@@ -1,0 +1,16 @@
+# Logs
+node_modules/
+dist/
+.astro/
+.env
+.env.local
+.DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Build outputs
+.cache/
+.tmp/

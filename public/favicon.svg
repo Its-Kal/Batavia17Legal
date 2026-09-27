@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Outer navy ring -->
+  <circle cx="32" cy="32" r="31" fill="#061124"/>
+  <!-- Gold accent ring -->
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#D4AF37" stroke-width="1.5"/>
+  <!-- Inner glow -->
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#D4AF37" stroke-width="0.5" opacity="0.4"/>
+  <!-- B17 text -->
+  <text x="32" y="37" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="17" text-anchor="middle" fill="#D4AF37" letter-spacing="0.5">B17</text>
+</svg>

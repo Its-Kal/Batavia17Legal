@@ -1,0 +1,1035 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Layanan cards dengan background images
+const services = [
+  {
+    badge: 'HUKUM DIGITAL',
+    title: 'Pinjaman Online',
+    desc: 'Menata dokumen, riwayat komunikasi, dan pilihan penanganan awal.',
+    bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAruauknQGvJtA9xjOZ9B2T1INGscyzrCJFysUhnLhEI_SmTvq2d2tSYpxdDcFgD0G6ZL_apGkIn-ibedvPyypjxi4b0kGxG6HS7_6EFs8fXoAaiGukzWHGMpVhmiVLblW0W-I6Ajk7Tr8zjkMyc7ayYG-9KQXvfmdauZDrwWmAjOBqCfLgCUMp2ZWkpjxTB_ZMrgWB3JDEyNMioSEXeFA1yda9w7XmxPVFdL2kTF29fdBb1tueINn9',
+  },
+  {
+    badge: 'PERTANAHAN',
+    title: 'Sengketa Lahan',
+    desc: 'Menyusun kronologi dan dokumen sebelum meminta peninjauan hukum.',
+    bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB4Vi1s16AOeDkpzrDs-pc7x5ZSQkF-CfLq-cYF4oPWQjANKXKaWOGTefSXopfNtd5TE_auq7_Vj-NUmCpdPyiefy3QQX--HxluCyGGIZPv-d6LxC8DIs9Jvp-i-oNsJZtwzh-Fd-TIFvs1dku0tWX0FzQifKD3EoaXVr5AYwnMQIptvTTdlHRyTcxk4rorQHKMu6DFB0fV-sRGyxeso5CSsxYRX10uV745tsRXbUqrCLwuAZNI4Wa',
+  },
+  {
+    badge: 'PERKARA HUKUM',
+    title: 'Pidana & Perdata',
+    desc: 'Pendampingan untuk memahami dokumen dan tahapan perkara.',
+    bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBILrD3OLTfe2_k3fkogWp-f74tm8Vzbo2c6kCrlp3f3Eikk9iwpXPqNVu4VzlSvZLLhua0mE6XUZJZOzfkhl4d-AA9oZm8sPCfGjFG7h6IAhmtzK4n2M7b1zfn_hon-K3dHiCKbdDR8JPZ2BqMtDUeZYk19fXll9IQCzLcVfR2thds1bBolG2Epk7xuAALtLbtd_y0w369RIMFmiqf1acw17AzzV1j4qgpPEtvCl34lT3Y_hiK-Pym',
+  },
+  {
+    badge: 'KELUARGA',
+    title: 'Hukum Keluarga',
+    desc: 'Ruang konsultasi awal untuk memahami pilihan pada persoalan keluarga.',
+    bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC_x-lNt4190SFLojdoLepzF06Se48mPlUwb1IkZyYQq2x5fLobBzWXmLU2J-eh-0BRjDJKR_X5XK_ltCjO1j6u63qQu5Pt3R9ZTyiG20vMI7GMCWzvHqSl9Pf22qbwT59NX0bJeXvCKeAwxuY5c7sV7lmv9-x0CiJ34DNGeeaiHPX7EDYKvTjmIk8MMTqT-x6Ymsd_yWXy4RW2oY6qDDKLqD68-NOzcbyjp_zQajGAfqgUjF9zTy-d',
+  },
+  {
+    badge: 'USAHA & KONTRAK',
+    title: 'Hukum Bisnis',
+    desc: 'Meninjau dokumen dan opsi saat muncul persoalan usaha.',
+    bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBHnUABKsiIUwSV55-rFxM2jezNfJM3afVzMR2apyfS3VvqQdlkUFlrxgSv4ol7uZ3bPk0sfRlxkiwmyROS5z97pY5mdA-bqGc2TqAawIOMpvyJ_FMNlU6jGbmgX2gCKI51ytFpSQWlxASc7oNSyfRqAZbgH6cLptIhHBXv-H1Cz8_A4itLGVBLx4vIpO4XhEmAdLN609B_cgbwrNgCu4--kznlxgXA0nJ7DLtXwqvaeV6YhrC58bul',
+  },
+  {
+    badge: 'HUBUNGAN KERJA',
+    title: 'Ketenagakerjaan',
+    desc: 'Memetakan dokumen dan pilihan pada persoalan ketenagakerjaan.',
+    bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy6M89Pdv8ozO5GNCC01Cg3PJ63dlJZiDSzI1M6sImPQbJxBYpXiE_PloerMjGs_Xrl-QWTaykoYyRqRahh0qei92_bi415TKa-b1rrSn9BYW25XXKoBcvFnQRCbucQ8f9muqMqEcmUanbn2rI5VQyCn5u5hcsUzJSfsKzHv-s72wpbGbv-RmzaPcamxFDiDpQ7rE8Vp0RA8h88AQiQSaGbTIVFjMzBBxMleOxLXncTXKbd3i3ixo8',
+  },
+];
+
+const testimonials = [
+  {
+    initials: 'HW',
+    name: 'Bpk. Hendra Wijaya',
+    case: 'Kasus Pinjaman Digital · Jakarta Barat',
+    text: 'Batavia 17 bertindak sangat taktis. Kontak darurat saya diteror debt collector ilegal. Dalam hitungan hari setelah somasi dilayangkan, teror berhenti total dan privasi saya dipulihkan.',
+    badge: '✓ Selesai Mediasi',
+    role: 'Terverifikasi',
+  },
+  {
+    initials: 'RS',
+    name: 'Ibu Ratna Suryani',
+    case: 'Sengketa Lahan SHM · Bekasi',
+    text: 'Penyelesaian tumpang tindih sertifikat warisan keluarga dituntaskan secara transparan. Tim advokat menjelaskan setiap risiko tanpa kutipan biaya siluman.',
+    badge: '✓ Sertifikat Valid',
+    role: 'Terverifikasi',
+  },
+  {
+    initials: 'PT',
+    name: 'PT Cipta Mandiri',
+    case: 'Kontrak & Hubungan Usaha · Jakarta',
+    text: 'Legal audit dan negosiasi kontrak dari tim Batavia 17 berhasil melindungi kelangsungan operasional kami dari risiko gugatan wanprestasi senilai miliaran.',
+    badge: '✓ Kontrak Aman',
+    role: 'Mitra Korporasi',
+  },
+  {
+    initials: 'DP',
+    name: 'Doni Prasetyo',
+    case: 'Pendampingan Perkara · Tangerang',
+    text: 'Pengacara mendampingi saya dari pemeriksaan awal hingga penerbitan SP3. Sangat mengayomi, jelas dalam strategi, dan benar-benar hadir membela hak saya.',
+    badge: '✓ Hak Dipulihkan',
+    role: 'Terverifikasi',
+  },
+];
+
+const advokats = [
+  {
+    name: 'Adv. ROSLINDAWATI, S.H.I.',
+    role: 'Partner',
+    spec: 'Hukum Perempuan & Anak',
+    badge: 'Peradi Berizin',
+    img: '/images/advocate/ADV ROSLINDAWATI, SH.i.webp',
+  },
+  {
+    name: 'ADV. Muhamad Nur, S.H.',
+    role: 'Senior Partner',
+    spec: 'Hukum Pertanahan & Agraria',
+    badge: 'Peradi Berizin',
+    img: '/images/advocate/ADV.Muhamad nur, SH.webp',
+  },
+  {
+    name: 'Abdus Sholeh, S.H.',
+    role: 'Associate',
+    spec: 'Hukum Pemerintahan & Tata Negara',
+    badge: 'Peradi Berizin',
+    img: '/images/advocate/Abdus Sholeh, S.H..webp',
+  },
+  {
+    name: 'AHMAD AKBAR, S.H.',
+    role: 'Associate',
+    spec: 'Hukum Bisnis & Kontrak',
+    badge: 'Peradi Berizin',
+    img: '/images/advocate/AHMAD AKBAR.webp',
+  },
+  {
+    name: 'Fikri Abdul Ajiz, S.H.',
+    role: 'Associate',
+    spec: 'Hukum Pidana & Perdata',
+    badge: 'Peradi Berizin',
+    img: '/images/advocate/Fikri Abdul Ajiz, S.H..webp',
+  },
+];
+
+const intake = [
+  {
+    name: 'Rusli Yani',
+    role: 'Founder',
+    desc: 'Pendiri Batavia 17',
+    img: '/images/staff/Rusli Yani.webp',
+  },
+  {
+    name: 'Firman',
+    role: 'Staff Legal Consultant',
+    desc: 'Membantu dalam analisis perkara dan persiapan dokumen hukum untuk mendukung proses pendampingan klien.',
+    img: '/images/staff/firman.webp',
+  },
+  {
+    name: 'Lita Khaileena',
+    role: 'Staff Legal Consultant',
+    desc: 'Memberikan konsultasi hukum awal dan membantu verifikasi kelengkapan dokumen perkara klien.',
+    img: '/images/staff/Lita khaileena.webp',
+  },
+  {
+    name: 'Farida',
+    role: 'Staff Legal Consultant',
+    desc: 'Mengelola dan menyusun dokumen hukum serta memastikan kelancaran komunikasi dengan klien.',
+    img: '/images/staff/farida.webp',
+  },
+  {
+    name: 'Bilal Ferdiansyah',
+    role: 'Staff Legal Consultant',
+    desc: 'Berkomitmen membantu kelancaran administrasi perkara dan koordinasi dengan tim hukum untuk penanganan kasus.',
+    img: '/images/staff/Bilal Ferdiansyah.webp',
+  },
+];
+
+const whatsappWa = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya butuh bantuan hukum.')}`;
+const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya ingin berkonsultasi mengenai masalah hukum.')}`;
+---
+
+<Layout>
+  {/* ============================================ */}
+  {/* BREADCRUMB BAR                              */}
+  {/* ============================================ */}
+  <div class="bg-[#061124] border-b border-[#162847]/60">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-3 flex items-center gap-2 text-[13px] text-slate-400">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-light">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <a href="/" class="hover:text-gold-light transition-colors">Beranda</a>
+      <span class="text-[#162847]">/</span>
+      <span class="text-gold-light font-medium">Halaman Utama</span>
+      <span class="ml-auto hidden sm:flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs text-emerald-400 font-medium">Online · Tim siaga 24/7</span>
+      </span>
+    </div>
+  </div>
+
+  {/* ============================================ */}
+  {/* HERO SECTION                                */}
+  {/* ============================================ */}
+  <section class="relative w-full min-h-[92vh] flex items-center bg-[#061124] text-white pt-32 pb-20 lg:py-36 overflow-hidden">
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none" style="background-image: url('/images/hero.webp');"></div>
+    {/* Dramatic gradient: 0% solid dark → 50% dark navy → 60% transition → 70% lighter → 100% bright navy */}
+    <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(to right, #061124 0%, #061124 40%, rgba(6,17,36,0.95) 50%, rgba(10,25,49,0.85) 58%, rgba(13,32,63,0.65) 65%, rgba(15,46,86,0.45) 72%, rgba(22,40,71,0.25) 82%, rgba(22,40,71,0.05) 95%, transparent 100%);"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-[#061124]/40 via-transparent to-[#061124]/60 pointer-events-none"></div>
+    <div class="absolute -top-40 -right-40 w-[420px] h-[420px] bg-gold-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        {/* Hero Left */}
+        <div class="lg:col-span-8 flex flex-col items-start gap-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#122344]/80 border border-gold-accent/30 text-gold-light text-xs font-semibold tracking-wider uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-gold-accent"></span>
+            <span>PENDAMPINGAN & ADVOKASI HUKUM TERPERCAYA</span>
+          </div>
+          <h1 class="font-display font-extrabold text-3xl sm:text-5xl lg:text-[56px] leading-[1.15] tracking-tight text-white max-w-3xl">
+            Saat masalah hukum datang, Anda tidak harus <span class="hero-gold-underline text-white">menghadapinya sendiri.</span>
+          </h1>
+          <p class="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl">
+            Temukan arah langkah hukum yang lebih jelas. Tim Batavia 17 siap mendengarkan situasi Anda dan membantu menata langkah berikutnya.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-2 w-full sm:w-auto">
+            <a class="inline-flex items-center justify-center bg-brand-red hover:bg-brand-red-hover text-white font-semibold text-[15px] px-7 py-3.5 rounded-lg shadow-crimson transition-all transform hover:-translate-y-0.5 active:translate-y-0" href={whatsappLayanan} rel="noopener noreferrer" target="_blank">
+              Bantu Saya
+            </a>
+            <a class="inline-flex items-center justify-center bg-[#0A1931]/60 hover:bg-[#162847] border border-slate-700/80 hover:border-gold-accent/50 text-slate-200 hover:text-white font-medium text-[15px] px-6 py-3.5 rounded-lg backdrop-blur-sm transition-all" href="#layanan-hukum">
+              Lihat bidang layanan
+            </a>
+          </div>
+        </div>
+
+      </div>
+  </section>
+
+  {/* ============================================ */}
+  {/* RUANG LINGKUP LAYANAN                       */}
+  {/* ============================================ */}
+  <section class="py-24 bg-white text-text-dark relative" id="layanan-hukum">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <span class="font-display font-semibold text-xs tracking-widest text-gold-dim uppercase block mb-2">
+          RUANG LINGKUP LAYANAN
+        </span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-text-dark tracking-tight leading-tight">
+          Dukungan hukum yang disesuaikan dengan situasi Anda.
+        </h2>
+        <p class="text-base text-text-muted mt-3 leading-relaxed">
+          Setiap perkara memiliki konteks yang berbeda. Mulailah dengan memahami dokumen, pilihan, dan langkah yang dapat dipertimbangkan.
+        </p>
+      </div>
+
+      <div class="relative">
+        <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((s, i) => (
+            <div class="service-card group relative rounded-2xl overflow-hidden bg-navy-card border border-slate-200/80 transition-all duration-500 shadow-sm flex flex-col justify-end cursor-pointer" data-index={i} onclick="expandCard(this)">
+              <div class="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700" style={`background-image: url('${s.bg}')`}></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/75 to-transparent"></div>
+              <div class="relative z-10 p-6">
+                <span class="px-2.5 py-0.5 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-light text-[11px] font-semibold uppercase tracking-wider mb-2 inline-block">
+                  {s.badge}
+                </span>
+                <h3 class="font-display font-bold text-xl text-white mb-1">{s.title}</h3>
+                <p class="text-sm text-slate-300 leading-snug">{s.desc}</p>
+                <div class="detail-content overflow-hidden max-h-0 opacity-0 group-hover:max-h-48 group-hover:opacity-100 transition-all duration-500 mt-4">
+                  <div class="h-px w-full bg-gold-accent/30 my-4"></div>
+                  <p class="text-sm text-slate-300 leading-relaxed mb-4">Konsultasikan kasus Anda dengan tim ahli kami untuk gambaran jelas langkah hukum yang tepat. Pendampingan dari awal hingga selesai.</p>
+                  <a href={whatsappLayanan} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-all">
+                    Konsultasi Sekarang
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ============================================ */}
+  {/* CERITA & PENGALAMAN (Testimonial Marquee)   */}
+  {/* ============================================ */}
+  <section class="py-24 bg-[#061124] text-white overflow-hidden relative">
+    <div class="max-w-7xl mx-auto px-6 mb-12">
+      <span class="font-display font-semibold text-xs tracking-widest text-gold-accent uppercase block mb-2">
+        CERITA & PENGALAMAN
+      </span>
+      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white tracking-tight leading-tight">
+        Dengar langsung dari mereka yang pernah didampingi.
+      </h2>
+      <p class="text-sm text-slate-400 mt-2">
+        Pengalaman nyata dari masyarakat dan pelaku usaha yang telah berhasil didampingi melewati masalah hukum.
+      </p>
+    </div>
+
+    <div class="carousel-container relative w-full overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+      <div class="carousel-track flex gap-6 px-6 py-4">
+        {[...testimonials, ...testimonials].map((t) => (
+          <div class="w-[360px] md:w-[400px] bg-white text-text-dark p-7 rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
+            <div>
+              <div class="flex items-center gap-3.5 mb-4">
+                <div class="w-12 h-12 rounded-full bg-navy-card text-gold-light font-display font-bold flex items-center justify-center shrink-0">
+                  {t.initials}
+                </div>
+                <div>
+                  <h4 class="font-display font-bold text-sm text-text-dark">{t.name}</h4>
+                  <p class="text-xs text-text-muted">{t.case}</p>
+                </div>
+              </div>
+              <div class="flex text-amber-500 mb-3 text-sm">★★★★★</div>
+              <p class="text-sm text-slate-600 leading-relaxed italic">"{t.text}"</p>
+            </div>
+            <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-medium text-emerald-600">{t.badge}</span>
+              <span>{t.role}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ============================================ */}
+  {/* ORANG DI BALIK PENDAMPINGAN                 */}
+  {/* ============================================ */}
+  <section class="py-24 bg-surface-light text-text-dark relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <span class="font-display font-semibold text-xs tracking-widest text-gold-dim uppercase block mb-2">
+          ORANG DI BALIK PENDAMPINGAN
+        </span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-text-dark tracking-tight leading-tight">
+          Tim yang hadir di setiap langkah.
+        </h2>
+        <p class="text-sm text-text-muted mt-2">
+          Para advokat tersumpah dan tim admisi responsif yang siap menelaah dokumen perkara Anda secara objektif.
+        </p>
+      </div>
+
+      {/* Advokat & Pengacara */}
+      <div class="mb-14">
+        <div class="flex items-center gap-2 mb-6">
+          <span class="w-2 h-2 rounded-full bg-gold-accent"></span>
+          <span class="font-display font-bold text-xs tracking-wider text-text-dark uppercase">
+            ADVOKAT & PENGACARA
+          </span>
+        </div>
+        <div class="relative flex items-center justify-center" style="perspective: 1400px; height: 540px;">
+          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d; width: 300px; height: 480px;">
+            {advokats.map((a, i) => (
+              <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)" style="width: 300px; height: 480px;">
+                <div class="h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div class="p-5 flex flex-col items-center h-full">
+                    <div class="relative w-full mb-3" style="flex-shrink: 0;">
+                      <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-gold-accent/30 to-transparent blur-xl transform scale-75"></div>
+                      <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-white/20 shadow-lg">
+                        <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
+                      </div>
+                    </div>
+                    <div class="text-center w-full" style="flex-shrink: 0;">
+                      <h4 class="font-display font-bold text-base text-white leading-tight mb-0.5">{a.name}</h4>
+                      <span class="text-sm font-medium text-gold-accent/80">{a.role}</span>
+                      <p class="text-[10px] text-slate-400 mt-1 leading-tight">{a.spec}</p>
+                    </div>
+                    <div class="w-full mt-auto pt-3 border-t border-white/10" style="flex-shrink: 0;">
+                      <span class="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-gold-accent/20 to-gold-dim/20 border border-gold-accent/30 text-gold-accent text-[10px] font-semibold">
+                        {a.badge}
+                      </span>
+                      <p class="text-[9px] text-slate-500 mt-2 text-center">Klik untuk detail</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button onclick="slideAdvokat(-1)" class="absolute left-4 lg:left-16 z-20 w-12 h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button onclick="slideAdvokat(1)" class="absolute right-4 lg:right-16 z-20 w-12 h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <div class="flex justify-center gap-2 mt-6">
+          {advokats.map((_, i) => (
+            <button onclick={`goToAdvokat(${i})`} class="advokat-dot rounded-full bg-slate-300 hover:bg-gold-accent transition-all" data-dot={i} style="width: 8px; height: 8px;"></button>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal Popup - ID Card Style */}
+      <div id="advokat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAdvokatModal()"></div>
+        {/* Close Button */}
+        <button onclick="closeAdvokatModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="relative w-full max-w-2xl">
+          {/* ID Card - Reference Style */}
+          <div class="id-card-wrapper bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
+            {/* Left Side - Navy Blue with Logo */}
+            <div class="bg-gradient-to-b from-[#1a3a5c] to-[#0d1f33] p-6 md:w-2/5 flex flex-col items-center justify-center relative">
+              {/* Logo Area */}
+              <div class="text-center mb-4">
+                <div class="w-24 h-24 mx-auto mb-3 rounded-full overflow-hidden flex items-center justify-center" style="background-color: #0d1f33;">
+                  <img crossorigin="anonymous" src="/images/logo.svg" alt="Batavia 17 Logo" class="w-full h-full object-contain" />
+                </div>
+                <h3 class="text-white font-bold text-xl tracking-wide">BATAVIA 17</h3>
+                <p class="text-gold-accent text-xs mt-1">KONSULTAN BANTUAN HUKUM</p>
+              </div>
+              {/* Tagline */}
+              <div class="text-center mt-4 border-t border-white/20 pt-4">
+                <p class="text-white/60 text-[10px] tracking-widest uppercase mb-1">Tagline</p>
+                <p class="text-white/80 text-xs italic">Integritas - Profesional - Terpercaya</p>
+              </div>
+              {/* Decorative scales */}
+              <div class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-20">
+                <svg width="60" height="40" viewBox="0 0 100 60" fill="none">
+                  <path d="M50 5 L50 55" stroke="white" stroke-width="2"/>
+                  <path d="M20 20 Q50 35 80 20" stroke="white" stroke-width="2" fill="none"/>
+                  <path d="M20 20 L10 20 L20 35 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>
+                  <path d="M80 20 L90 20 L80 35 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>
+                  <circle cx="50" cy="5" r="4" fill="white"/>
+                </svg>
+              </div>
+            </div>
+
+            {/* Right Side - White with Details */}
+            <div class="p-6 md:w-3/5 flex flex-col">
+              {/* Header */}
+              <div class="mb-4">
+                <p class="text-slate-400 text-xs uppercase tracking-wider">Kartu Identitas</p>
+                <h3 class="text-navy-dark font-bold text-xl">Advokat Berizin</h3>
+              </div>
+
+              {/* Photo and Info Row */}
+              <div class="flex gap-5 mb-4">
+                {/* Photo - Larger */}
+                <div class="relative shrink-0">
+                  <div class="w-36 h-44 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg bg-slate-100">
+                    <img id="modal-img" class="w-full h-full object-cover object-top" src="" alt="" />
+                  </div>
+                  {/* Badge overlay */}
+                  <div class="absolute -bottom-2 left-1/2 -translate-x-1/2">
+                    <span id="modal-badge" class="px-3 py-1 rounded-full bg-gold-accent text-navy-dark text-[9px] font-bold whitespace-nowrap shadow-md"></span>
+                  </div>
+                </div>
+
+                {/* Info - Larger */}
+                <div class="flex-1 pt-1">
+                  <div class="mb-4">
+                    <p class="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Nama Lengkap</p>
+                    <h4 id="modal-name" class="text-navy-dark font-bold text-base leading-tight"></h4>
+                  </div>
+                  <div class="mb-4">
+                    <p class="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Jabatan</p>
+                    <p id="modal-role" class="text-gold-accent font-bold text-sm"></p>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Spesialisasi</p>
+                    <p id="modal-spec" class="text-navy-dark/80 text-sm leading-tight"></p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ID Number and Download */}
+              <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <p class="text-slate-400 text-[10px] uppercase tracking-wider">No. ID</p>
+                  <p class="text-navy-dark font-mono text-sm font-bold">B17-ADV-<span id="modal-id">0001</span></p>
+                </div>
+                <button onclick="downloadIdCard()" id="modal-download" class="flex items-center gap-2 bg-gradient-to-r from-gold-accent to-gold-dim hover:from-gold-dim hover:to-gold-accent text-navy-dark font-bold text-xs px-5 py-2.5 rounded-lg shadow-md transition-all cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download PDF
+                </button>
+              </div>
+
+              {/* Website */}
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="text-slate-400 text-xs">www.batavia17.id</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Back Side of ID Card */}
+        <div class="id-card-wrapper-back hidden">
+          <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8" style="width: 600px;">
+            {/* Header */}
+            <div class="text-center mb-6 border-b border-slate-200 pb-4">
+              <h3 class="text-navy-dark font-bold text-lg">RUANG LINGKUP LAYANAN</h3>
+              <p class="text-slate-500 text-xs mt-1">BATAVIA 17 KONSULTAN BANTUAN HUKUM</p>
+            </div>
+
+            {/* Services List */}
+            <div class="grid grid-cols-2 gap-3">
+              {services.map((s) => (
+                <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <span class="text-gold-accent text-[10px] font-bold uppercase tracking-wider">{s.badge}</span>
+                  <p class="text-navy-dark font-semibold text-xs mt-1">{s.title}</p>
+                  <p class="text-slate-500 text-[9px] mt-0.5 leading-tight">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer with transparent logo */}
+            <div class="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="text-slate-400 text-[10px]">Konsultasi Awal Gratis</p>
+                <p class="text-navy-dark font-bold text-xs">www.batavia17.id</p>
+              </div>
+              <div class="relative w-20 h-20 opacity-20">
+                <img src="/images/logo.svg" alt="" class="w-full h-full object-contain" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Popup - Intake ID Card Style */}
+      <div id="intake-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeIntakeModal()"></div>
+        {/* Close Button */}
+        <button onclick="closeIntakeModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="relative w-full max-w-2xl">
+          {/* ID Card - Reference Style */}
+          <div class="id-card-wrapper bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
+            {/* Left Side - Navy Blue with Logo */}
+            <div class="bg-gradient-to-b from-[#1a3a5c] to-[#0d1f33] p-6 md:w-2/5 flex flex-col items-center justify-center relative">
+              {/* Logo Area */}
+              <div class="text-center mb-4">
+                <div class="w-24 h-24 mx-auto mb-3 rounded-full overflow-hidden flex items-center justify-center" style="background-color: #0d1f33;">
+                  <img crossorigin="anonymous" src="/images/logo.svg" alt="Batavia 17 Logo" class="w-full h-full object-contain" />
+                </div>
+                <h3 class="text-white font-bold text-xl tracking-wide">BATAVIA 17</h3>
+                <p class="text-gold-accent text-xs mt-1">KONSULTAN BANTUAN HUKUM</p>
+              </div>
+              {/* Tagline */}
+              <div class="text-center mt-4 border-t border-white/20 pt-4">
+                <p class="text-white/60 text-[10px] tracking-widest uppercase mb-1">Tagline</p>
+                <p class="text-white/80 text-xs italic">Integritas - Profesional - Terpercaya</p>
+              </div>
+              {/* Decorative scales */}
+              <div class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-20">
+                <svg width="60" height="40" viewBox="0 0 100 60" fill="none">
+                  <path d="M50 5 L50 55" stroke="white" stroke-width="2"/>
+                  <path d="M20 20 Q50 35 80 20" stroke="white" stroke-width="2" fill="none"/>
+                  <path d="M20 20 L10 20 L20 35 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>
+                  <path d="M80 20 L90 20 L80 35 Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.3"/>
+                  <circle cx="50" cy="5" r="4" fill="white"/>
+                </svg>
+              </div>
+            </div>
+
+            {/* Right Side - White with Details */}
+            <div class="p-6 md:w-3/5 flex flex-col">
+              {/* Header */}
+              <div class="mb-4">
+                <p class="text-slate-400 text-xs uppercase tracking-wider">Kartu Identitas</p>
+                <h3 id="intake-modal-title" class="text-navy-dark font-bold text-xl">Staff Legal Intake</h3>
+              </div>
+
+              {/* Photo and Info Row */}
+              <div class="flex gap-5 mb-4">
+                {/* Photo - Larger */}
+                <div class="relative shrink-0">
+                  <div class="w-36 h-44 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg bg-slate-100">
+                    <img id="intake-modal-img" class="w-full h-full object-cover object-top" src="" alt="" />
+                  </div>
+                  {/* Badge overlay */}
+                  <div class="absolute -bottom-2 left-1/2 -translate-x-1/2">
+                    <span id="intake-modal-badge" class="px-3 py-1 rounded-full bg-gold-accent text-navy-dark text-[9px] font-bold whitespace-nowrap shadow-md"></span>
+                  </div>
+                </div>
+
+                {/* Info - Larger */}
+                <div class="flex-1 pt-1">
+                  <div class="mb-4">
+                    <p class="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Nama Lengkap</p>
+                    <h4 id="intake-modal-name" class="text-navy-dark font-bold text-base leading-tight"></h4>
+                  </div>
+                  <div class="mb-4">
+                    <p class="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Jabatan</p>
+                    <p id="intake-modal-role" class="text-gold-accent font-bold text-sm"></p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ID Number and Download */}
+              <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <p class="text-slate-400 text-[10px] uppercase tracking-wider">No. ID</p>
+                  <p class="text-navy-dark font-mono text-sm font-bold">B17-STAFF-<span id="intake-modal-id">0001</span></p>
+                </div>
+                <button onclick="downloadIntakeIdCard()" class="flex items-center gap-2 bg-gradient-to-r from-gold-accent to-gold-dim hover:from-gold-dim hover:to-gold-accent text-navy-dark font-bold text-xs px-5 py-2.5 rounded-lg shadow-md transition-all cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download PDF
+                </button>
+              </div>
+
+              {/* Website */}
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="text-slate-400 text-xs">www.batavia17.id</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sales, Admisi & Legal Intake */}
+      <div>
+        <div class="flex items-center gap-2 mb-6">
+          <span class="w-2 h-2 rounded-full bg-gold-accent"></span>
+          <span class="font-display font-bold text-xs tracking-wider text-text-dark uppercase">
+            TIM ADMINISTRASI & LEGAL INTAKE
+          </span>
+        </div>
+
+        {/* Head Section - Large Card */}
+        <div class="bg-gradient-to-br from-[#1a2744] to-[#0d1a2e] rounded-3xl p-6 lg:p-8 mb-8 border border-white/10 shadow-xl">
+          <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6">
+            <div class="relative shrink-0">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-gold-accent/30 to-transparent blur-xl"></div>
+              <div class="relative w-36 h-44 lg:w-48 lg:h-56 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl">
+                <img alt={intake[0].name} class="w-full h-full object-cover object-top" src={intake[0].img} />
+              </div>
+            </div>
+            <div class="flex-1 text-center lg:text-left">
+              <h3 class="font-display font-bold text-2xl lg:text-3xl text-white mb-1">{intake[0].name}</h3>
+              <p class="text-gold-accent font-semibold text-base mb-4">{intake[0].role}</p>
+              <p class="text-slate-400 text-sm leading-relaxed max-w-2xl mb-6">
+                Berawal dari keresahan pribadi menghadapi kompleksitas sistem hukum Indonesia, mendirikan Batavia 17 dengan misi memberikan akses keadilan yang adil dan transparan. Mengedepankan pendekatan humanis dalam setiap penanganan perkara, memastikan setiap klien merasa didengar, dipahami, dan dibimbing dengan penuh integritas dari awal hingga penyelesaian.
+              </p>
+              <button onclick="showIntakeModal(0)" class="inline-flex items-center gap-2 bg-gold-accent hover:from-gold-dim hover:to-gold-accent text-navy-dark font-semibold text-sm px-6 py-3 rounded-xl transition-all cursor-pointer">
+                Lihat Detail
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Staff Grid - 2 columns */}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {intake.slice(1).map((p, i) => (
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-gold-accent/30 transition-all duration-300 flex items-center gap-4">
+              <div class="relative shrink-0">
+                <div class="absolute inset-0 rounded-xl bg-gold-accent/10 blur-md"></div>
+                <div class="relative w-32 h-40 md:w-36 md:h-44 rounded-xl overflow-hidden border-2 border-white shadow-lg">
+                  <img alt={p.name} class="w-full h-full object-cover object-top" src={p.img} />
+                </div>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h4 class="font-display font-bold text-base text-text-dark">{p.name}</h4>
+                <span class="text-sm font-semibold text-gold-accent">{p.role}</span>
+                <p class="text-sm text-text-muted mt-1 leading-relaxed">{p.desc}</p>
+              </div>
+              <button onclick={`showIntakeModal(${i + 1})`} class="shrink-0 w-12 h-12 rounded-xl bg-gold-accent/10 hover:bg-gold-accent group flex items-center justify-center transition-all cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E6C158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ============================================ */}
+  {/* CLOSING CTA BANNER                          */}
+  {/* ============================================ */}
+  <section class="py-24 bg-[#061124] text-white relative overflow-hidden text-center">
+    {/* Background Image with 50% Transparent Overlay */}
+    <div class="absolute inset-0">
+      <img src="/images/hero tentang kami.webp" alt="" class="w-full h-full object-cover opacity-50" />
+      <div class="absolute inset-0 bg-gradient-to-b from-[#0A1931]/60 to-[#061124]/80 pointer-events-none"></div>
+    </div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative max-w-4xl mx-auto px-6 flex flex-col items-center">
+      <h2 class="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight leading-tight">
+        Langkah yang lebih jelas dimulai dari percakapan.
+      </h2>
+      <p class="text-base sm:text-lg text-slate-300 mt-4 max-w-2xl leading-relaxed">
+        Ceritakan kebutuhan awal Anda kepada tim Batavia 17. Konsultasi awal bebas biaya untuk pemetaan perkara Anda.
+      </p>
+      <div class="mt-8">
+        <a class="inline-flex items-center justify-center bg-brand-red hover:bg-brand-red-hover text-white font-semibold text-base px-8 py-4 rounded-xl shadow-crimson-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0" href={whatsappWa} rel="noopener noreferrer" target="_blank">
+          Hubungi Kami
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero-gold-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .hero-gold-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #E6C158 0%, #D4AF37 100%);
+    border-radius: 9999px;
+  }
+  .carousel-track {
+    display: flex;
+    width: max-content;
+    animation: marqueeScroll 45s linear infinite;
+  }
+  .carousel-container:hover .carousel-track {
+    animation-play-state: paused;
+  }
+  @keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+    70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+  }
+  .whatsapp-pulse {
+    animation: pulse-ring 2.5s infinite;
+  }
+  .expanded-card {
+    background: #0A1931 !important;
+  }
+  .expanded-card .detail-content {
+    max-height: 500px !important;
+    opacity: 1 !important;
+  }
+  .is-expanded {
+    grid-column: 1 / -1 !important;
+    z-index: 50;
+    background: #0A1931 !important;
+  }
+  .is-expanded .detail-content {
+    max-height: 300px !important;
+    opacity: 1 !important;
+    margin-top: 1rem;
+  }
+  .is-hidden {
+    display: none !important;
+  }
+  #advokat-carousel {
+    scroll-behavior: smooth;
+  }
+  .advokat-card > div {
+    position: relative;
+  }
+  #advokat-carousel {
+    transform-style: preserve-3d;
+  }
+  .advokat-card {
+    left: 50%;
+    margin-left: -150px;
+    backface-visibility: hidden;
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+
+<script is:inline>
+  let expandedCard = null;
+  let currentAdvokatSlide = 0;
+  let advokatInterval;
+  let advokatCount = 5;
+
+  function updateAdvokatCards() {
+    const carousel = document.getElementById('advokat-carousel');
+    if (!carousel) return;
+    const cards = carousel.querySelectorAll('.advokat-card');
+    advokatCount = cards.length;
+    cards.forEach((card, i) => {
+      const diff = ((i - currentAdvokatSlide) % advokatCount + advokatCount) % advokatCount;
+      let xPos = 0, zPos = 0, rotY = 0, opacity = 1, scale = 1;
+
+      if (diff === 0) {
+        xPos = 0; zPos = 0; rotY = 0; opacity = 1; scale = 1;
+      } else if (diff === 1) {
+        xPos = 280; zPos = -200; rotY = -60; opacity = 0.4; scale = 0.8;
+      } else if (diff === 2) {
+        xPos = 0; zPos = -400; rotY = 0; opacity = 0; scale = 0.6;
+      } else if (diff === 3) {
+        xPos = -280; zPos = -200; rotY = 60; opacity = 0.4; scale = 0.8;
+      } else {
+        xPos = 0; zPos = -500; rotY = 0; opacity = 0; scale = 0.5;
+      }
+
+      card.style.transform = `translateX(${xPos}px) translateZ(${zPos}px) rotateY(${rotY}deg) scale(${scale})`;
+      card.style.opacity = opacity;
+      card.style.zIndex = diff === 0 ? 10 : (diff === 1 || diff === advokatCount - 1 ? 5 : 1);
+    });
+
+    const dots = document.querySelectorAll('.advokat-dot');
+    dots.forEach((dot, i) => {
+      const isActive = i === currentAdvokatSlide;
+      dot.style.backgroundColor = isActive ? '#E6C158' : '#cbd5e1';
+      dot.style.width = isActive ? '24px' : '8px';
+      dot.style.height = '8px';
+    });
+  }
+
+  function startAdvokatAutoplay() {
+    advokatInterval = setInterval(() => {
+      currentAdvokatSlide = (currentAdvokatSlide + 1) % advokatCount;
+      updateAdvokatCards();
+    }, 3000);
+  }
+
+  function stopAdvokatAutoplay() {
+    clearInterval(advokatInterval);
+  }
+
+  function slideAdvokat(direction) {
+    stopAdvokatAutoplay();
+    currentAdvokatSlide = (currentAdvokatSlide + direction + advokatCount) % advokatCount;
+    updateAdvokatCards();
+    startAdvokatAutoplay();
+  }
+
+  function goToAdvokat(index) {
+    stopAdvokatAutoplay();
+    currentAdvokatSlide = index;
+    updateAdvokatCards();
+    startAdvokatAutoplay();
+  }
+
+  function expandCard(el) {
+    const grid = document.getElementById('services-grid');
+    if (!grid) return;
+    const cards = grid.querySelectorAll('.service-card');
+    const idx = parseInt(el.dataset.index);
+    cards.forEach((c, i) => {
+      if (i === idx) {
+        c.classList.add('is-expanded');
+      } else {
+        c.classList.add('is-hidden');
+      }
+    });
+    expandedCard = el;
+  }
+  function collapseCard() {
+    const grid = document.getElementById('services-grid');
+    if (!grid) return;
+    grid.querySelectorAll('.service-card').forEach(c => {
+      c.classList.remove('is-expanded', 'is-hidden');
+    });
+    expandedCard = null;
+  }
+  document.addEventListener('click', function(e) {
+    const grid = document.getElementById('services-grid');
+    if (grid && !grid.contains(e.target)) {
+      collapseCard();
+    }
+  });
+
+  window.expandCard = expandCard;
+  window.collapseCard = collapseCard;
+  window.slideAdvokat = slideAdvokat;
+  window.goToAdvokat = goToAdvokat;
+
+  function showAdvokatModal(card) {
+    const modal = document.getElementById('advokat-modal');
+    const idx = parseInt(card.dataset.index) + 1;
+    const idNum = idx.toString().padStart(4, '0');
+    document.getElementById('modal-img').src = card.dataset.img;
+    document.getElementById('modal-img').alt = card.dataset.name;
+    document.getElementById('modal-name').textContent = card.dataset.name;
+    document.getElementById('modal-role').textContent = card.dataset.role;
+    document.getElementById('modal-spec').textContent = card.dataset.spec;
+    document.getElementById('modal-badge').textContent = card.dataset.badge;
+    document.getElementById('modal-id').textContent = idNum;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    stopAdvokatAutoplay();
+  }
+
+  function closeAdvokatModal() {
+    const modal = document.getElementById('advokat-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    startAdvokatAutoplay();
+  }
+
+  async function downloadIdCard() {
+    const cardFront = document.querySelector('.id-card-wrapper');
+    const cardBack = document.querySelector('.id-card-wrapper-back');
+    if (!cardFront) return;
+    const downloadBtn = document.getElementById('modal-download');
+    const originalHTML = downloadBtn.innerHTML;
+    downloadBtn.innerHTML = 'Generating...';
+    downloadBtn.disabled = true;
+    downloadBtn.style.visibility = 'hidden';
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // @ts-ignore
+      const canvas = await html2canvas(cardFront, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false
+      });
+      // @ts-ignore
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [cardFront.offsetWidth, cardFront.offsetHeight]
+      });
+      // Page 1 - Front
+      const imgData1 = canvas.toDataURL('image/jpeg', 0.95);
+      pdf.addImage(imgData1, 'JPEG', 0, 0, cardFront.offsetWidth, cardFront.offsetHeight);
+      // Page 2 - Back
+      if (cardBack) {
+        cardBack.classList.remove('hidden');
+        const canvasBack = await html2canvas(cardBack, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false
+        });
+        pdf.addPage([cardBack.offsetWidth, cardBack.offsetHeight], 'landscape');
+        const imgData2 = canvasBack.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData2, 'JPEG', 0, 0, cardBack.offsetWidth, cardBack.offsetHeight);
+        cardBack.classList.add('hidden');
+      }
+      const name = document.getElementById('modal-name').textContent.replace(/\s+/g, '_');
+      pdf.save(`ID_Card_${name}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Gagal generate PDF. Coba lagi.');
+    }
+    downloadBtn.style.visibility = 'visible';
+    downloadBtn.innerHTML = originalHTML;
+    downloadBtn.disabled = false;
+  }
+
+  window.showAdvokatModal = showAdvokatModal;
+  window.closeAdvokatModal = closeAdvokatModal;
+  window.downloadIdCard = downloadIdCard;
+
+  // Intake Modal Functions
+  const intakeData = [
+    {
+      name: 'Rusli Yani',
+      role: 'Founder',
+      badge: 'Pendiri',
+      img: '/images/staff/Rusli Yani.webp'
+    },
+    {
+      name: 'Firman',
+      role: 'Staff Legal Consultant',
+      badge: 'Staff Legal',
+      img: '/images/staff/firman.webp'
+    },
+    {
+      name: 'Lita Khaileena',
+      role: 'Staff Legal Consultant',
+      badge: 'Staff Legal',
+      img: '/images/staff/Lita khaileena.webp'
+    },
+    {
+      name: 'Farida',
+      role: 'Staff Legal Consultant',
+      badge: 'Staff Legal',
+      img: '/images/staff/farida.webp'
+    },
+    {
+      name: 'Bilal Ferdiansyah',
+      role: 'Staff Legal Consultant',
+      badge: 'Staff Legal',
+      img: '/images/staff/Bilal Ferdiansyah.webp'
+    }
+  ];
+
+  function showIntakeModal(index) {
+    const modal = document.getElementById('intake-modal');
+    const data = intakeData[index];
+    if (!data) return;
+
+    const idNum = (index + 1).toString().padStart(4, '0');
+    document.getElementById('intake-modal-img').src = data.img;
+    document.getElementById('intake-modal-img').alt = data.name;
+    document.getElementById('intake-modal-name').textContent = data.name;
+    document.getElementById('intake-modal-role').textContent = data.role;
+    document.getElementById('intake-modal-badge').textContent = data.badge;
+    document.getElementById('intake-modal-id').textContent = idNum;
+    document.getElementById('intake-modal-title').textContent = index === 0 ? 'Pendiri Batavia 17' : 'Staff Legal Intake';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeIntakeModal() {
+    const modal = document.getElementById('intake-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  async function downloadIntakeIdCard() {
+    const cardFront = document.querySelector('#intake-modal .id-card-wrapper');
+    if (!cardFront) return;
+    const downloadBtn = document.querySelector('#intake-modal button[onclick="downloadIntakeIdCard()"]');
+    if (!downloadBtn) return;
+    const originalHTML = downloadBtn.innerHTML;
+    downloadBtn.innerHTML = 'Generating...';
+    downloadBtn.disabled = true;
+    downloadBtn.style.visibility = 'hidden';
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // @ts-ignore
+      const canvas = await html2canvas(cardFront, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false
+      });
+      // @ts-ignore
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [cardFront.offsetWidth, cardFront.offsetHeight]
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      pdf.addImage(imgData, 'JPEG', 0, 0, cardFront.offsetWidth, cardFront.offsetHeight);
+      const name = document.getElementById('intake-modal-name').textContent.replace(/\s+/g, '_');
+      pdf.save(`ID_Card_${name}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Gagal generate PDF. Coba lagi.');
+    }
+    downloadBtn.style.visibility = 'visible';
+    downloadBtn.innerHTML = originalHTML;
+    downloadBtn.disabled = false;
+  }
+
+  window.showIntakeModal = showIntakeModal;
+  window.closeIntakeModal = closeIntakeModal;
+  window.downloadIntakeIdCard = downloadIntakeIdCard;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    updateAdvokatCards();
+    startAdvokatAutoplay();
+    const carouselContainer = document.querySelector('#advokat-carousel').parentElement;
+    carouselContainer.addEventListener('mouseenter', stopAdvokatAutoplay);
+    carouselContainer.addEventListener('mouseleave', startAdvokatAutoplay);
+  });
+</script>

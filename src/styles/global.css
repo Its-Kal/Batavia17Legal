@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-light text-text-dark font-sans;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: #D4AF37;
+    color: #061124;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply max-w-[1280px] mx-auto px-6 md:px-10 lg:px-16;
+  }
+
+  /* Legal badge */
+  .legal-badge {
+    @apply inline-flex items-center font-heading font-bold;
+    color: #061124;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Marquee */
+  .marquee-track {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }
+
+  /* Form */
+  .form-input {
+    @apply w-full bg-white transition-all duration-200 outline-none;
+    border: 1.5px solid #CBD5E1;
+    padding: 14px 16px;
+    border-radius: 8px;
+    color: #061124;
+    font-size: 15px;
+  }
+  .form-input::placeholder { color: #94A3B8; }
+  .form-input:focus {
+    border-color: #0B1D3A;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+  }
+
+  /* Section divider */
+  .section-eyebrow {
+    @apply inline-flex items-center font-heading font-bold;
+    color: #061124;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .section-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1.5px;
+    background: #D4AF37;
+    margin-right: 12px;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}

@@ -1,0 +1,143 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import stats from '../../data/stats.json';
+import feedback from '../../data/feedback.json';
+
+const { stats: statList, attorneys } = stats;
+---
+
+<Layout title="Admin Dashboard — Batavia 17" isDarkHeader={true}>
+  <section class="bg-surface-canvas py-12">
+    <div class="container-x">
+      {/* Header */}
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-10">
+        <div>
+          <span class="section-eyebrow">Admin Dashboard</span>
+          <h1 class="mt-3 font-heading font-extrabold text-4xl tracking-tight">Selamat Datang Kembali.</h1>
+          <p class="text-navy-base/60 mt-2">Ringkasan operasional & manajemen konsultasi klien.</p>
+        </div>
+        <button id="logout-btn" class="btn-navy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+
+      {/* Stats grid */}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        {statList.map((s) => (
+          <div class="bg-white rounded-2xl p-6 shadow-card border border-navy-base/5">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-xl bg-gold-tint text-gold-deep grid place-items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+              </div>
+              <span class="text-xs text-green-600 font-semibold">+12% bulan ini</span>
+            </div>
+            <div class="mt-5 font-heading font-extrabold text-3xl text-navy-base">{s.value}</div>
+            <div class="text-xs tracking-badge uppercase text-navy-base/50 mt-2">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent consultations */}
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-card border border-navy-base/5 overflow-hidden">
+          <div class="px-6 py-5 border-b border-navy-base/5 flex items-center justify-between">
+            <h2 class="font-heading font-bold text-lg">Konsultasi Terbaru</h2>
+            <button class="text-xs text-gold-deep font-semibold hover:text-navy-base">Lihat semua →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-surface-muted text-xs tracking-badge uppercase text-navy-base/60">
+                <tr>
+                  <th class="text-left px-6 py-3 font-semibold">Klien</th>
+                  <th class="text-left px-6 py-3 font-semibold">Kategori</th>
+                  <th class="text-left px-6 py-3 font-semibold">Status</th>
+                  <th class="text-left px-6 py-3 font-semibold">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody class="text-sm">
+                {[
+                  { name: 'Andi Pratama', cat: 'Hukum Bisnis', status: 'Active', date: '26 Sep 2026' },
+                  { name: 'Maria Yuliana', cat: 'Hukum Keluarga', status: 'Mediasi', date: '25 Sep 2026' },
+                  { name: 'Bambang Setiawan', cat: 'Hukum Pidana', status: 'Active', date: '24 Sep 2026' },
+                  { name: 'Dewi Lestari', cat: 'Hukum Keluarga', status: 'Selesai', date: '23 Sep 2026' },
+                  { name: 'Rio Hartono', cat: 'Pertanahan', status: 'Active', date: '22 Sep 2026' },
+                ].map((row) => (
+                  <tr class="border-t border-navy-base/5 hover:bg-surface-canvas transition-colors">
+                    <td class="px-6 py-4 font-medium">{row.name}</td>
+                    <td class="px-6 py-4 text-navy-base/70">{row.cat}</td>
+                    <td class="px-6 py-4">
+                      <span class={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        row.status === 'Active' ? 'bg-green-100 text-green-700' :
+                        row.status === 'Mediasi' ? 'bg-blue-100 text-blue-700' :
+                        'bg-surface-muted text-navy-base/70'
+                      }`}>{row.status}</span>
+                    </td>
+                    <td class="px-6 py-4 text-navy-base/50">{row.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Team */}
+        <div class="bg-white rounded-2xl shadow-card border border-navy-base/5">
+          <div class="px-6 py-5 border-b border-navy-base/5">
+            <h2 class="font-heading font-bold text-lg">Tim Aktif</h2>
+          </div>
+          <div class="p-6 space-y-4">
+            {attorneys.map((a) => (
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-navy-base to-navy-surface text-gold-primary grid place-items-center font-heading font-bold text-sm">
+                  {a.name.split(' ').slice(2, 3)[0]?.[0] ?? 'A'}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-sm truncate">{a.name.split(',')[0]}</p>
+                  <p class="text-xs text-navy-base/50">{a.specialty}</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Feedback snapshot */}
+      <div class="mt-6 bg-white rounded-2xl shadow-card border border-navy-base/5 p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-heading font-bold text-lg">Feedback Terbaru</h2>
+          <span class="legal-badge text-gold-deep">{feedback.length} ulasan</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {feedback.slice(0, 3).map((fb) => (
+            <div class="bg-surface-canvas p-5 rounded-xl border border-navy-base/5">
+              <div class="flex gap-1 mb-2">
+                {Array.from({length: fb.rating}).map(() => (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#D4AF37"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                ))}
+              </div>
+              <p class="text-sm text-navy-base/75 italic line-clamp-3">"{fb.text}"</p>
+              <div class="mt-3 pt-3 border-t border-navy-base/5 flex justify-between text-xs">
+                <span class="font-semibold">{fb.name}</span>
+                <span class="text-navy-base/50">{fb.service}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Simple session check (client-side guard)
+  if (!document.cookie.includes('b17_session')) {
+    window.location.href = '/admin/login?error=required';
+  }
+
+  document.getElementById('logout-btn')?.addEventListener('click', () => {
+    document.cookie = 'b17_session=; path=/; max-age=0';
+    window.location.href = '/admin/login';
+  });
+</script>

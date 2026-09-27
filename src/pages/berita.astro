@@ -1,0 +1,202 @@
+---
+import Layout from '../layouts/Layout.astro';
+import feedback from '../data/feedback.json';
+
+// Set to true to enable maintenance mode
+const MAINTENANCE_MODE = true;
+
+const articles = [
+  {
+    id: 1,
+    category: 'Hukum Pidana',
+    title: 'Memahami Proses Penyidikan: Hak-Hak Tersangka Yang Wajib Anda Ketahui',
+    excerpt: 'Proses penyidikan memiliki batas waktu dan protokol ketat. Artikel ini merangkum hak-hak konstitusional Anda saat berhadapan dengan aparat penegak hukum.',
+    date: '12 September 2026',
+    readTime: '8 menit',
+    author: 'Adv. Dr. Hendra Wijaya',
+  },
+  {
+    id: 2,
+    category: 'Hukum Bisnis',
+    title: '5 Klausul Kontrak Yang Sering Mengecoh Pendiri Startup',
+    excerpt: 'Founder perlu mewaspadai klausul eksklusivitas, IP assignment, dan vesting shares. Panduan praktis sebelum Anda menandatangani dokumen investasi.',
+    date: '28 Agustus 2026',
+    readTime: '6 menit',
+    author: 'Adv. Bima Sakti',
+  },
+  {
+    id: 3,
+    category: 'Hukum Keluarga',
+    title: 'Mediasi Perceraian: Mengapa Pendekatan Ini Menguntungkan Semua Pihak',
+    excerpt: 'Mediasi menurunkan biaya, mempercepat proses, dan menjaga privasi keluarga. Studi kasus dan rekomendasi langkah mediasi dari tim kami.',
+    date: '15 Agustus 2026',
+    readTime: '7 menit',
+    author: 'Adv. Ratna Kusuma',
+  },
+  {
+    id: 4,
+    category: 'Hukum Pertanahan',
+    title: 'Sertifikat Elektronik: Era Baru Kepemilikan Tanah di Indonesia',
+    excerpt: 'Kementerian ATR/BPN telah meluncurkan sertifikat elektronik. Apa implikasinya bagi keamanan transaksi dan sengketa pertanahan?',
+    date: '02 Agustus 2026',
+    readTime: '9 menit',
+    author: 'Adv. Safira Putri',
+  },
+  {
+    id: 5,
+    category: 'Hukum Ketenagakerjaan',
+    title: 'PHK Massal: Prosedur, Hak Pekerja, dan Strategi Hukum Korporasi',
+    excerpt: 'Pemutusan hubungan kerja massal memiliki regulasi ketat. Panduan compliance untuk HR dan strategi mempertahankan hak bagi pekerja.',
+    date: '20 Juli 2026',
+    readTime: '10 menit',
+    author: 'Adv. Bima Sakti',
+  },
+  {
+    id: 6,
+    category: 'Hukum Perdata',
+    title: 'Wanprestasi vs Perbuatan Melawan Hukum: Perbedaan Krusial Yang Perlu Dipahami',
+    excerpt: 'Banyak klien keliru menggolongkan kasusnya. Artikel ini membedakan dua ranah hukum perdata yang paling sering dijumpai.',
+    date: '10 Juli 2026',
+    readTime: '7 menit',
+    author: 'Adv. Dr. Hendra Wijaya',
+  },
+];
+
+const totalRating = feedback.reduce((sum, f) => sum + f.rating, 0);
+const avgRating = (totalRating / feedback.length).toFixed(1);
+---
+
+<Layout title="Berita & Edukasi Hukum — Batavia 17">
+{MAINTENANCE_MODE ? (
+  <div class="min-h-screen flex items-center justify-center bg-[#061124]">
+    <div class="text-center px-6 max-w-xl">
+      <div class="w-24 h-24 mx-auto mb-8 rounded-full bg-gold-accent/20 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#E6C158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h1 class="font-display font-bold text-4xl text-white mb-4">Segera Hadir</h1>
+      <p class="text-slate-400 text-lg mb-8">Halaman Berita & Edukasi sedang dalam pengembangan. Kami sedang mempersiapkan konten terbaik untuk Anda.</p>
+      <a href="/" class="inline-flex items-center gap-2 bg-gold-accent hover:bg-gold-dim text-navy-dark font-semibold px-6 py-3 rounded-xl transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Kembali ke Beranda
+      </a>
+    </div>
+  </div>
+) : (
+  <>
+  {/* Hero */}
+  <section class="bg-navy-dark text-white pt-20 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-[0.05]" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+    <div class="container-x relative py-20 lg:py-28">
+      <span class="section-eyebrow text-gold-primary">Berita & Edukasi</span>
+      <h1 class="mt-5 font-heading font-extrabold text-balance text-4xl lg:text-6xl tracking-tight max-w-3xl">
+        Insight Hukum<br/>
+        <span class="text-gold-primary">Untuk Keputusan Tepat.</span>
+      </h1>
+      <p class="mt-6 text-white/75 text-lg max-w-2xl leading-relaxed">
+        Artikel, panduan, dan analisis dari tim pengacara kami. Dirancang untuk membantu Anda memahami opsi hukum secara jernih.
+      </p>
+    </div>
+  </section>
+
+  {/* Filter chips */}
+  <section class="border-b border-navy-base/5 bg-white">
+    <div class="container-x py-6 flex flex-wrap gap-3">
+      {['Semua', 'Hukum Pidana', 'Hukum Bisnis', 'Hukum Keluarga', 'Hukum Pertanahan', 'Hukum Ketenagakerjaan', 'Hukum Perdata'].map((cat, i) => (
+        <button class={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${i === 0 ? 'bg-navy-base text-white' : 'bg-surface-muted text-navy-base/70 hover:bg-navy-base/5'}`}>
+          {cat}
+        </button>
+      ))}
+    </div>
+  </section>
+
+  {/* Articles grid */}
+  <section class="py-20 bg-surface-canvas">
+    <div class="container-x">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+        {articles.map((a) => (
+          <article class="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all border border-navy-base/5 group">
+            <div class="aspect-[16/10] bg-gradient-to-br from-navy-base via-navy-surface to-navy-dark relative overflow-hidden">
+              <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+              <div class="absolute top-4 left-4">
+                <span class="px-3 py-1 bg-gold-primary text-navy-dark text-[10px] tracking-badge uppercase font-bold rounded-full">
+                  {a.category}
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4">
+                <span class="legal-badge text-white/60">{a.readTime}</span>
+              </div>
+            </div>
+            <div class="p-7">
+              <p class="text-xs text-navy-base/50 tracking-badge uppercase font-semibold">{a.date} · {a.author}</p>
+              <h3 class="mt-3 font-heading font-bold text-lg leading-snug text-balance group-hover:text-gold-deep transition-colors">
+                {a.title}
+              </h3>
+              <p class="mt-3 text-sm text-navy-base/65 leading-relaxed line-clamp-3">
+                {a.excerpt}
+              </p>
+              <div class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold-deep group-hover:text-navy-base transition-colors">
+                Baca artikel
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* Feedback section */}
+  <section class="py-24 bg-navy-base text-white">
+    <div class="container-x">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center mb-16">
+        <div>
+          <span class="section-eyebrow text-gold-primary">Feedback Klien</span>
+          <h2 class="mt-5 font-heading font-extrabold text-4xl tracking-tight">Apa Kata Mereka?</h2>
+        </div>
+        <div class="lg:col-span-2 flex items-center gap-8">
+          <div class="text-6xl font-heading font-extrabold text-gold-primary">{avgRating}</div>
+          <div>
+            <div class="flex gap-1 mb-2">
+              {Array.from({length: 5}).map((_, i) => (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill={i < Math.round(parseFloat(avgRating)) ? '#D4AF37' : 'rgba(255,255,255,0.2)'}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ))}
+            </div>
+            <p class="text-white/70">Rata-rata dari {feedback.length} ulasan klien</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {feedback.map((fb) => (
+          <div class="bg-navy-surface/40 border border-white/10 rounded-2xl p-6 hover:border-gold-primary transition-colors">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gold-primary to-gold-deep grid place-items-center text-navy-dark font-heading font-bold text-sm">
+                {fb.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+              </div>
+              <div>
+                <p class="font-heading font-bold text-sm">{fb.name}</p>
+                <p class="text-xs text-white/50">{fb.company}</p>
+              </div>
+            </div>
+            <div class="flex gap-1 mb-3">
+              {Array.from({length: fb.rating}).map(() => (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#D4AF37"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ))}
+            </div>
+            <p class="text-white/85 text-sm leading-relaxed italic">"{fb.text}"</p>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="legal-badge text-gold-primary">{fb.service}</span>
+              <span class="text-xs text-white/40">{fb.date}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  </>
+)}
+</Layout>

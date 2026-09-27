@@ -1,0 +1,60 @@
+---
+const navLinks = [
+  { href: '/', label: 'Beranda' },
+  { href: '/berita', label: 'Berita & Edukasi' },
+  { href: '/tentang', label: 'Tentang Kami' },
+];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+
+const whatsappUrl = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya ingin berkonsultasi mengenai masalah hukum.')}`;
+const logoUrl = '/images/logo.webp';
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#061124]/95 backdrop-blur-md border-b border-[#162847]/60 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between">
+    <a class="flex items-center gap-4 group" href="/">
+      <div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-gold-accent/40 shadow-gold-glow flex-shrink-0">
+      <img alt="Batavia 17 Logo" class="w-full h-full object-cover object-center transition-transform group-hover:scale-105" src={logoUrl} />
+    </div>
+      <div class="flex flex-col leading-none">
+        <span class="font-display font-bold text-white text-xl tracking-wide group-hover:text-gold-light transition-colors">BATAVIA 17</span>
+        <span class="font-display font-semibold text-[11px] text-gold-light tracking-[0.18em] uppercase mt-1">Konsultan Bantuan Hukum</span>
+      </div>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-10">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class={`font-medium text-[15px] transition-colors relative py-2 ${
+            isActive(link.href)
+              ? 'text-gold-light after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gold-accent'
+              : 'text-white hover:text-gold-light'
+          }`}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a
+        class="inline-flex items-center justify-center gap-2.5 bg-[#D32F2F] hover:bg-[#B71C1C] text-white text-[15px] font-semibold px-6 py-3 rounded-lg shadow-[0_6px_20px_rgba(211,47,47,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+        href={whatsappUrl}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          <path d="M14.05 2a9 9 0 0 1 8 7.94"/>
+          <path d="M14.05 6A5 5 0 0 1 18 10"/>
+        </svg>
+        Hubungi Batavia 17
+      </a>
+    </div>
+  </div>
+</header>
+<div class="h-24"></div>

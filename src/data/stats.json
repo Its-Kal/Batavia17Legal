@@ -1,0 +1,104 @@
+{
+  "practiceAreas": [
+    {
+      "id": "hukum-pidana",
+      "icon": "scales",
+      "title": "Hukum Pidana",
+      "description": "Pendampingan hukum untuk kasus pidana umum, khusus, hingga litigasi strategis di tingkat investigasi, penyidikan, dan persidangan.",
+      "cases": "120+"
+    },
+    {
+      "id": "hukum-perdata",
+      "icon": "document",
+      "title": "Hukum Perdata",
+      "description": "Penyelesaian sengketa perdata, wanprestasi, perbuatan melawan hukum, dan mediasi untuk individu maupun korporasi.",
+      "cases": "180+"
+    },
+    {
+      "id": "hukum-bisnis",
+      "icon": "shield",
+      "title": "Hukum Bisnis & Korporasi",
+      "description": "Pendirian perusahaan, kontrak komersial, merger & akuisisi, kepatuhan, dan tata kelola perusahaan yang baik (GCG).",
+      "cases": "90+"
+    },
+    {
+      "id": "hukum-keluarga",
+      "icon": "family",
+      "title": "Hukum Keluarga",
+      "description": "Konsultasi perceraian, hak asuh anak, warisan, wasiat, dan mediasi keluarga dengan pendekatan empatik dan rahasia.",
+      "cases": "150+"
+    },
+    {
+      "id": "hukum-tanah",
+      "icon": "map",
+      "title": "Hukum Pertanahan",
+      "description": "Sengketa tanah, sertifikasi, balik nama, dan litigasi agraria. Pengalaman panjang menangani kasus pertanahan strategis.",
+      "cases": "70+"
+    },
+    {
+      "id": "hukum-ketenagakerjaan",
+      "icon": "users",
+      "title": "Hukum Ketenagakerjaan",
+      "description": "Perselisihan hubungan industrial, PHK, kontrak kerja, dan perlindungan hak pekerja sesuai regulasi terbaru.",
+      "cases": "110+"
+    }
+  ],
+  "stats": [
+    { "value": "720+", "label": "Kasus Ditangani" },
+    { "value": "98%", "label": "Tingkat Kepuasan" },
+    { "value": "18+", "label": "Tahun Pengalaman" },
+    { "value": "45+", "label": "Mitra Pengacara" }
+  ],
+  "attorneys": [
+    {
+      "name": "Adv. Dr. Hendra Wijaya, S.H., M.H.",
+      "role": "Managing Partner",
+      "specialty": "Hukum Pidana & Korporasi",
+      "bar": "PERADI No. 98.12.4456",
+      "experience": "22 tahun"
+    },
+    {
+      "name": "Adv. Ratna Kusuma, S.H., M.Kn.",
+      "role": "Senior Partner",
+      "specialty": "Hukum Keluarga & Waris",
+      "bar": "PERADI No. 01.08.9921",
+      "experience": "16 tahun"
+    },
+    {
+      "name": "Adv. Bima Sakti, S.H., LL.M.",
+      "role": "Partner",
+      "specialty": "Hukum Bisnis & M&A",
+      "bar": "PERADI No. 04.15.1023",
+      "experience": "12 tahun"
+    },
+    {
+      "name": "Adv. Safira Putri, S.H., M.H.",
+      "role": "Associate Partner",
+      "specialty": "Hukum Pertanahan",
+      "bar": "PERADI No. 07.19.3344",
+      "experience": "9 tahun"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Andi Pratama",
+      "role": "CEO, PT Nusantara Digital",
+      "text": "Tim Batavia 17 membantu negosiasi kontrak merger kami dengan presisi tinggi. Profesional, rahasia, dan hasil nyata."
+    },
+    {
+      "name": "Maria Yuliana",
+      "role": "Klien Keluarga",
+      "text": "Pendampingan saat perceraian saya ditangani dengan sangat manusiawi. Saya merasa aman dan dihormati sepanjang proses."
+    },
+    {
+      "name": "Ir. Bambang Setiawan",
+      "role": "Direktur Operasional",
+      "text": "Respons cepat 24/7 saat kami menghadapi investigasi mendadak. Mereka menyelamatkan reputasi perusahaan kami."
+    },
+    {
+      "name": "Dewi Lestari",
+      "role": "Pengusaha",
+      "text": "Konsultasi warisan keluarga sangat jelas dan terstruktur. Saya tidak perlu menebak lagi langkah hukum yang harus diambil."
+    }
+  ]
+}

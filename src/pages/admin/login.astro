@@ -1,0 +1,90 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const error = Astro.url.searchParams.get('error');
+---
+
+<Layout title="Admin Login — Batavia 17" isDarkHeader={true}>
+  <section class="min-h-[calc(100vh-5rem)] grid place-items-center bg-gradient-to-br from-navy-dark via-navy-base to-navy-surface px-6 py-20">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="inline-flex w-16 h-16 rounded-full bg-gold-primary text-navy-dark items-center justify-center mb-5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h1 class="font-heading font-extrabold text-3xl text-white">Portal Admin</h1>
+        <p class="text-white/60 mt-2 text-sm">Akses terbatas untuk mitra & staf internal</p>
+      </div>
+
+      <form id="login-form" class="bg-white rounded-2xl shadow-elevated p-8">
+        {error && (
+          <div class="mb-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm border border-crimson-primary/20">
+            {error === 'invalid' ? 'Password salah. Silakan coba lagi.' : 'Silakan login terlebih dahulu.'}
+          </div>
+        )}
+
+        <div class="mb-5">
+          <label class="text-xs font-semibold tracking-badge uppercase text-navy-base/70 mb-2 block">Username</label>
+          <input type="text" name="username" required class="form-input" placeholder="admin" autocomplete="username" />
+        </div>
+
+        <div class="mb-2">
+          <label class="text-xs font-semibold tracking-badge uppercase text-navy-base/70 mb-2 block">Password</label>
+          <input type="password" name="password" required class="form-input" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <p class="text-xs text-navy-base/40 mt-2">Demo: username <code class="bg-surface-muted px-1.5 py-0.5 rounded">admin</code> · password <code class="bg-surface-muted px-1.5 py-0.5 rounded">batavia17-admin-2026</code></p>
+
+        <button type="submit" class="btn-crimson w-full mt-6">
+          Masuk Portal
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <div id="login-status" class="hidden mt-5 p-3 rounded-lg text-sm"></div>
+      </form>
+
+      <p class="text-center text-xs text-white/40 mt-6">
+        © {new Date().getFullYear()} Batavia 17. Sistem internal.
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const status = document.getElementById('login-status') as HTMLDivElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const username = data.get('username');
+    const password = data.get('password');
+
+    status.classList.remove('hidden');
+    status.className = 'mt-5 p-3 rounded-lg bg-navy-base/5 text-navy-base text-sm';
+    status.textContent = 'Memverifikasi...';
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        status.className = 'mt-5 p-3 rounded-lg bg-gold-tint text-navy-base text-sm border border-gold-primary/30';
+        status.textContent = '✓ Berhasil masuk. Mengalihkan...';
+        document.cookie = `b17_session=${result.token}; path=/; max-age=86400; SameSite=Strict`;
+        setTimeout(() => { window.location.href = '/admin'; }, 600);
+      } else {
+        status.className = 'mt-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm';
+        status.textContent = '✗ ' + (result.message || 'Login gagal');
+      }
+    } catch (err) {
+      status.className = 'mt-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm';
+      status.textContent = '✗ Gagal terhubung ke server';
+    }
+  });
+</script>

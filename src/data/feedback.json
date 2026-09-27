@@ -1,0 +1,47 @@
+[
+  {
+    "id": "fb-001",
+    "name": "Andi Pratama",
+    "company": "PT Nusantara Digital",
+    "rating": 5,
+    "text": "Pendampingan hukum merger sangat profesional dan rahasia.",
+    "service": "Hukum Bisnis",
+    "date": "2026-08-12"
+  },
+  {
+    "id": "fb-002",
+    "name": "Maria Yuliana",
+    "company": "Klien Personal",
+    "rating": 5,
+    "text": "Tim sangat empatik menangani kasus keluarga saya.",
+    "service": "Hukum Keluarga",
+    "date": "2026-08-25"
+  },
+  {
+    "id": "fb-003",
+    "name": "Bambang Setiawan",
+    "company": "PT Konstruksi Mandiri",
+    "rating": 5,
+    "text": "Respons cepat 24/7 menyelamatkan reputasi perusahaan kami.",
+    "service": "Hukum Pidana",
+    "date": "2026-09-02"
+  },
+  {
+    "id": "fb-004",
+    "name": "Dewi Lestari",
+    "company": "Pengusaha",
+    "rating": 4,
+    "text": "Konsultasi warisan terstruktur, mudah dipahami.",
+    "service": "Hukum Keluarga",
+    "date": "2026-09-10"
+  },
+  {
+    "id": "fb-005",
+    "name": "Rio Hartono",
+    "company": "CV Maju Bersama",
+    "rating": 5,
+    "text": "Penyelesaian sengketa tanah lebih cepat dari perkiraan.",
+    "service": "Hukum Pertanahan",
+    "date": "2026-09-18"
+  }
+]
