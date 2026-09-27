@@ -732,8 +732,18 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   }
   .advokat-card {
     left: 50%;
-    margin-left: -150px;
+    margin-left: -90px;
     backface-visibility: hidden;
+  }
+  @media (min-width: 640px) {
+    .advokat-card {
+      margin-left: -110px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .advokat-card {
+      margin-left: -150px;
+    }
   }
   .line-clamp-2 {
     display: -webkit-box;
@@ -754,6 +764,16 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     if (!carousel) return;
     const cards = carousel.querySelectorAll('.advokat-card');
     advokatCount = cards.length;
+
+    // Responsive card width
+    const isMobile = window.innerWidth < 640;
+    const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
+    const cardWidth = isMobile ? 180 : (isTablet ? 220 : 300);
+    const offsetPos = isMobile ? 140 : (isTablet ? 170 : 280);
+    const hidePos = isMobile ? 280 : (isTablet ? 350 : 400);
+    const scale2 = isMobile ? 0.7 : (isTablet ? 0.75 : 0.8);
+    const scale3 = isMobile ? 0.5 : (isTablet ? 0.55 : 0.6);
+
     cards.forEach((card, i) => {
       const diff = ((i - currentAdvokatSlide) % advokatCount + advokatCount) % advokatCount;
       let xPos = 0, zPos = 0, rotY = 0, opacity = 1, scale = 1;
@@ -761,16 +781,18 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       if (diff === 0) {
         xPos = 0; zPos = 0; rotY = 0; opacity = 1; scale = 1;
       } else if (diff === 1) {
-        xPos = 280; zPos = -200; rotY = -60; opacity = 0.4; scale = 0.8;
+        xPos = offsetPos; zPos = -150; rotY = -50; opacity = 0.4; scale = scale2;
       } else if (diff === 2) {
-        xPos = 0; zPos = -400; rotY = 0; opacity = 0; scale = 0.6;
+        xPos = 0; zPos = -hidePos; rotY = 0; opacity = 0; scale = scale3;
       } else if (diff === 3) {
-        xPos = -280; zPos = -200; rotY = 60; opacity = 0.4; scale = 0.8;
+        xPos = -offsetPos; zPos = -150; rotY = 50; opacity = 0.4; scale = scale2;
       } else {
-        xPos = 0; zPos = -500; rotY = 0; opacity = 0; scale = 0.5;
+        xPos = 0; zPos = -hidePos; rotY = 0; opacity = 0; scale = scale3;
       }
 
-      card.style.transform = `translateX(${xPos}px) translateZ(${zPos}px) rotateY(${rotY}deg) scale(${scale})`;
+      card.style.transform = `translateX(calc(-50% + ${xPos}px)) translateZ(${zPos}px) rotateY(${rotY}deg) scale(${scale})`;
+      card.style.left = '50%';
+      card.style.marginLeft = `${-cardWidth / 2}px`;
       card.style.opacity = opacity;
       card.style.zIndex = diff === 0 ? 10 : (diff === 1 || diff === advokatCount - 1 ? 5 : 1);
     });
@@ -779,10 +801,14 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     dots.forEach((dot, i) => {
       const isActive = i === currentAdvokatSlide;
       dot.style.backgroundColor = isActive ? '#E6C158' : '#cbd5e1';
-      dot.style.width = isActive ? '24px' : '8px';
-      dot.style.height = '8px';
+      dot.style.width = isActive ? '20px' : '6px';
+      dot.style.height = '6px';
     });
   }
+
+  // Update carousel on resize
+  window.addEventListener('resize', updateAdvokatCards);
+  window.addEventListener('load', updateAdvokatCards);
 
   function startAdvokatAutoplay() {
     advokatInterval = setInterval(() => {
