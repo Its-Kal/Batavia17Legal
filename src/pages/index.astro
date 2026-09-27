@@ -311,7 +311,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
         </p>
       </div>
 
-      {/* Advokat & Pengacara - 3D Carousel (Responsive) */}
+      {/* Advokat & Pengacara - Simple Horizontal Carousel */}
       <div class="mb-10 sm:mb-14">
         <div class="flex items-center gap-2 mb-4 sm:mb-6">
           <span class="w-2 h-2 rounded-full bg-gold-accent"></span>
@@ -319,43 +319,69 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
             ADVOKAT & PENGACARA
           </span>
         </div>
-        <div class="relative flex items-center justify-center" style="perspective: 1200px; height: 380px; overflow: hidden;">
+
+        {/* Desktop: 3D Carousel */}
+        <div class="hidden lg:block relative flex items-center justify-center" style="perspective: 1200px; height: 480px; overflow: hidden;">
           <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d;">
             {advokats.map((a, i) => (
               <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)">
-                <div class="h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                  <div class="p-3 flex flex-col items-center h-full">
-                    <div class="relative w-full mb-2" style="flex-shrink: 0;">
-                      <div class="relative w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/20 shadow-lg">
+                <div class="h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div class="p-5 flex flex-col items-center h-full">
+                    <div class="relative w-full mb-3">
+                      <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-white/20 shadow-lg">
                         <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
                       </div>
                     </div>
-                    <div class="text-center w-full" style="flex-shrink: 0;">
-                      <h4 class="font-display font-bold text-[10px] text-white leading-tight mb-0.5">{a.name}</h4>
-                      <span class="text-[9px] font-medium text-gold-accent/80">{a.role}</span>
-                      <p class="text-[7px] text-slate-400 mt-0.5 leading-tight">{a.spec}</p>
+                    <div class="text-center w-full">
+                      <h4 class="font-display font-bold text-base text-white leading-tight mb-0.5">{a.name}</h4>
+                      <span class="text-sm font-medium text-gold-accent/80">{a.role}</span>
+                      <p class="text-[10px] text-slate-400 mt-1 leading-tight">{a.spec}</p>
                     </div>
-                    <div class="w-full mt-auto pt-2 border-t border-white/10" style="flex-shrink: 0;">
-                      <span class="inline-block px-2 py-0.5 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-accent text-[7px] font-semibold">
+                    <div class="w-full mt-auto pt-3 border-t border-white/10">
+                      <span class="inline-block px-3 py-1 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-accent text-[10px] font-semibold">
                         {a.badge}
                       </span>
-                      <p class="text-[6px] text-slate-500 mt-1 text-center">Klik detail</p>
+                      <p class="text-[9px] text-slate-500 mt-2 text-center">Klik untuk detail</p>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <button onclick="slideAdvokat(-1)" class="absolute left-0 sm:left-2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <button onclick="slideAdvokat(-1)" class="absolute left-16 z-20 w-12 h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <button onclick="slideAdvokat(1)" class="absolute right-0 sm:right-2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <button onclick="slideAdvokat(1)" class="absolute right-16 z-20 w-12 h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
-        <div class="flex justify-center gap-2 mt-4">
+
+        {/* Mobile/Tablet: Horizontal Scroll Carousel */}
+        <div class="lg:hidden overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory" id="mobile-carousel">
+          <div class="flex gap-4" style="width: max-content;">
+            {advokats.map((a, i) => (
+              <div class="snap-center flex-shrink-0 cursor-pointer" onclick="showAdvokatModal(this)" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img}>
+                <div class="w-[200px] sm:w-[240px] bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl overflow-hidden">
+                  <div class="p-4 flex flex-col items-center">
+                    <div class="w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/20 mb-3">
+                      <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
+                    </div>
+                    <h4 class="font-display font-bold text-xs sm:text-sm text-white text-center leading-tight">{a.name}</h4>
+                    <span class="text-[10px] sm:text-xs font-medium text-gold-accent/80 text-center">{a.role}</span>
+                    <span class="mt-2 inline-block px-2 py-0.5 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-accent text-[8px] sm:text-[9px] font-semibold">
+                      {a.badge}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Dots */}
+        <div class="hidden lg:flex justify-center gap-2 mt-6">
           {advokats.map((_, i) => (
-            <button onclick={`goToAdvokat(${i})`} class="advokat-dot rounded-full bg-slate-300 hover:bg-gold-accent transition-all" data-dot={i} style="width: 6px; height: 6px;"></button>
+            <button onclick={`goToAdvokat(${i})`} class="advokat-dot rounded-full bg-slate-300 hover:bg-gold-accent transition-all" data-dot={i} style="width: 8px; height: 8px;"></button>
           ))}
         </div>
       </div>
@@ -406,11 +432,11 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
               </div>
 
               {/* Photo and Info Row */}
-              <div class="flex gap-5 mb-4">
+              <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 mb-4">
                 {/* Photo - Larger */}
-                <div class="relative shrink-0">
-                  <div class="w-36 h-44 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg bg-slate-100">
-                    <img id="modal-img" class="w-full h-full object-cover object-top" src="" alt="" />
+                <div class="relative shrink-0 mx-auto sm:mx-0">
+                  <div class="w-32 h-40 sm:w-36 sm:h-44 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg bg-slate-100">
+                    <img id="modal-img" crossorigin="anonymous" class="w-full h-full object-cover object-top" src="" alt="" />
                   </div>
                   {/* Badge overlay */}
                   <div class="absolute -bottom-2 left-1/2 -translate-x-1/2">
@@ -536,11 +562,11 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
               </div>
 
               {/* Photo and Info Row */}
-              <div class="flex gap-5 mb-4">
+              <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 mb-4">
                 {/* Photo - Larger */}
-                <div class="relative shrink-0">
-                  <div class="w-36 h-44 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg bg-slate-100">
-                    <img id="intake-modal-img" class="w-full h-full object-cover object-top" src="" alt="" />
+                <div class="relative shrink-0 mx-auto sm:mx-0">
+                  <div class="w-32 h-40 sm:w-36 sm:h-44 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg bg-slate-100">
+                    <img id="intake-modal-img" crossorigin="anonymous" class="w-full h-full object-cover object-top" src="" alt="" />
                   </div>
                   {/* Badge overlay */}
                   <div class="absolute -bottom-2 left-1/2 -translate-x-1/2">
@@ -723,27 +749,28 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   }
   #advokat-carousel {
     scroll-behavior: smooth;
+    transform-style: preserve-3d;
   }
   .advokat-card > div {
     position: relative;
   }
-  #advokat-carousel {
-    transform-style: preserve-3d;
-  }
   .advokat-card {
-    left: 50%;
-    margin-left: -90px;
+    left: 50% !important;
+    margin-left: -150px !important;
     backface-visibility: hidden;
   }
-  @media (min-width: 640px) {
-    .advokat-card {
-      margin-left: -110px;
-    }
+
+  /* Mobile carousel horizontal scroll styling */
+  #mobile-carousel::-webkit-scrollbar {
+    height: 4px;
   }
-  @media (min-width: 1024px) {
-    .advokat-card {
-      margin-left: -150px;
-    }
+  #mobile-carousel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  #mobile-carousel::-webkit-scrollbar-thumb {
+    background: #E6C158;
+    border-radius: 10px;
   }
   .line-clamp-2 {
     display: -webkit-box;
@@ -765,39 +792,23 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     const cards = carousel.querySelectorAll('.advokat-card');
     advokatCount = cards.length;
 
-    // Responsive card dimensions
-    const isMobile = window.innerWidth < 640;
-    const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
-    const cardWidth = isMobile ? 160 : (isTablet ? 200 : 300);
-    const cardHeight = isMobile ? 280 : (isTablet ? 340 : 480);
-    const offsetPos = isMobile ? 100 : (isTablet ? 140 : 280);
-    const hidePos = isMobile ? 200 : (isTablet ? 280 : 400);
-    const scale2 = isMobile ? 0.65 : (isTablet ? 0.75 : 0.8);
-    const scale3 = isMobile ? 0.5 : (isTablet ? 0.6 : 0.6);
-
     cards.forEach((card, i) => {
       const diff = ((i - currentAdvokatSlide) % advokatCount + advokatCount) % advokatCount;
       let xPos = 0, zPos = 0, rotY = 0, opacity = 1, scale = 1;
 
-      // Set card dimensions
-      card.style.width = cardWidth + 'px';
-      card.style.height = cardHeight + 'px';
-
       if (diff === 0) {
         xPos = 0; zPos = 0; rotY = 0; opacity = 1; scale = 1;
       } else if (diff === 1) {
-        xPos = offsetPos; zPos = -100; rotY = -40; opacity = 0.3; scale = scale2;
+        xPos = 280; zPos = -200; rotY = -60; opacity = 0.4; scale = 0.8;
       } else if (diff === 2) {
-        xPos = 0; zPos = -hidePos; rotY = 0; opacity = 0; scale = scale3;
+        xPos = 0; zPos = -400; rotY = 0; opacity = 0; scale = 0.6;
       } else if (diff === 3) {
-        xPos = -offsetPos; zPos = -100; rotY = 40; opacity = 0.3; scale = scale2;
+        xPos = -280; zPos = -200; rotY = 60; opacity = 0.4; scale = 0.8;
       } else {
-        xPos = 0; zPos = -hidePos; rotY = 0; opacity = 0; scale = scale3;
+        xPos = 0; zPos = -500; rotY = 0; opacity = 0; scale = 0.5;
       }
 
-      card.style.transform = `translateX(calc(-50% + ${xPos}px)) translateZ(${zPos}px) rotateY(${rotY}deg) scale(${scale})`;
-      card.style.left = '50%';
-      card.style.marginLeft = `${-cardWidth / 2}px`;
+      card.style.transform = `translateX(${xPos}px) translateZ(${zPos}px) rotateY(${rotY}deg) scale(${scale})`;
       card.style.opacity = opacity;
       card.style.zIndex = diff === 0 ? 10 : (diff === 1 || diff === advokatCount - 1 ? 5 : 1);
     });
@@ -810,10 +821,6 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       dot.style.height = '6px';
     });
   }
-
-  // Update carousel on resize
-  window.addEventListener('resize', updateAdvokatCards);
-  window.addEventListener('load', updateAdvokatCards);
 
   function startAdvokatAutoplay() {
     advokatInterval = setInterval(() => {
