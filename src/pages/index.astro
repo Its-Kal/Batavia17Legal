@@ -356,28 +356,25 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
           </button>
         </div>
 
-        {/* Mobile/Tablet: Horizontal Scroll Carousel */}
-        <div class="lg:hidden overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory" id="mobile-carousel">
-          <div class="flex gap-4" style="width: max-content;">
-            {advokats.map((a, i) => (
-              <div class="snap-center flex-shrink-0 cursor-pointer" onclick="showAdvokatModal(this)" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img}>
-                <div class="w-[200px] sm:w-[240px] bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl overflow-hidden">
-                  <div class="p-4 flex flex-col items-center">
-                    <div class="w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/20 mb-3">
-                      <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
-                    </div>
-                    <h4 class="font-display font-bold text-xs sm:text-sm text-white text-center leading-tight">{a.name}</h4>
-                    <span class="text-[10px] sm:text-xs font-medium text-gold-accent/80 text-center">{a.role}</span>
-                    <span class="mt-2 inline-block px-2 py-0.5 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-accent text-[8px] sm:text-[9px] font-semibold">
-                      {a.badge}
-                    </span>
+        {/* Mobile/Tablet: Simple 2-Column Grid */}
+        <div class="grid grid-cols-2 lg:hidden gap-3">
+          {advokats.map((a, i) => (
+            <div class="cursor-pointer" onclick="showAdvokatModal(this)" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img}>
+              <div class="bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl overflow-hidden">
+                <div class="p-3 flex flex-col items-center">
+                  <div class="w-full aspect-square rounded-lg overflow-hidden border border-white/20 mb-2">
+                    <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
                   </div>
+                  <h4 class="font-display font-bold text-[10px] text-white text-center leading-tight">{a.name}</h4>
+                  <span class="text-[9px] font-medium text-gold-accent/80 text-center">{a.role}</span>
+                  <span class="mt-1 inline-block px-2 py-0.5 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-accent text-[7px] font-semibold">
+                    {a.badge}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-
         {/* Desktop Dots */}
         <div class="hidden lg:flex justify-center gap-2 mt-6">
           {advokats.map((_, i) => (
