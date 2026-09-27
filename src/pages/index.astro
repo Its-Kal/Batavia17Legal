@@ -311,7 +311,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
         </p>
       </div>
 
-      {/* Advokat & Pengacara */}
+      {/* Advokat & Pengacara - Desktop Carousel / Mobile Grid */}
       <div class="mb-10 sm:mb-14">
         <div class="flex items-center gap-2 mb-4 sm:mb-6">
           <span class="w-2 h-2 rounded-full bg-gold-accent"></span>
@@ -319,44 +319,68 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
             ADVOKAT & PENGACARA
           </span>
         </div>
-        <div class="relative flex items-center justify-center" style="perspective: 1400px; height: 380px sm:480px lg:540px;">
-          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d; width: 220px sm:260px lg:300px; height: 340px sm:420px lg:480px;">
+
+        {/* Desktop: 3D Carousel */}
+        <div class="hidden lg:block relative flex items-center justify-center" style="perspective: 1400px; height: 540px;">
+          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d; width: 300px; height: 480px;">
             {advokats.map((a, i) => (
-              <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)" style="width: 220px sm:260px lg:300px; height: 340px sm:420px lg:480px;">
-                <div class="h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl sm:rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                  <div class="p-3 sm:p-4 lg:p-5 flex flex-col items-center h-full">
-                    <div class="relative w-full mb-2 sm:mb-3" style="flex-shrink: 0;">
-                      <div class="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-br from-gold-accent/30 to-transparent blur-xl transform scale-75"></div>
-                      <div class="relative w-full aspect-[3/4] rounded-lg sm:rounded-xl overflow-hidden border-2 border-white/20 shadow-lg">
+              <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)" style="width: 300px; height: 480px;">
+                <div class="h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div class="p-5 flex flex-col items-center h-full">
+                    <div class="relative w-full mb-3" style="flex-shrink: 0;">
+                      <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-gold-accent/30 to-transparent blur-xl transform scale-75"></div>
+                      <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-white/20 shadow-lg">
                         <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
                       </div>
                     </div>
                     <div class="text-center w-full" style="flex-shrink: 0;">
-                      <h4 class="font-display font-bold text-xs sm:text-base lg:text-base text-white leading-tight mb-0.5">{a.name}</h4>
-                      <span class="text-[10px] sm:text-sm font-medium text-gold-accent/80">{a.role}</span>
-                      <p class="text-[8px] sm:text-[10px] text-slate-400 mt-1 leading-tight">{a.spec}</p>
+                      <h4 class="font-display font-bold text-base text-white leading-tight mb-0.5">{a.name}</h4>
+                      <span class="text-sm font-medium text-gold-accent/80">{a.role}</span>
+                      <p class="text-[10px] text-slate-400 mt-1 leading-tight">{a.spec}</p>
                     </div>
-                    <div class="w-full mt-auto pt-2 sm:pt-3 border-t border-white/10" style="flex-shrink: 0;">
-                      <span class="inline-block px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-gold-accent/20 to-gold-dim/20 border border-gold-accent/30 text-gold-accent text-[8px] sm:text-[10px] font-semibold">
+                    <div class="w-full mt-auto pt-3 border-t border-white/10" style="flex-shrink: 0;">
+                      <span class="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-gold-accent/20 to-gold-dim/20 border border-gold-accent/30 text-gold-accent text-[10px] font-semibold">
                         {a.badge}
                       </span>
-                      <p class="text-[7px] sm:text-[9px] text-slate-500 mt-1 sm:mt-2 text-center">Klik untuk detail</p>
+                      <p class="text-[9px] text-slate-500 mt-2 text-center">Klik untuk detail</p>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <button onclick="slideAdvokat(-1)" class="absolute left-2 sm:left-4 lg:left-16 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-20 sm:h-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <button onclick="slideAdvokat(-1)" class="absolute left-16 z-20 w-12 h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <button onclick="slideAdvokat(1)" class="absolute right-2 sm:right-4 lg:right-16 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="sm:w-20 sm:h-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <button onclick="slideAdvokat(1)" class="absolute right-16 z-20 w-12 h-12 rounded-full bg-white/95 hover:bg-white shadow-xl flex items-center justify-center text-navy-dark transition-all hover:scale-110 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
-        <div class="flex justify-center gap-2 mt-4 sm:mt-6">
+
+        {/* Mobile/Tablet: Simple Grid */}
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:hidden gap-3 sm:gap-4">
+          {advokats.map((a, i) => (
+            <div class="cursor-pointer" data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)">
+              <div class="bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl overflow-hidden">
+                <div class="p-3 sm:p-4 flex flex-col items-center">
+                  <div class="w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/20 mb-2 sm:mb-3">
+                    <img alt={a.name} class="w-full h-full object-cover object-top" src={a.img} />
+                  </div>
+                  <h4 class="font-display font-bold text-[10px] sm:text-xs text-white text-center leading-tight">{a.name}</h4>
+                  <span class="text-[8px] sm:text-[10px] font-medium text-gold-accent/80 text-center">{a.role}</span>
+                  <span class="mt-2 inline-block px-2 py-0.5 rounded-full bg-gold-accent/20 border border-gold-accent/30 text-gold-accent text-[7px] sm:text-[8px] font-semibold">
+                    {a.badge}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop dots */}
+        <div class="hidden lg:flex justify-center gap-2 mt-6">
           {advokats.map((_, i) => (
-            <button onclick={`goToAdvokat(${i})`} class="advokat-dot rounded-full bg-slate-300 hover:bg-gold-accent transition-all" data-dot={i} style="width: 6px sm:8px; height: 6px sm:8px;"></button>
+            <button onclick={`goToAdvokat(${i})`} class="advokat-dot rounded-full bg-slate-300 hover:bg-gold-accent transition-all" data-dot={i} style="width: 8px; height: 8px;"></button>
           ))}
         </div>
       </div>

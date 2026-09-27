@@ -13,7 +13,7 @@ const whatsappUrl = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo
 const logoUrl = '/images/logo.webp';
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 bg-[#061124]/95 backdrop-blur-md border-b border-[#162847]/60 transition-all duration-300">
+<header class="fixed top-0 left-0 right-0 z-[100] bg-[#061124]/95 backdrop-blur-md border-b border-[#162847]/60 transition-all duration-300 overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-16 sm:h-20 lg:h-24 flex items-center justify-between">
     {/* Logo */}
     <a class="flex items-center gap-2 sm:gap-3 group" href="/">
@@ -70,7 +70,7 @@ const logoUrl = '/images/logo.webp';
   </div>
 
   {/* Mobile Menu */}
-  <div id="mobile-menu" class="lg:hidden hidden bg-[#061124]/98 backdrop-blur-md border-t border-[#162847]/60">
+  <div id="mobile-menu" class="lg:hidden hidden bg-[#061124]/98 backdrop-blur-md border-t border-[#162847]/60 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-2">
       {navLinks.map((link) => (
         <a
