@@ -319,10 +319,10 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
             ADVOKAT & PENGACARA
           </span>
         </div>
-        <div class="relative flex items-center justify-center" style="perspective: 1200px; height: 380px; max-width: 100%; overflow: hidden;">
-          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d; width: 180px; height: 340px; @media (sm) { width: 220px; height: 380px; } @media (lg) { width: 300px; height: 480px; }">
+        <div class="relative flex items-center justify-center" style="perspective: 1200px; height: 380px; overflow: hidden;">
+          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d;">
             {advokats.map((a, i) => (
-              <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)" style="width: 180px; height: 340px;">
+              <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)">
                 <div class="h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                   <div class="p-3 flex flex-col items-center h-full">
                     <div class="relative w-full mb-2" style="flex-shrink: 0;">
@@ -765,27 +765,32 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     const cards = carousel.querySelectorAll('.advokat-card');
     advokatCount = cards.length;
 
-    // Responsive card width
+    // Responsive card dimensions
     const isMobile = window.innerWidth < 640;
     const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
-    const cardWidth = isMobile ? 180 : (isTablet ? 220 : 300);
-    const offsetPos = isMobile ? 140 : (isTablet ? 170 : 280);
-    const hidePos = isMobile ? 280 : (isTablet ? 350 : 400);
-    const scale2 = isMobile ? 0.7 : (isTablet ? 0.75 : 0.8);
-    const scale3 = isMobile ? 0.5 : (isTablet ? 0.55 : 0.6);
+    const cardWidth = isMobile ? 160 : (isTablet ? 200 : 300);
+    const cardHeight = isMobile ? 280 : (isTablet ? 340 : 480);
+    const offsetPos = isMobile ? 100 : (isTablet ? 140 : 280);
+    const hidePos = isMobile ? 200 : (isTablet ? 280 : 400);
+    const scale2 = isMobile ? 0.65 : (isTablet ? 0.75 : 0.8);
+    const scale3 = isMobile ? 0.5 : (isTablet ? 0.6 : 0.6);
 
     cards.forEach((card, i) => {
       const diff = ((i - currentAdvokatSlide) % advokatCount + advokatCount) % advokatCount;
       let xPos = 0, zPos = 0, rotY = 0, opacity = 1, scale = 1;
 
+      // Set card dimensions
+      card.style.width = cardWidth + 'px';
+      card.style.height = cardHeight + 'px';
+
       if (diff === 0) {
         xPos = 0; zPos = 0; rotY = 0; opacity = 1; scale = 1;
       } else if (diff === 1) {
-        xPos = offsetPos; zPos = -150; rotY = -50; opacity = 0.4; scale = scale2;
+        xPos = offsetPos; zPos = -100; rotY = -40; opacity = 0.3; scale = scale2;
       } else if (diff === 2) {
         xPos = 0; zPos = -hidePos; rotY = 0; opacity = 0; scale = scale3;
       } else if (diff === 3) {
-        xPos = -offsetPos; zPos = -150; rotY = 50; opacity = 0.4; scale = scale2;
+        xPos = -offsetPos; zPos = -100; rotY = 40; opacity = 0.3; scale = scale2;
       } else {
         xPos = 0; zPos = -hidePos; rotY = 0; opacity = 0; scale = scale3;
       }
