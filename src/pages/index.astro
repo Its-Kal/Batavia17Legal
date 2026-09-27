@@ -622,7 +622,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
         {/* Staff Grid - 2 columns */}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {intake.slice(1).map((p, i) => (
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-gold-accent/30 transition-all duration-300 flex items-center gap-4">
+            <div onclick={`showIntakeModal(${i + 1})`} class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-gold-accent/30 transition-all duration-300 flex items-center gap-4 cursor-pointer md:cursor-default">
               <div class="relative shrink-0">
                 <div class="absolute inset-0 rounded-xl bg-gold-accent/10 blur-md"></div>
                 <div class="relative w-32 h-40 md:w-36 md:h-44 rounded-xl overflow-hidden border-2 border-white shadow-lg">
@@ -634,7 +634,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
                 <span class="text-sm font-semibold text-gold-accent">{p.role}</span>
                 <p class="text-sm text-text-muted mt-1 leading-relaxed">{p.desc}</p>
               </div>
-              <button onclick={`showIntakeModal(${i + 1})`} class="shrink-0 w-12 h-12 rounded-xl bg-gold-accent/10 hover:bg-gold-accent group flex items-center justify-center transition-all cursor-pointer">
+              <button onclick={`showIntakeModal(${i + 1}); event.stopPropagation();`} class="hidden md:flex shrink-0 w-12 h-12 rounded-xl bg-gold-accent/10 hover:bg-gold-accent group items-center justify-center transition-all cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E6C158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </button>
             </div>
