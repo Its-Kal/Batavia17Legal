@@ -2,17 +2,17 @@
 const whatsappUrl = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya ingin berkonsultasi mengenai perkara hukum saya.')}`;
 ---
 
-<div class="fixed bottom-6 right-6 z-50 flex items-center">
+<div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center">
   <a
     aria-label="Konsultasi WhatsApp Batavia 17"
-    class="whatsapp-pulse flex items-center gap-2.5 bg-whatsapp hover:bg-[#20ba5a] text-white px-5 py-3.5 rounded-full shadow-whatsapp transition-transform hover:scale-105 active:scale-95"
+    class="whatsapp-pulse flex items-center gap-2 sm:gap-2.5 bg-whatsapp hover:bg-[#20ba5a] text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-full shadow-whatsapp transition-transform hover:scale-105 active:scale-95"
     href={whatsappUrl}
     rel="noopener noreferrer"
     target="_blank"
   >
-    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+    <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24">
       <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.311.045-.698.058-1.125-.078-.276-.088-.636-.217-1.134-.432-2.115-.918-3.486-3.056-3.593-3.197-.105-.143-.863-1.149-.863-2.193 0-1.045.545-1.558.739-1.77.194-.213.424-.266.565-.266.143 0 .285.002.408.008.13.006.304-.049.476.363.177.424.606 1.48.66 1.586.053.106.089.23.018.372-.07.143-.106.23-.212.355-.106.124-.222.277-.318.372-.106.106-.217.221-.093.434.124.212.551.908 1.18 1.468.81.723 1.493.947 1.706 1.053.212.106.336.089.46-.053.124-.142.531-.619.673-.832.142-.213.284-.177.478-.106.195.071 1.236.583 1.448.689.213.106.354.16.407.248.053.088.053.513-.091.918zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.17L2 22l4.981-1.39C8.423 21.49 10.155 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
     </svg>
-    <span class="font-display font-semibold text-sm">Hubungi Kami</span>
+    <span class="font-display font-semibold text-xs sm:text-sm hidden sm:inline">Hubungi Kami</span>
   </a>
 </div>

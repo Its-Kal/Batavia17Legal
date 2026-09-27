@@ -14,3 +14,4 @@ dist/
 # Build outputs
 .cache/
 .tmp/
+.vercel
