@@ -175,8 +175,8 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   {/* ============================================ */}
   <section class="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center bg-[#061124] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-20 overflow-hidden">
     <div class="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none" style="background-image: url('/images/hero.webp');"></div>
-    {/* Dramatic gradient: 0% solid dark → 50% dark navy → 60% transition → 70% lighter → 100% bright navy */}
-    <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(to right, #061124 0%, #061124 40%, rgba(6,17,36,0.95) 50%, rgba(10,25,49,0.85) 58%, rgba(13,32,63,0.65) 65%, rgba(15,46,86,0.45) 72%, rgba(22,40,71,0.25) 82%, rgba(22,40,71,0.05) 95%, transparent 100%);"></div>
+    {/* Dramatic gradient */}
+    <div class="absolute inset-0 pointer-events-none max-w-full" style="background: linear-gradient(to right, #061124 0%, #061124 40%, rgba(6,17,36,0.95) 50%, rgba(10,25,49,0.85) 58%, rgba(13,32,63,0.65) 65%, rgba(15,46,86,0.45) 72%, rgba(22,40,71,0.25) 82%, rgba(22,40,71,0.05) 95%, transparent 100%);"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-[#061124]/40 via-transparent to-[#061124]/60 pointer-events-none"></div>
     <div class="absolute -top-20 sm:-top-40 -right-20 sm:-right-40 w-[300px] sm:w-[420px] h-[300px] sm:h-[420px] bg-gold-accent/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -459,7 +459,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
 
         {/* Back Side of ID Card */}
         <div class="id-card-wrapper-back hidden">
-          <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8" style="width: 600px;">
+          <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-4 sm:p-6 md:p-8 w-[320px] sm:w-[450px] md:w-[600px]">
             {/* Header */}
             <div class="text-center mb-6 border-b border-slate-200 pb-4">
               <h3 class="text-navy-dark font-bold text-lg">RUANG LINGKUP LAYANAN</h3>
