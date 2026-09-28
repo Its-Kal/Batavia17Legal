@@ -1,0 +1,358 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { supabase } from '../../utils/supabase';
+
+export const prerender = false;
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+if (!accessToken) return Astro.redirect('/admin/login?error=required');
+
+const { data: { user } } = await supabase.auth.getUser(accessToken);
+if (!user) {
+  Astro.cookies.delete('sb-access-token', { path: '/' });
+  Astro.cookies.delete('sb-refresh-token', { path: '/' });
+  return Astro.redirect('/admin/login?error=required');
+}
+
+// Fetch semua profiles
+const { data: profiles } = await supabase
+  .from('profiles')
+  .select('*')
+  .order('is_active', { ascending: false })
+  .order('created_at', { ascending: false });
+
+const allProfiles = profiles ?? [];
+
+// Stats
+const activeStaff = allProfiles.filter(p => p.is_active && p.role === 'staff').length;
+const inactiveStaff = allProfiles.filter(p => !p.is_active && p.role === 'staff').length;
+const activeAdmin = allProfiles.filter(p => p.is_active && p.role === 'admin_utama').length;
+const totalUsers = allProfiles.length;
+---
+
+<AdminLayout title="Kelola User — Batavia 17" activeMenu="users" userRole="admin_utama" userEmail={user.email ?? ''}>
+  <div class="p-8">
+
+    {/* Page header */}
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-slate-900">Kelola User</h1>
+      <p class="text-slate-500 text-sm mt-1">Aktifkan, nonaktifkan, atau buat akun baru.</p>
+    </div>
+
+    {/* Summary cards */}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-5 border border-slate-200">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Total User</div>
+        <div class="text-3xl font-extrabold text-slate-900">{totalUsers}</div>
+        <div class="text-xs text-slate-400 mt-1">akun terdaftar</div>
+      </div>
+      <div class="bg-white rounded-xl p-5 border border-slate-200">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Staff Aktif</div>
+        <div class="text-3xl font-extrabold text-green-600">{activeStaff}</div>
+        <div class="text-xs text-slate-400 mt-1">bisa login</div>
+      </div>
+      <div class="bg-white rounded-xl p-5 border border-slate-200">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Dinonaktifkan</div>
+        <div class="text-3xl font-extrabold text-red-500">{inactiveStaff}</div>
+        <div class="text-xs text-slate-400 mt-1">tidak bisa login</div>
+      </div>
+      <div class="bg-white rounded-xl p-5 border border-slate-200">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Admin Aktif</div>
+        <div class="text-3xl font-extrabold text-[#0A1931]">{activeAdmin}</div>
+        <div class="text-xs text-slate-400 mt-1">admin utama</div>
+      </div>
+    </div>
+
+    {/* Search */}
+    <div class="relative mb-4">
+      <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Cari nama atau email..."
+        class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/20 focus:border-[#0A1931]/40 bg-white"
+      />
+    </div>
+
+    {/* Filter tabs */}
+    <div class="flex gap-2 mb-4">
+      <button class="filter-tab active" data-filter="all">Semua</button>
+      <button class="filter-tab" data-filter="active">Aktif</button>
+      <button class="filter-tab" data-filter="inactive">Dinonaktifkan</button>
+    </div>
+
+    {/* Table + Create form dalam satu card */}
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+
+      {/* Inline create form */}
+      <div id="create-form" class="hidden border-b border-slate-100 p-5 bg-slate-50/50">
+        <h3 class="font-semibold text-slate-900 text-sm mb-3">Buat Akun Baru</h3>
+        <form id="new-user-form" class="flex flex-wrap gap-3 items-end">
+          <input type="text" name="full_name" placeholder="Nama lengkap" required class="flex-1 min-w-[160px] border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+          <input type="email" name="email" placeholder="Email" required class="flex-1 min-w-[180px] border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+          <input type="password" name="password" placeholder="Password (min 6 karakter)" minlength="6" required class="flex-1 min-w-[160px] border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+          <select name="role" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 bg-white">
+            <option value="staff">Staff</option>
+            <option value="admin_utama">Admin Utama</option>
+          </select>
+          <select name="is_active" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 bg-white">
+            <option value="true">Aktif</option>
+            <option value="false">Dinonaktifkan</option>
+          </select>
+          <div class="flex gap-2">
+            <button type="submit" class="bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Simpan</button>
+            <button type="button" id="btn-cancel" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-medium px-4 py-2 rounded-lg transition-colors">Batal</button>
+          </div>
+          <div id="form-status" class="w-full text-sm hidden mt-1"></div>
+        </form>
+      </div>
+
+      {/* Header row with Create button */}
+      <div class="px-5 py-3 flex items-center justify-between border-b border-slate-100 bg-slate-50/30">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          {allProfiles.length} akun
+        </div>
+        <button id="btn-create" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah User
+        </button>
+      </div>
+
+      {/* Table */}
+      <table class="w-full">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Nama</th>
+            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Email</th>
+            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Role</th>
+            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
+            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Terdaftar</th>
+            <th class="text-right px-5 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="staff-table-body" class="divide-y divide-slate-100">
+          {allProfiles.map((p) => (
+            <tr
+              class="staff-row hover:bg-slate-50/60 transition-colors"
+              data-name={p.full_name?.toLowerCase() ?? ''}
+              data-email={p.email?.toLowerCase() ?? ''}
+              data-role={p.role}
+              data-active={p.is_active ? 'active' : 'inactive'}
+            >
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                    p.is_active ? 'bg-[#0A1931] text-white' : 'bg-slate-200 text-slate-500'
+                  }`}>
+                    {(p.full_name ?? p.email ?? '?').slice(0, 2).toUpperCase()}
+                  </div>
+                  <div class="font-medium text-sm text-slate-900">{p.full_name ?? '-'}</div>
+                </div>
+              </td>
+              <td class="px-5 py-4 text-sm text-slate-600">{p.email}</td>
+              <td class="px-5 py-4">
+                <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  p.role === 'admin_utama'
+                    ? 'bg-[#D4AF37]/10 text-[#9A7B2A] border border-[#D4AF37]/30'
+                    : 'bg-blue-50 text-blue-700 border border-blue-200'
+                }`}>
+                  {p.role === 'admin_utama' ? 'Admin Utama' : 'Staff'}
+                </span>
+              </td>
+              <td class="px-5 py-4">
+                <span class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  p.is_active
+                    ? 'bg-green-100 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-600 border border-red-200'
+                }`}>
+                  {p.is_active ? '✓ Aktif' : '✗ Dinonaktifkan'}
+                </span>
+              </td>
+              <td class="px-5 py-4 text-xs text-slate-500">
+                {new Date(p.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </td>
+              <td class="px-5 py-4 text-right">
+                {p.id !== user.id ? (
+                  <div class="flex items-center justify-end gap-3">
+                    {p.is_active ? (
+                      <button class="btn-deactivate text-xs text-red-600 hover:text-red-800 font-medium transition-colors" data-id={p.id} data-name={p.full_name ?? p.email}>Nonaktifkan</button>
+                    ) : (
+                      <button class="btn-activate text-xs text-green-600 hover:text-green-800 font-medium transition-colors" data-id={p.id} data-name={p.full_name ?? p.email}>Aktifkan</button>
+                    )}
+                    <button class="btn-delete text-xs text-slate-400 hover:text-red-600 font-medium transition-colors" data-id={p.id} data-name={p.full_name ?? p.email}>Hapus</button>
+                  </div>
+                ) : (
+                  <span class="text-xs text-slate-400 italic">Anda</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {allProfiles.length === 0 && (
+        <div class="py-12 text-center text-slate-400 text-sm">Belum ada user. Klik "Tambah User" untuk membuat.</div>
+      )}
+    </div>
+
+    {/* Delete confirm modal */}
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+        <h3 class="font-semibold text-slate-900 mb-2">Hapus User?</h3>
+        <p class="text-sm text-slate-600 mb-5">Akun "<strong id="delete-name"></strong>" akan dihapus permanen.</p>
+        <div class="flex justify-end gap-3">
+          <button id="btn-delete-cancel" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 font-medium">Batal</button>
+          <button id="btn-delete-confirm" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg">Hapus Permanen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  // Search & filter
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const tableBody = document.getElementById('staff-table-body') as HTMLTableSectionElement;
+  const rows = tableBody.querySelectorAll('tr.staff-row');
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function applyFilters() {
+    let visible = 0;
+    rows.forEach(row => {
+      const el = row as HTMLElement;
+      const matchSearch = !currentSearch ||
+        (el.dataset.name ?? '').includes(currentSearch) ||
+        (el.dataset.email ?? '').includes(currentSearch);
+      const matchFilter = currentFilter === 'all' ||
+        (currentFilter === 'active' && el.dataset.active === 'active') ||
+        (currentFilter === 'inactive' && el.dataset.active === 'inactive');
+      el.style.display = matchSearch && matchFilter ? '' : 'none';
+      if (matchSearch && matchFilter) visible++;
+    });
+    visible === 0 ? tableBody.parentElement?.querySelector('thead')?.nextElementSibling?.nextElementSibling : null;
+  }
+
+  searchInput?.addEventListener('input', e => {
+    currentSearch = (e.target as HTMLInputElement).value.toLowerCase().trim();
+    applyFilters();
+  });
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentFilter = (tab as HTMLElement).dataset.filter ?? 'all';
+      applyFilters();
+    });
+  });
+
+  // Create form toggle
+  document.getElementById('btn-create')?.addEventListener('click', () => {
+    document.getElementById('create-form')?.classList.toggle('hidden');
+    (document.getElementById('new-user-form') as HTMLFormElement)?.reset();
+  });
+  document.getElementById('btn-cancel')?.addEventListener('click', () => {
+    document.getElementById('create-form')?.classList.add('hidden');
+  });
+
+  // Create user
+  document.getElementById('new-user-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const fd = new FormData(form);
+    const statusEl = document.getElementById('form-status')!;
+
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: fd.get('email') as string,
+      password: fd.get('password') as string,
+      email_confirm: true,
+    });
+
+    if (authError || !authData.user) {
+      statusEl.className = 'w-full text-sm text-red-600 mt-1';
+      statusEl.textContent = '✗ Gagal: ' + (authError?.message ?? 'Unknown error');
+      statusEl.classList.remove('hidden');
+      return;
+    }
+
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      id: authData.user.id,
+      email: fd.get('email') as string,
+      full_name: fd.get('full_name') as string,
+      role: fd.get('role') as string,
+      is_active: fd.get('is_active') === 'true',
+    });
+
+    if (profileError) {
+      statusEl.className = 'w-full text-sm text-yellow-600 mt-1';
+      statusEl.textContent = '⚠ Akun dibuat tapi profile gagal diupdate: ' + profileError.message;
+      statusEl.classList.remove('hidden');
+      return;
+    }
+
+    statusEl.className = 'w-full text-sm text-green-600 mt-1';
+    statusEl.textContent = '✓ Akun berhasil dibuat!';
+    statusEl.classList.remove('hidden');
+    setTimeout(() => location.reload(), 1200);
+  });
+
+  // Activate / Deactivate
+  async function toggleActive(id: string, action: 'activate' | 'deactivate') {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_active: action === 'activate', updated_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) { alert('Gagal: ' + error.message); return; }
+    location.reload();
+  }
+
+  document.querySelectorAll('.btn-activate').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = btn as HTMLElement;
+      if (confirm(`Aktifkan "${el.dataset.name}"?`)) toggleActive(el.dataset.id ?? '', 'activate');
+    });
+  });
+  document.querySelectorAll('.btn-deactivate').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = btn as HTMLElement;
+      if (confirm(`Nonaktifkan "${el.dataset.name}"?`)) toggleActive(el.dataset.id ?? '', 'deactivate');
+    });
+  });
+
+  // Delete
+  let deleteTargetId = '';
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteTargetId = (btn as HTMLElement).dataset.id ?? '';
+      document.getElementById('delete-name')!.textContent = (btn as HTMLElement).dataset.name ?? '';
+      document.getElementById('delete-modal')!.classList.remove('hidden');
+    });
+  });
+  document.getElementById('btn-delete-cancel')?.addEventListener('click', () => {
+    document.getElementById('delete-modal')!.classList.add('hidden');
+  });
+  document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
+    if (!deleteTargetId) return;
+    const { error } = await supabase.auth.admin.deleteUser(deleteTargetId);
+    document.getElementById('delete-modal')!.classList.add('hidden');
+    if (error) { alert('Gagal hapus: ' + error.message); }
+    else { location.reload(); }
+  });
+</script>
+
+<style>
+  .filter-tab {
+    @apply px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border;
+    @apply text-slate-500 border-slate-200 bg-white hover:bg-slate-50;
+  }
+  .filter-tab.active {
+    @apply bg-[#0A1931] text-white border-[#0A1931];
+  }
+</style>

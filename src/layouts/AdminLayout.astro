@@ -1,7 +1,7 @@
 ---
 interface Props {
   title: string;
-  activeMenu: 'statistik' | 'content' | 'user' | 'staff';
+  activeMenu: 'statistik' | 'content' | 'users';
   userRole: 'admin_utama' | 'staff';
   userEmail: string;
 }
@@ -32,10 +32,8 @@ const initials = userEmail.slice(0, 2).toUpperCase();
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-sm">B17</div>
         <div>
-          <div class="font-bold text-sm leading-tight text-yellow-300">✦ Batavia 17 v2</div>
+          <div class="font-bold text-sm leading-tight">Batavia 17</div>
           <div class="text-white/40 text-xs">Admin Panel</div>
-          <!-- DEBUG: role yang diterima server-side -->
-          <div class="text-[8px] text-white/20 mt-0.5 font-mono">[role: {userRole}]</div>
         </div>
       </div>
     </div>
@@ -51,16 +49,10 @@ const initials = userEmail.slice(0, 2).toUpperCase();
         Content
       </a>
       {userRole === 'admin_utama' && (
-        <>
-        <a href="/admin/staff" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'staff' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-          Staff
+        <a href="/admin/users" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'users' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Kelola User
         </a>
-        <a href="/admin/user" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'user' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          User
-        </a>
-        </>
       )}
     </nav>
 
