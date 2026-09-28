@@ -262,37 +262,34 @@ const totalUsers = allProfiles.length;
     document.getElementById('create-form')?.classList.add('hidden');
   });
 
-  // Create user
+  // Create user via server-side API route
   document.getElementById('new-user-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const fd = new FormData(form);
     const statusEl = document.getElementById('form-status')!;
 
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: fd.get('email') as string,
-      password: fd.get('password') as string,
-      email_confirm: true,
+    statusEl.className = 'w-full text-sm text-blue-600 mt-1';
+    statusEl.textContent = '⏳ Membuat akun...';
+    statusEl.classList.remove('hidden');
+
+    const res = await fetch('/api/admin-users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        full_name: fd.get('full_name'),
+        email: fd.get('email'),
+        password: fd.get('password'),
+        role: fd.get('role'),
+        is_active: fd.get('is_active') === 'true',
+      }),
     });
 
-    if (authError || !authData.user) {
+    const result = await res.json();
+
+    if (!res.ok) {
       statusEl.className = 'w-full text-sm text-red-600 mt-1';
-      statusEl.textContent = '✗ Gagal: ' + (authError?.message ?? 'Unknown error');
-      statusEl.classList.remove('hidden');
-      return;
-    }
-
-    const { error: profileError } = await supabase.from('profiles').upsert({
-      id: authData.user.id,
-      email: fd.get('email') as string,
-      full_name: fd.get('full_name') as string,
-      role: fd.get('role') as string,
-      is_active: fd.get('is_active') === 'true',
-    });
-
-    if (profileError) {
-      statusEl.className = 'w-full text-sm text-yellow-600 mt-1';
-      statusEl.textContent = '⚠ Akun dibuat tapi profile gagal diupdate: ' + profileError.message;
+      statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error');
       statusEl.classList.remove('hidden');
       return;
     }
@@ -326,7 +323,7 @@ const totalUsers = allProfiles.length;
     });
   });
 
-  // Delete
+  // Delete via server-side API route
   let deleteTargetId = '';
   document.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -340,10 +337,20 @@ const totalUsers = allProfiles.length;
   });
   document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
     if (!deleteTargetId) return;
-    const { error } = await supabase.auth.admin.deleteUser(deleteTargetId);
     document.getElementById('delete-modal')!.classList.add('hidden');
-    if (error) { alert('Gagal hapus: ' + error.message); }
-    else { location.reload(); }
+
+    const res = await fetch('/api/admin-users', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: deleteTargetId }),
+    });
+    const result = await res.json();
+
+    if (!res.ok) {
+      alert('Gagal hapus: ' + (result.error ?? 'Unknown error'));
+    } else {
+      location.reload();
+    }
   });
 </script>
 
