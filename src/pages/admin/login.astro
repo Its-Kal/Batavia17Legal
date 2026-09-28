@@ -87,13 +87,31 @@ const error = Astro.url.searchParams.get('error');
         : error.message);
       submitBtn.disabled = false;
     } else {
-      // Get session and persist to cookies for SSR auth
+      // Check if account is active before allowing login
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const maxAge = 60 * 60 * 24; // 24 hours
-        document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Strict`;
-        document.cookie = `sb-refresh-token=${session.refresh_token}; path=/; max-age=${maxAge * 7}; SameSite=Strict`;
+      if (!session) {
+        status.className = 'mt-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm';
+        status.textContent = '✗ Session tidak valid. Silakan coba lagi.';
+        submitBtn.disabled = false;
+        await supabase.auth.signOut();
+        return;
       }
+
+      const { data: profile } = await supabase
+        .from('profiles').select('is_active').eq('id', session.user.id).single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        status.className = 'mt-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm';
+        status.textContent = '✗ Akun ini telah dinonaktifkan. Hubungi admin utama.';
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Persist to cookies for SSR auth
+      const maxAge = 60 * 60 * 24; // 24 hours
+      document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Strict`;
+      document.cookie = `sb-refresh-token=${session.refresh_token}; path=/; max-age=${maxAge * 7}; SameSite=Strict`;
       status.className = 'mt-5 p-3 rounded-lg bg-gold-tint text-navy-base text-sm border border-gold-primary/30';
       status.textContent = '✓ Berhasil masuk. Mengalihkan...';
       setTimeout(() => { window.location.href = '/admin'; }, 600);
