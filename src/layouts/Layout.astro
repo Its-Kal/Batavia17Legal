@@ -40,6 +40,21 @@ import WhatsAppFab from '../components/WhatsAppFab.astro';
     </main>
     <Footer />
     <WhatsAppFab />
+    <script>
+      document.body.addEventListener('click', (e) => {
+        const link = (e.target as HTMLElement).closest('a[href*="wa.me"]');
+        if (!link) return;
+        const url = (link as HTMLAnchorElement).href;
+        fetch('/api/track-whatsapp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: window.location.pathname,
+            referrer: document.referrer,
+          }),
+        }).catch(() => {}); // fire and forget
+      });
+    </script>
   </body>
 </html>
 

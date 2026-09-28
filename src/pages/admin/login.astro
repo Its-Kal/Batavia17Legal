@@ -26,8 +26,8 @@ const error = Astro.url.searchParams.get('error');
         )}
 
         <div class="mb-5">
-          <label class="text-xs font-semibold tracking-badge uppercase text-navy-base/70 mb-2 block">Username</label>
-          <input type="text" name="username" required class="form-input" placeholder="admin" autocomplete="username" />
+          <label class="text-xs font-semibold tracking-badge uppercase text-navy-base/70 mb-2 block">Email</label>
+          <input type="email" name="username" required class="form-input" placeholder="admin@batavia17.legal" autocomplete="email" />
         </div>
 
         <div class="mb-2">
@@ -35,9 +35,9 @@ const error = Astro.url.searchParams.get('error');
           <input type="password" name="password" required class="form-input" placeholder="••••••••" autocomplete="current-password" />
         </div>
 
-        <p class="text-xs text-navy-base/40 mt-2">Demo: username <code class="bg-surface-muted px-1.5 py-0.5 rounded">admin</code> · password <code class="bg-surface-muted px-1.5 py-0.5 rounded">batavia17-admin-2026</code></p>
+        <p class="text-xs text-navy-base/40 mt-2">Hubungi admin jika lupa kata sandi.</p>
 
-        <button type="submit" class="btn-crimson w-full mt-6">
+        <button type="submit" class="btn-crimson w-full mt-6" id="submit-btn">
           Masuk Portal
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
@@ -53,38 +53,50 @@ const error = Astro.url.searchParams.get('error');
 </Layout>
 
 <script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
   const form = document.getElementById('login-form') as HTMLFormElement;
   const status = document.getElementById('login-status') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = new FormData(form);
-    const username = data.get('username');
+    const email = data.get('username');
     const password = data.get('password');
 
     status.classList.remove('hidden');
     status.className = 'mt-5 p-3 rounded-lg bg-navy-base/5 text-navy-base text-sm';
     status.textContent = 'Memverifikasi...';
+    submitBtn.disabled = true;
 
-    try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      const result = await res.json();
-      if (result.success) {
-        status.className = 'mt-5 p-3 rounded-lg bg-gold-tint text-navy-base text-sm border border-gold-primary/30';
-        status.textContent = '✓ Berhasil masuk. Mengalihkan...';
-        document.cookie = `b17_session=${result.token}; path=/; max-age=86400; SameSite=Strict`;
-        setTimeout(() => { window.location.href = '/admin'; }, 600);
-      } else {
-        status.className = 'mt-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm';
-        status.textContent = '✗ ' + (result.message || 'Login gagal');
-      }
-    } catch (err) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email as string,
+      password: password as string,
+    });
+
+    if (error) {
       status.className = 'mt-5 p-3 rounded-lg bg-crimson-light text-crimson-dark text-sm';
-      status.textContent = '✗ Gagal terhubung ke server';
+      status.textContent = '✗ ' + (error.message === 'Invalid login credentials'
+        ? 'Email atau password salah'
+        : error.message);
+      submitBtn.disabled = false;
+    } else {
+      // Get session and persist to cookies for SSR auth
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const maxAge = 60 * 60 * 24; // 24 hours
+        document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `sb-refresh-token=${session.refresh_token}; path=/; max-age=${maxAge * 7}; SameSite=Strict`;
+      }
+      status.className = 'mt-5 p-3 rounded-lg bg-gold-tint text-navy-base text-sm border border-gold-primary/30';
+      status.textContent = '✓ Berhasil masuk. Mengalihkan...';
+      setTimeout(() => { window.location.href = '/admin'; }, 600);
     }
   });
 </script>
