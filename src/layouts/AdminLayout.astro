@@ -15,7 +15,7 @@ const initials = userEmail.slice(0, 2).toUpperCase();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="/images/favicon1.svg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -96,7 +96,7 @@ const initials = userEmail.slice(0, 2).toUpperCase();
   );
   document.getElementById('logout-btn')?.addEventListener('click', async () => {
     await supabase.auth.signOut();
-    window.location.href = '/admin/login';
+    window.location.href = '/admin/login?success=logout';
   });
 </script>
 
