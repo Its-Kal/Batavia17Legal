@@ -19,6 +19,8 @@ const { data: profile } = await supabase
 
 const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
 
+if (role !== 'admin_utama') return Astro.redirect('/admin');
+
 const { data: contents } = await supabase
   .from('content')
   .select('*')

@@ -14,6 +14,13 @@ if (!user) {
   return Astro.redirect('/admin/login?error=required');
 }
 
+// Fetch profile untuk role check
+const { data: profile } = await supabase
+  .from('profiles').select('role').eq('id', user.id).single();
+
+const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
+if (role !== 'admin_utama') return Astro.redirect('/admin');
+
 // Fetch semua profiles
 const { data: profiles } = await supabase
   .from('profiles')
