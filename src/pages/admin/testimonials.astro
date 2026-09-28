@@ -1,8 +1,17 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { supabase } from '../../utils/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export const prerender = false;
+
+const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const SUPABASE_SERVICE_ROLE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+
+// Service role client — bypass RLS untuk lihat semua testimonials
+const supabaseAdmin = SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+  : supabase;
 
 const accessToken = Astro.cookies.get('sb-access-token')?.value;
 if (!accessToken) return Astro.redirect('/admin/login?error=required');
@@ -20,8 +29,8 @@ const { data: profile } = await supabase
 const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
 if (role !== 'admin_utama') return Astro.redirect('/admin');
 
-// Fetch semua testimonials
-const { data: testimonials } = await supabase
+  // Fetch semua testimonials (service role bypasses RLS)
+const { data: testimonials } = await supabaseAdmin
   .from('testimonials')
   .select('*')
   .order('created_at', { ascending: false });
@@ -210,24 +219,40 @@ const approved = allTestimonials.filter(t => t.is_approved);
     });
   });
 
-  // Approve
+  // Approve via service role API
   document.querySelectorAll('.btn-approve').forEach(btn => {
     btn.addEventListener('click', async () => {
       const el = btn as HTMLElement;
       if (!confirm(`Terima testimoni dari "${el.dataset.name}"?`)) return;
-      const { error } = await supabase.from('testimonials').update({ is_approved: true }).eq('id', el.dataset.id ?? '');
-      if (error) { alert('Gagal: ' + error.message); return; }
+      const res = await fetch('/api/admin-testimonials', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: el.dataset.id, is_approved: true }),
+      });
+      if (!res.ok) {
+        const r = await res.json();
+        alert('Gagal: ' + (r.error ?? 'Unknown error'));
+        return;
+      }
       location.reload();
     });
   });
 
-  // Reject / Unpublish (set is_approved = false)
+  // Reject / Unpublish via service role API
   document.querySelectorAll('.btn-reject, .btn-unpublish').forEach(btn => {
     btn.addEventListener('click', async () => {
       const el = btn as HTMLElement;
       if (!confirm(`Tolak / tarik testimoni dari "${el.dataset.name}"?`)) return;
-      const { error } = await supabase.from('testimonials').update({ is_approved: false }).eq('id', el.dataset.id ?? '');
-      if (error) { alert('Gagal: ' + error.message); return; }
+      const res = await fetch('/api/admin-testimonials', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: el.dataset.id, is_approved: false }),
+      });
+      if (!res.ok) {
+        const r = await res.json();
+        alert('Gagal: ' + (r.error ?? 'Unknown error'));
+        return;
+      }
       location.reload();
     });
   });
