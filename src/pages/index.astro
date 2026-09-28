@@ -247,10 +247,10 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     <div class="carousel-container relative w-full overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
       <div
         class="carousel-track flex gap-4 sm:gap-6 py-4"
-        style="padding-left: 100vw; animation: marqueeScrollLeft 25s linear infinite;"
+        style="padding-left: 100vw;"
       >
         {[...testimonials, ...testimonials].map((t) => (
-          <div class="w-[280px] sm:w-[360px] md:w-[400px] bg-white text-text-dark p-4 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
+          <div class="testimonial-card w-[280px] sm:w-[360px] md:w-[400px] bg-white text-text-dark p-4 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
             <div>
               <div class="flex items-center gap-2.5 sm:gap-3.5 mb-3 sm:mb-4">
                 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-navy-card text-gold-light font-display font-bold flex items-center justify-center shrink-0 text-xs sm:text-base">
@@ -674,6 +674,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   .carousel-track {
     display: flex;
     width: max-content;
+    animation: marqueeScrollLeft 25s linear infinite;
   }
   .carousel-container:hover .carousel-track {
     animation-play-state: paused;
@@ -876,6 +877,37 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       collapseCard();
     }
   });
+
+  // Testimonial marquee carousel
+  const track = document.querySelector('.carousel-track') as HTMLElement | null;
+  if (track) {
+    // Calculate animation duration based on total card width
+    let animDur = 25;
+    const updateDuration = () => {
+      const cards = track.querySelectorAll('.testimonial-card');
+      if (!cards.length) return;
+      // Get actual card width including gap
+      const cardEl = cards[0] as HTMLElement;
+      const cardStyle = window.getComputedStyle(cardEl);
+      const cardW = cardEl.offsetWidth
+        + parseFloat(cardStyle.marginLeft) + parseFloat(cardStyle.marginRight)
+        + parseFloat(window.getComputedStyle(track).gap || '0');
+      const visibleWidth = track.parentElement?.offsetWidth ?? window.innerWidth;
+      const totalCards = cards.length / 2; // duplicated set
+      const totalW = cardW * totalCards;
+      // Duration: full scroll of one set takes N seconds
+      animDur = Math.max(15, Math.round((totalW / visibleWidth) * 20));
+      track.style.animationDuration = animDur + 's';
+    };
+    updateDuration();
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateDuration, 200);
+    });
+    track.addEventListener('mouseenter', () => { track.style.animationPlayState = 'paused'; });
+    track.addEventListener('mouseleave', () => { track.style.animationPlayState = 'running'; });
+  }
 
   window.expandCard = expandCard;
   window.collapseCard = collapseCard;
