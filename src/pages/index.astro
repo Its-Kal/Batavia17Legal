@@ -729,8 +729,6 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     margin-left: -130px !important;
     margin-top: -200px !important;
     backface-visibility: hidden;
-    /* ensure card never collapses during transitions */
-    will-change: transform, opacity;
   }
   @media (min-width: 640px) {
     .advokat-card {
@@ -806,12 +804,16 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       }
 
       card.style.transform = `translateX(${xPos}px) translateZ(${zPos}px) rotateY(${rotY}deg) scale(${scale})`;
-      card.style.opacity = opacity;
-      let z = 1;
-      if (diff === 0) z = 10;
-      else if (diff === 1 || diff === advokatCount - 1) z = 5;
-      else if (diff === 2 || diff === advokatCount - 2) z = 3;
+      card.style.opacity = String(opacity);
+      // zIndex: use string to avoid JS number-to-string coercion issues
+      let z = '1';
+      if (diff === 0) z = '10';
+      else if (diff === 1 || diff === advokatCount - 1) z = '5';
+      else if (diff === 2 || diff === advokatCount - 2) z = '3';
+      else z = '1';
       card.style.zIndex = z;
+      // show/hide non-center cards to prevent click-through
+      card.style.pointerEvents = diff === 0 ? 'auto' : 'none';
     });
 
     const dots = document.querySelectorAll('.advokat-dot');
