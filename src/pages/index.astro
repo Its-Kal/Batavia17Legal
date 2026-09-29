@@ -244,41 +244,78 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       </p>
     </div>
 
-    <div class="carousel-container relative w-full overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-      <div
-        class="carousel-track flex gap-4 sm:gap-6 py-4"
-        style="padding-left: 100vw;"
-      >
-        {[...testimonials, ...testimonials].map((t) => (
-          <div class="testimonial-card w-[280px] sm:w-[360px] md:w-[400px] bg-white text-text-dark p-4 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
-            <div>
-              <div class="flex items-center gap-2.5 sm:gap-3.5 mb-3 sm:mb-4">
-                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-navy-card text-gold-light font-display font-bold flex items-center justify-center shrink-0 text-xs sm:text-base">
-                  {(t.name ?? '?').slice(0, 2).toUpperCase()}
+    {/* ============================================ */}
+    {/* CERITA & PENGALAMAN (Testimonial)            */}
+    {/* ============================================ */}
+    {/* Static grid when ≤ 3 testimonials */}
+    {testimonials.length > 0 && testimonials.length <= 3 && (
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {testimonials.map((t) => (
+            <div class="testimonial-card bg-white text-[#0F172A] p-5 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2.5 sm:gap-3.5 mb-3 sm:mb-4">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0A1931] text-[#E9C349] font-bold flex items-center justify-center shrink-0 text-xs sm:text-base">
+                    {(t.name ?? '?').slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-xs sm:text-sm text-[#0F172A]">{t.name}</h4>
+                    {(t.company || t.location) && (
+                      <p class="text-[9px] sm:text-xs text-[#64748B]">{[t.company, t.location].filter(Boolean).join(' · ')}</p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h4 class="font-display font-bold text-xs sm:text-sm text-text-dark">{t.name}</h4>
-                  {(t.company || t.location) && (
-                    <p class="text-[9px] sm:text-xs text-text-muted">{[t.company, t.location].filter(Boolean).join(' · ')}</p>
-                  )}
+                <div class="flex text-amber-500 mb-2 sm:mb-3 text-xs sm:text-sm">
+                  {Array.from({length: 5}).map((_, i) => (
+                    <span>{i < (t.rating ?? 0) ? '★' : '☆'}</span>
+                  ))}
                 </div>
+                <p class="text-[10px] sm:text-sm text-slate-600 leading-relaxed italic">"{t.content}"</p>
               </div>
-              <div class="flex text-amber-500 mb-2 sm:mb-3 text-xs sm:text-sm">
-                {Array.from({length: 5}).map((_, i) => (
-                  <span key={i}>{i < (t.rating ?? 0) ? '★' : '☆'}</span>
-                ))}
-              </div>
-              <p class="text-[10px] sm:text-sm text-slate-600 leading-relaxed italic">"{t.content}"</p>
             </div>
-          </div>
-        ))}
-        {testimonials.length === 0 && (
-          <div class="flex items-center justify-center w-full py-10 text-slate-400 text-sm">
-            Belum ada testimoni. Jadilah yang pertama!
-          </div>
-        )}
+          ))}
+        </div>
       </div>
-    </div>
+    )}
+
+    {/* Marquee when > 3 testimonials — starts from right, infinite seamless loop */}
+    {testimonials.length > 3 && (
+      <div class="carousel-container relative w-full overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+        <div class="carousel-track flex gap-4 sm:gap-6 py-4" style="padding-left: 100vw;">
+          {[...testimonials, ...testimonials].map((t) => (
+            <div class="testimonial-card w-[280px] sm:w-[360px] md:w-[400px] bg-white text-[#0F172A] p-4 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
+              <div>
+                <div class="flex items-center gap-2.5 sm:gap-3.5 mb-3 sm:mb-4">
+                  <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-[#0A1931] text-[#E9C349] font-bold flex items-center justify-center shrink-0 text-xs sm:text-base">
+                    {(t.name ?? '?').slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-xs sm:text-sm text-[#0F172A]">{t.name}</h4>
+                    {(t.company || t.location) && (
+                      <p class="text-[9px] sm:text-xs text-[#64748B]">{[t.company, t.location].filter(Boolean).join(' · ')}</p>
+                    )}
+                  </div>
+                </div>
+                <div class="flex text-amber-500 mb-2 sm:mb-3 text-xs sm:text-sm">
+                  {Array.from({length: 5}).map((_, i) => (
+                    <span>{i < (t.rating ?? 0) ? '★' : '☆'}</span>
+                  ))}
+                </div>
+                <p class="text-[10px] sm:text-sm text-slate-600 leading-relaxed italic">"{t.content}"</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {testimonials.length === 0 && (
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-center w-full py-10 text-slate-400 text-sm">
+          Belum ada testimoni. Jadilah yang pertama!
+        </div>
+      </div>
+    )}
   </section>
   {/* ============================================ */}
   {/* ORANG DI BALIK PENDAMPINGAN                 */}
