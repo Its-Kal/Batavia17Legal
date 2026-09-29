@@ -674,7 +674,10 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   .carousel-track {
     display: flex;
     width: max-content;
-    animation: marqueeScrollLeft 25s linear infinite;
+    animation-name: marqueeScrollLeft;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
   }
   .carousel-container:hover .carousel-track {
     animation-play-state: paused;
@@ -885,26 +888,17 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     }
   });
 
-  // Testimonial marquee carousel
+  // Testimonial marquee carousel — seamless infinite loop
   const track = document.querySelector('.carousel-track');
   if (track) {
-    // Calculate animation duration based on total card width
-    let animDur = 25;
     const updateDuration = () => {
       const cards = track.querySelectorAll('.testimonial-card');
       if (!cards.length) return;
-      // Get actual card width including gap
-      const cardEl = cards[0];
-      const cardStyle = window.getComputedStyle(cardEl);
-      const cardW = cardEl.offsetWidth
-        + parseFloat(cardStyle.marginLeft) + parseFloat(cardStyle.marginRight)
-        + parseFloat(window.getComputedStyle(track).gap || '0');
-      const visibleWidth = track.parentElement ? track.parentElement.offsetWidth : window.innerWidth;
-      const totalCards = cards.length / 2; // duplicated set
-      const totalW = cardW * totalCards;
-      // Duration: full scroll of one set takes N seconds
-      animDur = Math.max(15, Math.round((totalW / visibleWidth) * 20));
-      track.style.animationDuration = animDur + 's';
+      // Use half the track (one set) to animate — seamless because set is duplicated
+      const halfW = track.scrollWidth / 2;
+      // Speed: cards should drift at ~80px/sec — feels smooth and never stops
+      const duration = Math.max(10, halfW / 80);
+      track.style.animationDuration = duration + 's';
     };
     updateDuration();
     let resizeTimer;
