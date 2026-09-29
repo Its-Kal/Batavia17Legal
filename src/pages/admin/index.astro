@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { supabase } from '../../utils/supabase';
+import { supabase, supabaseAdmin } from '../../utils/supabase';
 
 export const prerender = false;
 
@@ -27,26 +27,26 @@ if (profile && !profile.is_active) {
 const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
 
 // Stats: WhatsApp clicks
-const { count: totalClicks } = await supabase
+const { count: totalClicks } = await supabaseAdmin
   .from('whatsapp_clicks').select('*', { count: 'exact', head: true });
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
-const { count: todayClicks } = await supabase
+const { count: todayClicks } = await supabaseAdmin
   .from('whatsapp_clicks')
   .select('*', { count: 'exact', head: true })
   .gte('clicked_at', today.toISOString());
 
 const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-const { count: weekClicks } = await supabase
+const { count: weekClicks } = await supabaseAdmin
   .from('whatsapp_clicks')
   .select('*', { count: 'exact', head: true })
   .gte('clicked_at', weekAgo.toISOString());
 
-const { count: totalUsers } = await supabase
+const { count: totalUsers } = await supabaseAdmin
   .from('profiles').select('*', { count: 'exact', head: true });
 
-const { count: staffCount } = await supabase
+const { count: staffCount } = await supabaseAdmin
   .from('profiles').select('*', { count: 'exact', head: true })
   .eq('role', 'staff');
 ---
