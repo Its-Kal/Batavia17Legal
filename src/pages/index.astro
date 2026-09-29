@@ -308,7 +308,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
 
         {/* 3D Carousel - responsive (desktop & mobile) */}
         <div class="advokat-stage relative flex items-center justify-center" style="perspective: 1200px; height: 460px; overflow: hidden;">
-          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d; width: 0; height: 0;">
+          <div id="advokat-carousel" class="relative" style="transform-style: preserve-3d;">
             {advokats.map((a, i) => (
               <div class="advokat-card absolute transition-all duration-700 ease-out cursor-pointer" data-index={i} data-name={a.name} data-role={a.role} data-spec={a.spec} data-badge={a.badge} data-img={a.img} onclick="showAdvokatModal(this)">
                 <div class="w-full h-full bg-gradient-to-b from-[#1a2744] to-[#0d1a2e] border border-white/10 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
@@ -714,6 +714,9 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   #advokat-carousel {
     scroll-behavior: smooth;
     transform-style: preserve-3d;
+    /* explicit dimensions so absolute children are positioned relative to this, not clipped */
+    width: min(660px, 90vw);
+    height: 460px;
   }
   .advokat-card > div {
     position: relative;
@@ -726,6 +729,8 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     margin-left: -130px !important;
     margin-top: -200px !important;
     backface-visibility: hidden;
+    /* ensure card never collapses during transitions */
+    will-change: transform, opacity;
   }
   @media (min-width: 640px) {
     .advokat-card {
