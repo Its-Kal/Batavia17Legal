@@ -925,6 +925,20 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
     }
   });
 
+  // Track WhatsApp link clicks
+  document.addEventListener('click', (e) => {
+    const waLink = e.target.closest('a[href*="wa.me"]');
+    if (!waLink) return;
+    fetch('/api/track-whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: window.location.href,
+        referrer: document.referrer,
+      }),
+    }).catch(() => {});
+  });
+
   // Testimonial marquee carousel — seamless infinite loop
   const track = document.querySelector('.carousel-track');
   if (track) {
