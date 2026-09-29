@@ -10,7 +10,7 @@ export const POST: APIRoute = async ({ request }) => {
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(
       import.meta.env.PUBLIC_SUPABASE_URL,
-      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+      import.meta.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
     // Get user from cookie if logged in
