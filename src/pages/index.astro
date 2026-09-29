@@ -886,7 +886,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   });
 
   // Testimonial marquee carousel
-  const track = document.querySelector('.carousel-track') as HTMLElement | null;
+  const track = document.querySelector('.carousel-track');
   if (track) {
     // Calculate animation duration based on total card width
     let animDur = 25;
@@ -894,12 +894,12 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       const cards = track.querySelectorAll('.testimonial-card');
       if (!cards.length) return;
       // Get actual card width including gap
-      const cardEl = cards[0] as HTMLElement;
+      const cardEl = cards[0];
       const cardStyle = window.getComputedStyle(cardEl);
       const cardW = cardEl.offsetWidth
         + parseFloat(cardStyle.marginLeft) + parseFloat(cardStyle.marginRight)
         + parseFloat(window.getComputedStyle(track).gap || '0');
-      const visibleWidth = track.parentElement?.offsetWidth ?? window.innerWidth;
+      const visibleWidth = track.parentElement ? track.parentElement.offsetWidth : window.innerWidth;
       const totalCards = cards.length / 2; // duplicated set
       const totalW = cardW * totalCards;
       // Duration: full scroll of one set takes N seconds
@@ -907,7 +907,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
       track.style.animationDuration = animDur + 's';
     };
     updateDuration();
-    let resizeTimer: ReturnType<typeof setTimeout>;
+    let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(updateDuration, 200);
