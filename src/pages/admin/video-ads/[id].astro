@@ -1,0 +1,349 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { supabase, supabaseAdmin } from '../../../utils/supabase';
+
+export const prerender = false;
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+if (!accessToken) return Astro.redirect('/admin/login?error=required');
+
+const { data: { user } } = await supabase.auth.getUser(accessToken);
+if (!user) {
+  Astro.cookies.delete('sb-access-token', { path: '/' });
+  Astro.cookies.delete('sb-refresh-token', { path: '/' });
+  return Astro.redirect('/admin/login?error=required');
+}
+
+const { data: profile } = await supabase
+  .from('profiles').select('role').eq('id', user.id).single();
+
+const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
+if (role !== 'admin_utama') return Astro.redirect('/admin');
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect('/admin/video-ads');
+
+const { data: video } = await supabaseAdmin
+  .from('video_ads').select('*').eq('id', id).single();
+
+if (!video) return Astro.redirect('/admin/video-ads');
+
+// Extract Drive file ID
+function extractDriveId(url: string): string | null {
+  const m = String(url).match(/\/file\/d\/([^/]+)\//);
+  return m ? m[1] : null;
+}
+
+const fileId = extractDriveId(video.video_url ?? '');
+const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+const downloadUrl = fileId ? `https://docs.google.com/uc?export=download&id=${fileId}` : null;
+const viewUrl = video.video_url || null;
+
+// Published status — we'll use the existing is_active field
+const isPublished = video.is_active;
+---
+
+<AdminLayout title={`${video.title} — Video Iklan`} activeMenu="video-ads" userRole="admin_utama" userEmail={user.email ?? ''}>
+  <div class="p-8 max-w-4xl mx-auto">
+
+    {/* Back link */}
+    <a href="/admin/video-ads" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A1931] transition-colors mb-6">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Kembali ke Daftar Video
+    </a>
+
+    {/* Status + Title */}
+    <div class="flex items-start justify-between gap-4 mb-6">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="text-2xl font-bold text-slate-900">{video.title}</h1>
+          {isPublished ? (
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+              Published
+            </span>
+          ) : (
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200">
+              Draft
+            </span>
+          )}
+        </div>
+        <div class="flex items-center gap-4 text-xs text-slate-400">
+          {video.category && <span class="bg-[#0A1931]/5 text-[#0A1931] px-2 py-0.5 rounded-full">{video.category}</span>}
+          {video.synced_at && <span>Synced: {new Date(video.synced_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>}
+          <span>Display order: {video.display_order}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button id="btn-toggle-publish" class={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+          isPublished
+            ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200'
+            : 'bg-green-600 hover:bg-green-700 text-white'
+        }`}>
+          {isPublished ? 'Unpublish' : 'Publish'}
+        </button>
+        <a href="/admin/video-ads" id="btn-edit-page"
+          class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#0A1931] hover:bg-[#1a3a5c] text-white transition-colors">
+          Edit
+        </a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+      {/* Left: Video Preview */}
+      <div class="lg:col-span-3 space-y-4">
+        <div class="bg-black rounded-2xl overflow-hidden aspect-video relative" style="min-height: 280px;">
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              class="w-full h-full absolute inset-0"
+              allow="autoplay"
+              allowfullscreen
+              title={video.title}
+            ></iframe>
+          ) : viewUrl ? (
+            <div class="w-full h-full absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white gap-3">
+              <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <p class="text-sm text-white/60">Video tidak bisa di-embed langsung</p>
+              <a href={viewUrl} target="_blank" rel="noopener noreferrer"
+                class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors">
+                Buka di Google Drive
+              </a>
+            </div>
+          ) : (
+            <div class="w-full h-full absolute inset-0 flex flex-col items-center justify-center bg-slate-100 text-slate-400 gap-3">
+              <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <p class="text-sm">Tidak ada link video</p>
+            </div>
+          )}
+        </div>
+
+        {/* Video Actions */}
+        <div class="flex flex-wrap gap-2">
+          {viewUrl && (
+            <a href={viewUrl} target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-2 px-4 py-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold rounded-xl transition-colors">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Buka di Drive
+            </a>
+          )}
+          {downloadUrl && (
+            <a href={downloadUrl}
+              class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition-colors"
+              download>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Video
+            </a>
+          )}
+          <button id="btn-copy-all" class="flex items-center gap-2 px-4 py-2 bg-[#D4AF37] hover:bg-[#c9a430] text-[#0A1931] text-sm font-bold rounded-xl transition-colors">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Caption + Hashtag
+          </button>
+        </div>
+
+        {/* Metadata */}
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <h3 class="font-semibold text-slate-700 text-sm mb-3">Metadata</h3>
+          <dl class="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-slate-400 text-xs">Kategori</dt>
+              <dd class="font-medium text-slate-700">{video.category || '-'}</dd>
+            </div>
+            <div>
+              <dt class="text-slate-400 text-xs">Display Order</dt>
+              <dd class="font-medium text-slate-700">{video.display_order}</dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-slate-400 text-xs">Video URL</dt>
+              <dd class="font-medium text-slate-700 break-all">
+                {video.video_url ? (
+                  <a href={video.video_url} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-xs">{video.video_url}</a>
+                ) : '-'}
+              </dd>
+            </div>
+            {video.thumbnail_url && (
+              <div class="col-span-2">
+                <dt class="text-slate-400 text-xs">Thumbnail URL</dt>
+                <dd class="font-medium text-slate-700 break-all text-xs">{video.thumbnail_url}</dd>
+              </div>
+            )}
+            <div>
+              <dt class="text-slate-400 text-xs">Dibuat</dt>
+              <dd class="font-medium text-slate-700">{new Date(video.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</dd>
+            </div>
+            <div>
+              <dt class="text-slate-400 text-xs">Terakhir Diubah</dt>
+              <dd class="font-medium text-slate-700">{new Date(video.updated_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      {/* Right: Caption & Hashtag */}
+      <div class="lg:col-span-2 space-y-4">
+
+        {/* Caption */}
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-slate-700 text-sm">Caption</h3>
+            <button id="btn-copy-caption" class="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors flex items-center gap-1">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+          <div id="caption-text" class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+            {video.caption ? (
+              video.caption
+            ) : (
+              <span class="text-slate-300 italic">Belum ada caption</span>
+            )}
+          </div>
+        </div>
+
+        {/* Hashtags */}
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-slate-700 text-sm">Hashtag</h3>
+            <button id="btn-copy-hashtags" class="text-xs text-slate-400 hover:text-[#D4AF37] transition-colors flex items-center gap-1">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+          <div id="hashtags-container" class="flex flex-wrap gap-2">
+            {video.hashtags && video.hashtags.length > 0 ? (
+              video.hashtags.map((tag: string) => (
+                <span class="text-xs font-semibold text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/20 px-3 py-1 rounded-full">
+                  #{tag}
+                </span>
+              ))
+            ) : (
+              <span class="text-xs text-slate-300 italic">Belum ada hashtag</span>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Copy: Caption + Hashtags Combined */}
+        {video.caption || (video.hashtags && video.hashtags.length > 0) ? (
+          <div class="bg-gradient-to-br from-[#0A1931] to-[#1a3a5c] rounded-xl p-5 text-white">
+            <h3 class="font-semibold text-sm mb-2">Caption Lengkap</h3>
+            <div id="full-caption" class="text-xs text-white/80 leading-relaxed whitespace-pre-wrap mb-3 max-h-48 overflow-y-auto">
+              {video.caption ?? ''}{video.hashtags && video.hashtags.length > 0 ? '\n\n' + video.hashtags.map((t: string) => '#' + t).join(' ') : ''}
+            </div>
+            <button id="btn-copy-full" class="w-full flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#c9a430] text-[#0A1931] font-bold text-sm px-4 py-2.5 rounded-xl transition-colors">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy Semua
+            </button>
+          </div>
+        ) : null}
+
+        {/* Video Info Card */}
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <h3 class="font-semibold text-slate-700 text-sm mb-3">Info Video</h3>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Platform</span>
+              <span class="font-semibold text-slate-700">{video.category || 'TikTok'}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Status</span>
+              <span class={`font-semibold ${isPublished ? 'text-green-600' : 'text-slate-400'}`}>
+                {isPublished ? 'Published' : 'Draft'}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Display Order</span>
+              <span class="font-semibold text-slate-700">{video.display_order}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Jumlah Hashtag</span>
+              <span class="font-semibold text-slate-700">{video.hashtags?.length ?? 0}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<div id="toast" class="hidden fixed bottom-6 right-6 z-[100] px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white bg-slate-800"></div>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+  const videoId = window.location.pathname.split('/').pop();
+
+  function showToast(msg: string, isError = false) {
+    const el = document.getElementById('toast')!;
+    el.textContent = msg;
+    el.className = `fixed bottom-6 right-6 z-[100] px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white ${isError ? 'bg-red-600' : 'bg-slate-800'}`;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 3000);
+  }
+
+  async function copyText(text: string, label = 'disalin') {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(`✓ Berhasil ${label}!`);
+    } catch {
+      showToast('Gagal menyalin ke clipboard.', true);
+    }
+  }
+
+  // Publish / Unpublish
+  document.getElementById('btn-toggle-publish')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-toggle-publish') as HTMLButtonElement;
+    const isCurrentlyPublished = btn.textContent?.trim() === 'Unpublish';
+    const newStatus = !isCurrentlyPublished;
+
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    const { error } = await supabase
+      .from('video_ads')
+      .update({ is_active: newStatus, updated_at: new Date().toISOString() })
+      .eq('id', videoId);
+
+    if (error) {
+      showToast('Gagal update status: ' + error.message, true);
+      btn.textContent = isCurrentlyPublished ? 'Unpublish' : 'Publish';
+      btn.disabled = false;
+      return;
+    }
+
+    showToast(newStatus ? '✓ Video berhasil dipublish.' : '✓ Video di-unpublish.');
+    setTimeout(() => location.reload(), 600);
+  });
+
+  // Copy caption only
+  document.getElementById('btn-copy-caption')?.addEventListener('click', () => {
+    const text = document.getElementById('caption-text')?.textContent?.trim() ?? '';
+    copyText(text, 'caption disalin');
+  });
+
+  // Copy hashtags only
+  document.getElementById('btn-copy-hashtags')?.addEventListener('click', () => {
+    const tags = Array.from(document.querySelectorAll('#hashtags-container span')).map((el) => el.textContent?.trim() ?? '').filter(Boolean);
+    copyText(tags.join(' '), 'hashtag disalin');
+  });
+
+  // Copy full caption + hashtags
+  document.getElementById('btn-copy-full')?.addEventListener('click', () => {
+    const caption = document.getElementById('caption-text')?.textContent?.trim() ?? '';
+    const tags = Array.from(document.querySelectorAll('#hashtags-container span')).map((el) => el.textContent?.trim() ?? '').filter(Boolean);
+    const full = caption + (tags.length ? '\n\n' + tags.join(' ') : '');
+    copyText(full, 'caption + hashtag disalin');
+  });
+
+  // Copy all (header button)
+  document.getElementById('btn-copy-all')?.addEventListener('click', () => {
+    const caption = document.getElementById('caption-text')?.textContent?.trim() ?? '';
+    const tags = Array.from(document.querySelectorAll('#hashtags-container span')).map((el) => el.textContent?.trim() ?? '').filter(Boolean);
+    const full = caption + (tags.length ? '\n\n' + tags.join(' ') : '');
+    copyText(full, 'caption + hashtag disalin');
+  });
+</script>
