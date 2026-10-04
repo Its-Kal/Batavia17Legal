@@ -9,14 +9,14 @@ function normalize(header: string): string {
 
 function findCol(headers: string[], ...candidates: string[]): number {
   for (const c of candidates) {
-    const idx = headers.indexOf(c);
+    const normC = normalize(c);
+    const idx = headers.findIndex(h => normalize(h) === normC);
     if (idx !== -1) return idx;
   }
   return -1;
 }
 
 function extractTitleFromDriveUrl(url: string): string {
-  // Format: https://drive.google.com/file/d/FILEID/view?usp=drivesdk
   const match = String(url).match(/\/file\/d\/([^/]+)\//);
   if (match) return `Video ${match[1].slice(0, 8).toUpperCase()}`;
   return '';
@@ -25,13 +25,28 @@ function extractTitleFromDriveUrl(url: string): string {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { spreadsheet_id, sheet_name } = body;
+    let { spreadsheet_id, sheet_name } = body;
 
-    if (!spreadsheet_id?.trim() || !sheet_name?.trim()) {
+    const apiKey = import.meta.env.GOOGLE_SHEETS_API_KEY;
+    const envDefaultSheet = import.meta.env.GOOGLE_SHEETS_SHEET_NAME || 'Videos';
+
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({
+          error: 'GOOGLE_SHEETS_API_KEY belum diset.\nSetup di Vercel Dashboard → Settings → Environment Variables.',
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    spreadsheet_id = spreadsheet_id?.trim();
+    sheet_name = (sheet_name || envDefaultSheet).trim();
+
+    if (!spreadsheet_id) {
       return new Response(
         JSON.stringify({
           error:
-            'Spreadsheet ID dan Sheet Name wajib diisi.\n' +
+            'Spreadsheet ID wajib diisi.\n' +
             'Spreadsheet ID dari URL:\n' +
             'https://docs.google.com/spreadsheets/d/XXXXX/edit → XXXXX',
         }),
@@ -39,23 +54,11 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const apiKey = import.meta.env.GOOGLE_SHEETS_API_KEY;
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({
-          error:
-            'GOOGLE_SHEETS_API_KEY belum diset.\n' +
-            'Setup di Vercel Dashboard → Settings → Environment Variables.',
-        }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
     // --- Fetch sheet data ---
-    const safeSheetName = encodeURIComponent(sheet_name.trim());
+    const safeSheetName = encodeURIComponent(sheet_name);
     const sheetRange = `${safeSheetName}!A1:Z1000`;
     const sheetsUrl =
-      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id.trim()}/values/${sheetRange}?key=${apiKey}`;
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id}/values/${sheetRange}?key=${apiKey}`;
 
     const sheetsRes = await fetch(sheetsUrl);
     const sheetsData = await sheetsRes.json();
@@ -78,22 +81,25 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // --- Parse headers (flexible matching) ---
+    // --- Parse headers (case-insensitive flexible matching) ---
     const rawHeaders = values[0];
     const headers = rawHeaders.map(normalize);
 
-    // Find column indices — most specific names first (headers are matched in order)
-    const videoUrlIdx  = findCol(headers, 'video_link', 'video_url', 'video', 'videolink', 'url');
-    const captionIdx   = findCol(headers, 'captions', 'caption', 'captions_text');
-    const hashtagIdx   = findCol(headers, 'hastag', 'hashtags', 'hashtag', 'tags');
+    // Video URL: supports "video_url", "video url", "video_link", "videourl", "url", etc.
+    const videoUrlIdx  = findCol(headers, 'video_url', 'video_link', 'videourl', 'video', 'url', 'video_link_1');
+    // Caption: supports "caption", "captions", "captions_text", "caption_text"
+    const captionIdx   = findCol(headers, 'captions', 'caption', 'captions_text', 'caption_text');
+    // Hashtag: supports "hastag", "hashtag", "hashtags", "tags", "hastag_text"
+    const hashtagIdx   = findCol(headers, 'hastag', 'hashtags', 'hashtag', 'hastag_text', 'tags');
+    // Title: optional explicit title column
     const titleIdx     = findCol(headers, 'title', 'name', 'video_title', 'judul');
 
-    // Must have at least a video URL or caption
+    // Must have at least video URL or caption
     if (videoUrlIdx === -1 && captionIdx === -1) {
       return new Response(
         JSON.stringify({
           error:
-            'Kolom "video link" atau "Captions" tidak ditemukan.\n' +
+            'Kolom "Video URL" atau "Caption" tidak ditemukan.\n' +
             'Kolom yang tersedia: ' + rawHeaders.join(', '),
         }),
         { status: 422, headers: { 'Content-Type': 'application/json' } }
@@ -108,15 +114,15 @@ export const POST: APIRoute = async ({ request }) => {
       const row = values[i];
       const get = (idx: number) => (idx >= 0 && idx < row.length ? String(row[idx]).trim() : '');
 
-      const rawCaption  = get(captionIdx);
-      const rawHashtags = get(hashtagIdx);
-      const rawVideoUrl = get(videoUrlIdx);
+      const rawCaption   = get(captionIdx);
+      const rawHashtags  = get(hashtagIdx);
+      const rawVideoUrl  = get(videoUrlIdx);
       const rawTitle    = get(titleIdx);
 
       // Skip fully empty rows
       if (!rawCaption && !rawVideoUrl) continue;
 
-      // Generate title: use explicit title col, else derive from Drive URL, else use caption prefix
+      // Generate title: explicit col → Drive URL ID → caption prefix
       let title = rawTitle;
       if (!title?.trim()) {
         title = extractTitleFromDriveUrl(rawVideoUrl);
@@ -134,7 +140,7 @@ export const POST: APIRoute = async ({ request }) => {
         : [];
 
       toInsert.push({
-        title: title.trim(),
+        title:        title.trim(),
         video_url:    rawVideoUrl || null,
         caption:      rawCaption || null,
         hashtags:     tagList,
@@ -149,9 +155,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (toInsert.length === 0) {
       return new Response(
         JSON.stringify({
-          error:
-            'Tidak ada data video yang bisa di-sync.\n' +
-            'Pastikan kolom "Captions" atau "video link" terisi.',
+          error: 'Tidak ada data video yang bisa di-sync. Pastikan kolom "Video URL" atau "Caption" terisi.',
         }),
         { status: 422, headers: { 'Content-Type': 'application/json' } }
       );
@@ -179,7 +183,9 @@ export const POST: APIRoute = async ({ request }) => {
       JSON.stringify({
         success: true,
         synced: toInsert.length,
-        columns_used: rawHeaders.join(', '),
+        columns_found: rawHeaders.filter((_, i) =>
+          [videoUrlIdx, captionIdx, hashtagIdx, titleIdx].includes(i)
+        ).join(', '),
         message: `Berhasil sync ${toInsert.length} video dari sheet "${sheet_name}".`,
         data,
       }),
