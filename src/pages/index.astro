@@ -13,7 +13,38 @@ const { data: approvedTestimonials } = await supabase
   .limit(8);
 
 const testimonials = approvedTestimonials ?? [];
-const services = [
+
+// SSR: fetch landing sections from DB, fall back to hardcoded defaults
+let heroSection: any = null;
+let layananSection: any = null;
+let advokatSection: any = null;
+let staffSection: any = null;
+
+const { data: allSections } = await supabase
+  .from('landing_sections')
+  .select('*')
+  .eq('status', 'published');
+
+if (allSections) {
+  for (const s of allSections) {
+    if (s.section_key === 'hero') heroSection = s;
+    if (s.section_key === 'layanan') layananSection = s;
+    if (s.section_key === 'advokat') advokatSection = s;
+    if (s.section_key === 'staff') staffSection = s;
+  }
+}
+
+// Fallback defaults (match DB seed values)
+const hero = heroSection ?? {
+  title: 'Pendampingan Hukum yang Tidak Main-Main.',
+  subtitle: 'Tim pengacara berpengalaman siap mengawal kasus Anda dari awal hingga penyelesaian. Konsultasi gratis, kerahasiaan terjamin.',
+  cta_text: 'Jadwalkan Konsultasi',
+  cta_link: 'https://wa.me/6285706129641?text=Halo%20Admin%20Batavia%2017',
+  image_url: '/images/hero.webp',
+  extra: { badge: 'Siap 24/7', tagline: 'Kerahasiaan Terjamin' },
+};
+
+const services = (layananSection?.extra?.services ?? [
   {
     badge: 'HUKUM DIGITAL',
     title: 'Pinjaman Online',
@@ -50,9 +81,14 @@ const services = [
     desc: 'Memetakan dokumen dan pilihan pada persoalan ketenagakerjaan.',
     bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy6M89Pdv8ozO5GNCC01Cg3PJ63dlJZiDSzI1M6sImPQbJxBYpXiE_PloerMjGs_Xrl-QWTaykoYyRqRahh0qei92_bi415TKa-b1rrSn9BYW25XXKoBcvFnQRCbucQ8f9muqMqEcmUanbn2rI5VQyCn5u5hcsUzJSfsKzHv-s72wpbGbv-RmzaPcamxFDiDpQ7rE8Vp0RA8h88AQiQSaGbTIVFjMzBBxMleOxLXncTXKbd3i3ixo8',
   },
-];
+]).map((svc: any) => ({
+  badge: svc.badge ?? svc.title ?? '',
+  title: svc.title ?? '',
+  desc: svc.description ?? svc.desc ?? '',
+  bg: svc.bg ?? svc.image_url ?? '',
+}));
 
-const advokats = [
+const advokats = (advokatSection?.extra?.advokats ?? [
   {
     name: 'Adv. ROSLINDAWATI, S.H.I.',
     role: 'Advokat',
@@ -61,7 +97,7 @@ const advokats = [
     img: '/images/advocate/ADV ROSLINDAWATI, SH.i.webp',
   },
   {
-    name: 'ADV. Muhamad Nur, S.H.',
+    name: 'Adv. Muhamad Nur, S.H.',
     role: 'Advokat',
     spec: 'Hukum Perdata dan Pidana',
     badge: 'Peradi Berizin',
@@ -75,7 +111,7 @@ const advokats = [
     img: '/images/advocate/Abdus Sholeh, S.H..webp',
   },
   {
-    name: 'AHMAD AKBAR, S.H.',
+    name: 'Ahmad Akbar, S.H.',
     role: 'Pengacara',
     spec: 'Hukum Perdata dan Pidana',
     badge: 'Peradi Berizin',
@@ -88,9 +124,9 @@ const advokats = [
     badge: 'Peradi Berizin',
     img: '/images/advocate/Fikri Abdul Ajiz, S.H..webp',
   },
-];
+]);
 
-const intake = [
+const intake = (staffSection?.extra?.staff ?? [
   {
     name: 'Rusli Yani',
     role: 'Founder',
@@ -121,7 +157,7 @@ const intake = [
     desc: 'Berkomitmen membantu kelancaran administrasi perkara dan koordinasi dengan tim hukum untuk penanganan kasus.',
     img: '/images/staff/Bilal Ferdiansyah.webp',
   },
-];
+]);
 
 const whatsappWa = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya butuh bantuan hukum.')}`;
 const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya ingin berkonsultasi mengenai masalah hukum.')}`;
@@ -150,7 +186,7 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   {/* HERO SECTION                                */}
   {/* ============================================ */}
   <section class="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center bg-[#061124] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-20 overflow-hidden">
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none" style="background-image: url('/images/hero.webp');"></div>
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none" style={`background-image: url('${hero.image_url ?? '/images/hero.webp'}');`}></div>
     {/* Dramatic gradient */}
     <div class="absolute inset-0 pointer-events-none max-w-full" style="background: linear-gradient(to right, #061124 0%, #061124 40%, rgba(6,17,36,0.95) 50%, rgba(10,25,49,0.85) 58%, rgba(13,32,63,0.65) 65%, rgba(15,46,86,0.45) 72%, rgba(22,40,71,0.25) 82%, rgba(22,40,71,0.05) 95%, transparent 100%);"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-[#061124]/40 via-transparent to-[#061124]/60 pointer-events-none"></div>
@@ -162,17 +198,17 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
         <div class="lg:col-span-8 flex flex-col items-start gap-4 sm:gap-5 lg:gap-6">
           <div class="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#122344]/80 border border-gold-accent/30 text-gold-light text-[10px] sm:text-xs font-semibold tracking-wider uppercase">
             <span class="w-1.5 h-1.5 rounded-full bg-gold-accent"></span>
-            <span>PENDAMPINGAN & ADVOKASI HUKUM TERPERCAYA</span>
+            <span>{hero.extra?.badge ?? 'PENDAMPINGAN & ADVOKASI HUKUM TERPERCAYA'}</span>
           </div>
           <h1 class="font-display font-extrabold text-2xl sm:text-4xl lg:text-[56px] leading-[1.2] sm:leading-[1.15] tracking-tight text-white max-w-full sm:max-w-3xl">
-            Saat masalah hukum datang, Anda tidak harus <span class="hero-gold-underline text-white">menghadapinya sendiri.</span>
+            {hero.title ?? 'Saat masalah hukum datang, Anda tidak harus menghadapinya sendiri.'}
           </h1>
           <p class="text-sm sm:text-base lg:text-lg text-slate-300 font-normal leading-relaxed max-w-full sm:max-w-2xl">
-            Temukan arah langkah hukum yang lebih jelas. Tim Batavia 17 siap mendengarkan situasi Anda dan membantu menata langkah berikutnya.
+            {hero.subtitle ?? 'Temukan arah langkah hukum yang lebih jelas. Tim Batavia 17 siap mendengarkan situasi Anda dan membantu menata langkah berikutnya.'}
           </p>
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 w-full sm:w-auto">
-            <a class="inline-flex items-center justify-center bg-brand-red hover:bg-brand-red-hover text-white font-semibold text-sm sm:text-[15px] px-6 sm:px-7 py-3 sm:py-3.5 rounded-lg shadow-crimson transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-center" href={whatsappLayanan} rel="noopener noreferrer" target="_blank">
-              Bantu Saya
+            <a class="inline-flex items-center justify-center bg-brand-red hover:bg-brand-red-hover text-white font-semibold text-sm sm:text-[15px] px-6 sm:px-7 py-3 sm:py-3.5 rounded-lg shadow-crimson transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-center" href={hero.cta_link ?? whatsappLayanan} rel="noopener noreferrer" target="_blank">
+              {hero.cta_text ?? 'Bantu Saya'}
             </a>
             <a class="inline-flex items-center justify-center bg-[#0A1931]/60 hover:bg-[#162847] border border-slate-700/80 hover:border-gold-accent/50 text-slate-200 hover:text-white font-medium text-sm sm:text-[15px] px-5 sm:px-6 py-3 sm:py-3.5 rounded-lg backdrop-blur-sm transition-all text-center" href="#layanan-hukum">
               Lihat bidang layanan

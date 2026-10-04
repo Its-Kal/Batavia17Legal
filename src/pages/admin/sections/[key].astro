@@ -1,0 +1,696 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { supabase, supabaseAdmin } from '../../../utils/supabase';
+
+export const prerender = false;
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+if (!accessToken) return Astro.redirect('/admin/login?error=required');
+
+const { data: { user } } = await supabase.auth.getUser(accessToken);
+if (!user) {
+  Astro.cookies.delete('sb-access-token', { path: '/' });
+  Astro.cookies.delete('sb-refresh-token', { path: '/' });
+  return Astro.redirect('/admin/login?error=required');
+}
+
+const { data: profile } = await supabase
+  .from('profiles').select('role').eq('id', user.id).single();
+
+const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
+if (role !== 'admin_utama') return Astro.redirect('/admin');
+
+const { key } = Astro.params as { key: string };
+
+const VALID_KEYS = ['hero', 'layanan', 'advokat', 'staff', 'footer_cta', 'footer_stats'];
+if (!VALID_KEYS.includes(key)) return Astro.redirect('/admin');
+
+const { data: section } = await supabaseAdmin
+  .from('landing_sections')
+  .select('*')
+  .eq('section_key', key)
+  .single();
+
+if (!section) return Astro.redirect('/admin');
+
+const sectionMeta: Record<string, { label: string; icon: string; description: string }> = {
+  hero:           { label: 'Hero',            icon: '🏠', description: 'Judul utama, subtitle, CTA, dan gambar hero.' },
+  layanan:         { label: 'Layanan',         icon: '⚖️', description: 'Kartu layanan hukum (icon, judul, deskripsi, gambar).' },
+  advokat:         { label: 'Advokat & Staff', icon: '👥', description: 'Profil tim pengacara dan staff.' },
+  footer_cta:      { label: 'Footer CTA',      icon: '📣', description: 'Teks ajakan dan tombol WhatsApp di footer.' },
+  footer_stats:    { label: 'Footer Stats',    icon: '📊', description: 'Statistik di footer.' },
+};
+
+const meta = sectionMeta[key];
+const extra = section.extra ?? {};
+---
+<!-- Inject raw JSON via data attribute (avoids Astro HTML-escaping issues) -->
+<script is:inline set:html={`window.__sectionExtra = ${JSON.stringify(extra)};`}></script>
+
+<AdminLayout title={`${meta.label} — Sections — Batavia 17`} activeMenu="sections" activeSection={key} userRole={role} userEmail={user.email ?? ''} data-section-page>
+  <div class="p-8 max-w-5xl">
+
+    {/* Page header */}
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/admin" class="text-slate-400 hover:text-slate-700 transition-colors">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+          <span>{meta.icon}</span> {meta.label}
+        </h1>
+        <p class="text-slate-500 text-sm mt-0.5">{meta.description}</p>
+      </div>
+      <div class="ml-auto">
+        <span class={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+          section.status === 'published'
+            ? 'bg-green-100 text-green-700 border border-green-200'
+            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+        }`}>
+          {section.status === 'published' ? '✓ Published' : '● Draft'}
+        </span>
+      </div>
+    </div>
+
+    {/* Save notification */}
+    <div id="save-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium"></div>
+
+    {/* ═══ HERO ═══ */}
+    {key === 'hero' && (
+      <form id="section-form" class="space-y-5">
+        <input type="hidden" name="section_key" value={key} />
+        <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+          <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Konten Utama</h2>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Judul</label>
+            <textarea name="title" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">{section.title ?? ''}</textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Subtitle</label>
+            <textarea name="subtitle" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">{section.subtitle ?? ''}</textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Badge</label>
+              <input type="text" name="badge" value={(extra.badge as string) ?? ''} class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" placeholder="Siap 24/7" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tagline</label>
+              <input type="text" name="tagline" value={(extra.tagline as string) ?? ''} class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" placeholder="Kerahasiaan Terjamin" />
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+          <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Tombol CTA</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Teks Tombol</label>
+              <input type="text" name="cta_text" value={section.cta_text ?? ''} class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Link WhatsApp</label>
+              <input type="url" name="cta_link" value={section.cta_link ?? ''} class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+          <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Gambar Hero</h2>
+          <div class="flex items-start gap-4">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">URL / Upload Gambar</label>
+              <input type="text" name="image_url" id="hero-image-url" value={section.image_url ?? ''} placeholder="https://..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 font-mono" />
+            </div>
+            <label class="mt-7 flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs px-3 py-2 rounded-lg cursor-pointer transition-colors border border-slate-300">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload
+              <input type="file" accept="image/*" class="hidden" id="hero-image-upload" />
+            </label>
+          </div>
+          <div id="hero-image-preview" class="mt-2 rounded-lg overflow-hidden border border-slate-200 max-w-sm">
+            {section.image_url && <img id="hero-preview-img" src={section.image_url} alt="Preview" class="w-full h-32 object-cover" onerror="this.parentElement.style.display='none'" />}
+          </div>
+        </div>
+        <div class="flex items-center gap-4 pt-2">
+          <button type="submit" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan Perubahan
+          </button>
+          <a href="/" target="_blank" class="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-2">Lihat di halaman →</a>
+        </div>
+      </form>
+    )}
+
+    {/* ═══ LAYANAN ═══ */}
+    {key === 'layanan' && (
+      <form id="section-form" class="space-y-5">
+        <input type="hidden" name="section_key" value={key} />
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Kartu Layanan</h2>
+            <button type="button" id="add-layanan-btn" class="flex items-center gap-1.5 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Tambah Layanan
+            </button>
+          </div>
+
+          {/* Dynamic list */}
+          <div class="space-y-4" id="dynamic-layanan-list"></div>
+          <div id="empty-layanan-msg" class="hidden py-8 text-center text-slate-400 text-sm">
+            Belum ada layanan. Klik "Tambah Layanan" untuk membuat.
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 pt-2">
+          <button type="submit" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan Perubahan
+          </button>
+          <a href="/" target="_blank" class="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-2">Lihat di halaman →</a>
+        </div>
+      </form>
+    )}
+
+    {/* ═══ ADVOKAT ═══ */}
+    {key === 'advokat' && (
+      <form id="section-form" class="space-y-5">
+        <input type="hidden" name="section_key" value={key} />
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Profil Advokat & Staff</h2>
+            <button type="button" id="add-advokat-btn" class="flex items-center gap-1.5 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Tambah
+            </button>
+          </div>
+          <div class="space-y-4" id="dynamic-advokat-list"></div>
+          <div id="empty-advokat-msg" class="hidden py-8 text-center text-slate-400 text-sm">
+            Belum ada data. Klik "Tambah" untuk membuat.
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 pt-2">
+          <button type="submit" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan Perubahan
+          </button>
+          <a href="/" target="_blank" class="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-2">Lihat di halaman →</a>
+        </div>
+      </form>
+    )}
+
+    {/* ═══ FOOTER CTA ═══ */}
+    {key === 'footer_cta' && (
+      <form id="section-form" class="space-y-5">
+        <input type="hidden" name="section_key" value={key} />
+        <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+          <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Konten Footer CTA</h2>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Judul</label>
+            <textarea name="title" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">{section.title ?? ''}</textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Subtitle</label>
+            <textarea name="subtitle" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">{section.subtitle ?? ''}</textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Teks Tombol</label>
+              <input type="text" name="cta_text" value={section.cta_text ?? ''} class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Link WhatsApp</label>
+              <input type="url" name="cta_link" value={section.cta_link ?? ''} class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 pt-2">
+          <button type="submit" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan Perubahan
+          </button>
+          <a href="/" target="_blank" class="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-2">Lihat di halaman →</a>
+        </div>
+      </form>
+    )}
+
+    {/* ═══ FOOTER STATS ═══ */}
+    {key === 'footer_stats' && (
+      <form id="section-form" class="space-y-5">
+        <input type="hidden" name="section_key" value={key} />
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-semibold text-slate-800 text-sm uppercase tracking-wide">Statistik Footer</h2>
+            <button type="button" id="add-stat-btn" class="flex items-center gap-1.5 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Tambah Stat
+            </button>
+          </div>
+          <div class="space-y-3" id="dynamic-stats-list"></div>
+          <div id="empty-stats-msg" class="hidden py-8 text-center text-slate-400 text-sm">
+            Klik "Tambah Stat" untuk membuat.
+          </div>
+        </div>
+        <div class="flex items-center gap-4 pt-2">
+          <button type="submit" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan Perubahan
+          </button>
+          <a href="/" target="_blank" class="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-2">Lihat di halaman →</a>
+        </div>
+      </form>
+    )}
+
+  </div>
+</AdminLayout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const form = document.getElementById('section-form') as HTMLFormElement | null;
+  const msg = document.getElementById('save-msg') as HTMLDivElement | null;
+  const sectionKey = form?.querySelector('[name="section_key"]')?.value ?? '';
+
+  function showMsg(text: string, type: 'success' | 'error') {
+    if (!msg) return;
+    msg.textContent = text;
+    msg.className = `mb-4 px-4 py-3 rounded-lg text-sm font-medium ${type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`;
+    msg.classList.remove('hidden');
+    msg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ── Image upload helper ──
+  async function uploadImage(file: File, bucket: string = 'images'): Promise<string | null> {
+    const ext = file.name.split('.').pop() ?? 'jpg';
+    const path = `${sectionKey}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+    if (error) { alert('Gagal upload gambar: ' + error.message); return null; }
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  // ── Hero image upload ──
+  const heroUpload = document.getElementById('hero-image-upload') as HTMLInputElement | null;
+  heroUpload?.addEventListener('change', async () => {
+    const file = heroUpload.files?.[0];
+    if (!file) return;
+    const url = await uploadImage(file);
+    if (url) {
+      (document.getElementById('hero-image-url') as HTMLInputElement).value = url;
+      const preview = document.getElementById('hero-image-preview');
+      const img = document.getElementById('hero-preview-img') as HTMLImageElement;
+      if (preview && img) {
+        preview.style.display = '';
+        img.src = url;
+      }
+    }
+    heroUpload.value = '';
+  });
+
+  // ── Shared image upload button creator ──
+  function makeImgUploader(btnId: string, targetInputId: string, previewId: string, defaultSrc = '') {
+    const btn = document.getElementById(btnId);
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.className = 'hidden';
+    btn?.parentElement?.appendChild(input);
+    btn?.addEventListener('click', () => input.click());
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const url = await uploadImage(file);
+      if (url) {
+        (document.getElementById(targetInputId) as HTMLInputElement).value = url;
+        const preview = document.getElementById(previewId);
+        if (preview) {
+          preview.style.display = '';
+          preview.tagName === 'IMG'
+            ? (preview as HTMLImageElement).src = url
+            : (preview.querySelector('img') as HTMLImageElement).src = url;
+        }
+      }
+      input.value = '';
+    });
+  }
+
+  // ══════════════════════════════════════
+  // LAYANAN
+  // ══════════════════════════════════════
+  if (sectionKey === 'layanan') {
+    const ICONS = ['scales','document','shield','family','map','users','gavel','dollar-sign','phone','mail'];
+    let items: any[] = (window.__sectionExtra as any)?.services ?? [];
+    const layananList = document.getElementById('dynamic-layanan-list') as HTMLDivElement;
+    const layananEmptyMsg = document.getElementById('empty-layanan-msg') as HTMLDivElement;
+    void layananList; void layananEmptyMsg;
+
+    function getDefaultItem() {
+      return { id: `svc-${Date.now()}`, icon: 'scales', title: '', description: '', cases: '', bg: '' };
+    }
+
+    function renderLayanan() {
+      layananList.innerHTML = '';
+      if (items.length === 0) { layananEmptyMsg.classList.remove('hidden'); return; }
+      layananEmptyMsg.classList.add('hidden');
+
+      items.forEach((svc, i) => {
+        const card = document.createElement('div');
+        card.className = 'border border-slate-200 rounded-lg p-4 space-y-3 bg-slate-50/50';
+        card.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold text-slate-400 mt-2 w-5 shrink-0">${i + 1}</span>
+            <div class="flex-1 space-y-2">
+              <input type="hidden" name="svc_id_${i}" value="${svc.id ?? ''}" />
+              <input type="text" name="svc_title_${i}" value="${escHtml(svc.title ?? '')}" placeholder="Nama layanan" class="svc-title w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Icon</label>
+                  <select name="svc_icon_${i}" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">${ICONS.map(ic => `<option value="${ic}" ${svc.icon === ic ? 'selected' : ''}>${ic}</option>`).join('')}</select>
+                </div>
+                <div>
+                  <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Jumlah Kasus</label>
+                  <input type="text" name="svc_cases_${i}" value="${escHtml(svc.cases ?? '')}" placeholder="120+" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Deskripsi</label>
+                <textarea name="svc_desc_${i}" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">${escHtml(svc.description ?? '')}</textarea>
+              </div>
+              <div>
+                <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Background</label>
+                <div class="flex items-start gap-2">
+                  <input type="text" name="svc_bg_${i}" id="svc_bg_${i}_${i}" value="${escHtml(svc.bg ?? '')}" placeholder="URL atau upload..." class="flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 font-mono" />
+                  <label class="mt-1 shrink-0 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium text-xs px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors border border-slate-300">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload
+                    <input type="file" accept="image/*" class="hidden" id="svc_upload_btn_${i}" />
+                  </label>
+                </div>
+                <div id="svc_bg_preview_${i}" class="mt-1.5 rounded overflow-hidden border border-slate-200 max-w-xs ${svc.bg ? '' : 'hidden'}">
+                  <img src="${escHtml(svc.bg ?? '')}" class="h-16 w-full object-cover" onerror="this.parentElement.style.display='none'" />
+                </div>
+              </div>
+            </div>
+            <button type="button" class="mt-1 shrink-0 text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition-colors" data-idx="${i}" title="Hapus">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        `;
+
+        // Wire upload button
+        const uploadBtn = card.querySelector(`#svc_upload_btn_${i}`) as HTMLInputElement;
+        const bgInput = card.querySelector(`#svc_bg_${i}_${i}`) as HTMLInputElement;
+        const bgPreview = card.querySelector(`#svc_bg_preview_${i}`) as HTMLDivElement;
+        if (uploadBtn && bgInput) {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*';
+          fileInput.className = 'hidden';
+          uploadBtn.parentElement?.appendChild(fileInput);
+          uploadBtn.addEventListener('click', () => fileInput.click());
+          fileInput.addEventListener('change', async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+            const url = await uploadImage(file);
+            if (url) {
+              bgInput.value = url;
+              bgPreview.style.display = '';
+              const img = bgPreview.querySelector('img') as HTMLImageElement;
+              if (img) img.src = url;
+            }
+            fileInput.value = '';
+          });
+        }
+
+        layananList.appendChild(card);
+      });
+    }
+
+    // Remove
+    layananList.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-idx]') as HTMLButtonElement | null;
+      if (!btn) return;
+      items.splice(parseInt(btn.dataset.idx ?? '0'), 1);
+      renderLayanan();
+    });
+
+    // Add
+    document.getElementById('add-layanan-btn')?.addEventListener('click', () => {
+      items.push(getDefaultItem());
+      renderLayanan();
+    });
+
+    // Init
+    renderLayanan();
+  }
+
+  // ══════════════════════════════════════
+  // ADVOKAT
+  // ══════════════════════════════════════
+  if (sectionKey === 'advokat') {
+    const ROLES = ['Advokat', 'Pengacara', 'Staff Legal Consultant', 'Founder'];
+    let items: any[] = (window.__sectionExtra as any)?.advokats ?? [];
+    if (!Array.isArray(items)) items = [];
+    const advList = document.getElementById('dynamic-advokat-list') as HTMLDivElement;
+    const emptyMsg = document.getElementById('empty-advokat-msg') as HTMLDivElement;
+
+    function getDefaultItem() {
+      return { name: '', role: 'Advokat', spec: '', badge: 'Peradi Berizin', img: '' };
+    }
+
+    function renderAdvokat() {
+      advList.innerHTML = '';
+      if (items.length === 0) { emptyMsg.classList.remove('hidden'); return; }
+      emptyMsg.classList.add('hidden');
+
+      items.forEach((adv, i) => {
+        const card = document.createElement('div');
+        card.className = 'border border-slate-200 rounded-lg p-4 space-y-3 bg-slate-50/50';
+        card.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold text-slate-400 mt-2 w-5 shrink-0">${i + 1}</span>
+            <div class="flex-1 space-y-2">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Nama Lengkap</label>
+                  <input type="text" name="adv_name_${i}" value="${escHtml(adv.name ?? '')}" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+                </div>
+                <div>
+                  <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Peran</label>
+                  <select name="adv_role_${i}" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30">${ROLES.map(r => `<option value="${r}" ${adv.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Spesialisasi</label>
+                  <input type="text" name="adv_spec_${i}" value="${escHtml(adv.spec ?? '')}" placeholder="Hukum Perdata dan Pidana" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+                </div>
+                <div>
+                  <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Badge</label>
+                  <input type="text" name="adv_badge_${i}" value="${escHtml(adv.badge ?? '')}" placeholder="Peradi Berizin" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Foto</label>
+                <div class="flex items-start gap-2">
+                  <input type="text" name="adv_img_${i}" id="adv_img_${i}" value="${escHtml(adv.img ?? '')}" placeholder="/images/... atau upload..." class="flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 font-mono" />
+                  <label class="mt-1 shrink-0 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium text-xs px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors border border-slate-300">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload
+                    <input type="file" accept="image/*" class="hidden" id="adv_upload_btn_${i}" />
+                  </label>
+                </div>
+                <div id="adv_img_preview_${i}" class="mt-1.5 w-12 h-12 rounded-full overflow-hidden border border-slate-200 ${adv.img ? '' : 'hidden'}">
+                  <img src="${escHtml(adv.img ?? '')}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'" />
+                </div>
+              </div>
+            </div>
+            <button type="button" class="mt-1 shrink-0 text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition-colors" data-idx="${i}" title="Hapus">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        `;
+
+        // Wire upload
+        const uploadBtn = card.querySelector(`#adv_upload_btn_${i}`) as HTMLInputElement;
+        const imgInput = card.querySelector(`#adv_img_${i}`) as HTMLInputElement;
+        const imgPreview = card.querySelector(`#adv_img_preview_${i}`) as HTMLDivElement;
+        if (uploadBtn && imgInput) {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*';
+          fileInput.className = 'hidden';
+          uploadBtn.parentElement?.appendChild(fileInput);
+          uploadBtn.addEventListener('click', () => fileInput.click());
+          fileInput.addEventListener('change', async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+            const url = await uploadImage(file);
+            if (url) {
+              imgInput.value = url;
+              imgPreview.style.display = '';
+              const img = imgPreview.querySelector('img') as HTMLImageElement;
+              if (img) img.src = url;
+            }
+            fileInput.value = '';
+          });
+        }
+
+        advList.appendChild(card);
+      });
+    }
+
+    advList.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-idx]') as HTMLButtonElement | null;
+      if (!btn) return;
+      items.splice(parseInt(btn.dataset.idx ?? '0'), 1);
+      renderAdvokat();
+    });
+
+    document.getElementById('add-advokat-btn')?.addEventListener('click', () => {
+      items.push(getDefaultItem());
+      renderAdvokat();
+    });
+
+    renderAdvokat();
+  }
+
+  // ══════════════════════════════════════
+  // FOOTER STATS
+  // ══════════════════════════════════════
+  if (sectionKey === 'footer_stats') {
+    let items: any[] = (window.__sectionExtra as any)?.stats ?? [];
+    if (!Array.isArray(items)) items = [];
+    const statsList = document.getElementById('dynamic-stats-list') as HTMLDivElement;
+    const statsEmptyMsg = document.getElementById('empty-stats-msg') as HTMLDivElement;
+    void statsList; void statsEmptyMsg;
+
+    function renderStats() {
+      statsList.innerHTML = '';
+      if (items.length === 0) { statsEmptyMsg.classList.remove('hidden'); return; }
+      statsEmptyMsg.classList.add('hidden');
+
+      items.forEach((stat, i) => {
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-[1fr,1fr,auto] gap-3 items-end';
+        row.innerHTML = `
+          <div>
+            <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Nilai</label>
+            <input type="text" name="stat_value_${i}" value="${escHtml(stat.value ?? '')}" placeholder="720+" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 font-mono" />
+          </div>
+          <div>
+            <label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Label</label>
+            <input type="text" name="stat_label_${i}" value="${escHtml(stat.label ?? '')}" placeholder="Kasus Ditangani" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30" />
+          </div>
+          <button type="button" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded transition-colors self-end" data-idx="${i}" title="Hapus">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        `;
+        statsList.appendChild(row);
+      });
+    }
+
+    statsList.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-idx]') as HTMLButtonElement | null;
+      if (!btn) return;
+      items.splice(parseInt(btn.dataset.idx ?? '0'), 1);
+      renderStats();
+    });
+
+    document.getElementById('add-stat-btn')?.addEventListener('click', () => {
+      items.push({ value: '', label: '' });
+      renderStats();
+    });
+
+    renderStats();
+  }
+
+  // ══════════════════════════════════════
+  // FORM SUBMIT
+  // ══════════════════════════════════════
+  function getExtra(): Record<string, any> {
+    const fd = new FormData(form!);
+    if (sectionKey === 'hero') {
+      return { badge: fd.get('badge') as string, tagline: fd.get('tagline') as string };
+    }
+    if (sectionKey === 'layanan') {
+      const services: any[] = [];
+      form!.querySelectorAll('.svc-title').forEach((el, i) => {
+        services.push({
+          id: fd.get(`svc_id_${i}`) as string,
+          icon: fd.get(`svc_icon_${i}`) as string,
+          title: fd.get(`svc_title_${i}`) as string,
+          description: fd.get(`svc_desc_${i}`) as string,
+          cases: fd.get(`svc_cases_${i}`) as string,
+          bg: fd.get(`svc_bg_${i}`) as string,
+        });
+      });
+      return { services };
+    }
+    if (sectionKey === 'advokat') {
+      const advokats: any[] = [];
+      const nameInputs = form!.querySelectorAll('[name^="adv_name_"]');
+      nameInputs.forEach((_, i) => {
+        advokats.push({
+          name: fd.get(`adv_name_${i}`) as string,
+          role: fd.get(`adv_role_${i}`) as string,
+          spec: fd.get(`adv_spec_${i}`) as string,
+          badge: fd.get(`adv_badge_${i}`) as string,
+          img: fd.get(`adv_img_${i}`) as string,
+        });
+      });
+      return { advokats };
+    }
+    if (sectionKey === 'footer_cta') {
+      return { whatsapp: '6285706129641' };
+    }
+    if (sectionKey === 'footer_stats') {
+      const stats: any[] = [];
+      form!.querySelectorAll('[name^="stat_value_"]').forEach((_, i) => {
+        stats.push({
+          value: fd.get(`stat_value_${i}`) as string,
+          label: fd.get(`stat_label_${i}`) as string,
+        });
+      });
+      return { stats };
+    }
+    return {};
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const payload: Record<string, any> = {
+      title: fd.get('title') as string || null,
+      subtitle: fd.get('subtitle') as string || null,
+      cta_text: fd.get('cta_text') as string || null,
+      cta_link: fd.get('cta_link') as string || null,
+      image_url: fd.get('image_url') as string || null,
+      extra: getExtra(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from('landing_sections')
+      .update(payload)
+      .eq('section_key', sectionKey);
+
+    if (error) {
+      showMsg('✗ Gagal menyimpan: ' + error.message, 'error');
+    } else {
+      showMsg('✓ Tersimpan! Memuat ulang...', 'success');
+      setTimeout(() => location.reload(), 1500);
+    }
+  });
+
+  // HTML escape helper
+  function escHtml(str: string): string {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
