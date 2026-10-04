@@ -152,20 +152,22 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    if (toInsert.length === 0) {
-      return new Response(
-        JSON.stringify({
-          error: 'Tidak ada data video yang bisa di-sync. Pastikan kolom "Video URL" atau "Caption" terisi.',
-        }),
-        { status: 422, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // --- Clear old data and insert new ---
+    // --- Always clear old data first, then insert new ---
     await supabaseAdmin
       .from('video_ads')
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000');
+
+    if (toInsert.length === 0) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          synced: 0,
+          message: `Sheet "${sheet_name}" kosong — semua video lama telah dihapus.`,
+        }),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     const { data, error } = await supabaseAdmin
       .from('video_ads')
