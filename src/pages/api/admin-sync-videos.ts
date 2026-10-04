@@ -55,8 +55,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // --- Fetch sheet data ---
-    // Sheet names with spaces must be wrapped in single quotes for Google Sheets API
-    const safeSheetName = encodeURIComponent(sheet_name.includes(' ') ? `'${sheet_name}'` : sheet_name);
+    // URL-encode sheet name (spaces → %20); Sheets API handles names with spaces directly
+    const safeSheetName = encodeURIComponent(sheet_name);
     const sheetRange = `${safeSheetName}!A1:Z1000`;
     const sheetsUrl =
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id}/values/${sheetRange}?key=${apiKey}`;
