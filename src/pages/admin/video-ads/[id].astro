@@ -71,7 +71,7 @@ const isPublished = video.is_active;
 ---
 
 <AdminLayout title={`${video.title} — Video Iklan`} activeMenu="video-ads" userRole={role} userEmail={user.email ?? ''}>
-  <div class="min-h-screen bg-slate-100">
+<div class="min-h-screen bg-slate-100 overflow-x-hidden">
 
     {/* Top bar — mobile friendly */}
     <div class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
@@ -91,7 +91,7 @@ const isPublished = video.is_active;
       </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-4 py-6">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 py-6 overflow-x-hidden">
 
       {/* Title row */}
       <div class="mb-5">
@@ -112,11 +112,11 @@ const isPublished = video.is_active;
 
         {/* LEFT — Video Player */}
         <div class="lg:col-span-2 space-y-4">
-          <div class="bg-black rounded-xl overflow-hidden aspect-video relative" style="min-height: 220px;">
+          <div class="bg-black rounded-xl overflow-hidden w-full" style="aspect-ratio:16/9;max-height:70vh;">
             {parsed.type === 'drive' && parsed.driveId ? (
               <iframe
                 src={`https://drive.google.com/file/d/${parsed.driveId}/preview`}
-                class="w-full h-full absolute inset-0"
+                class="w-full h-full border-0"
                 allow="autoplay; fullscreen"
                 title={video.title}
               ></iframe>
@@ -125,22 +125,22 @@ const isPublished = video.is_active;
                 src={parsed.directUrl!}
                 controls
                 controlsList="nodownload"
-                class="w-full h-full absolute inset-0"
+                class="w-full h-full object-contain"
                 title={video.title}
               ></video>
             ) : parsed.type === 'embed' || parsed.type === 'tiktok' ? (
               <iframe
                 src={parsed.directUrl!}
-                class="w-full h-full absolute inset-0"
+                class="w-full h-full border-0"
                 allow="autoplay; fullscreen"
                 title={video.title}
               ></iframe>
             ) : (
-              <div class="w-full h-full absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-900">
+              <div class="w-full h-full flex flex-col items-center justify-center gap-3 bg-slate-900">
                 <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" class="text-white/30" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <div class="text-center px-4">
                   <p class="text-white/50 text-sm mb-1">Video tidak bisa diputar langsung</p>
-                  <p class="text-white/30 text-xs">{video.video_url}</p>
+                  <p class="text-white/30 text-xs break-all px-2">{video.video_url}</p>
                 </div>
               </div>
             )}
