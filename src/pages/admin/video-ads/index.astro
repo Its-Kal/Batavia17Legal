@@ -39,51 +39,51 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
 ---
 
 <AdminLayout title="Video Iklan — Batavia 17" activeMenu="video-ads" userRole="admin_utama" userEmail={user.email ?? ''}>
-  <div class="p-8">
+  <div class="p-4 sm:p-6 lg:p-8">
 
     {/* Page header */}
-    <div class="mb-8 flex items-start justify-between">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">Video Iklan</h1>
-        <p class="text-slate-500 text-sm mt-1">Kelola video, caption, dan hashtag untuk media sosial.</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Video Iklan</h1>
+        <p class="text-slate-500 text-sm mt-0.5">Kelola video, caption, dan hashtag untuk media sosial.</p>
       </div>
-      <button id="btn-open-sync" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+      <button id="btn-open-sync" class="flex items-center justify-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shrink-0">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        Sync dari Google Sheet
+        Sync Sheet
       </button>
     </div>
 
-    {/* Stats */}
-    <div class="grid grid-cols-3 gap-4 mb-8">
-      <div class="bg-white rounded-xl p-5 border border-slate-200">
-        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Video</div>
-        <div class="text-3xl font-extrabold text-slate-900">{totalVideos ?? 0}</div>
+    {/* Stats — responsive grid */}
+    <div class="grid grid-cols-3 gap-3 mb-6">
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total</div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">{totalVideos ?? 0}</div>
       </div>
-      <div class="bg-white rounded-xl p-5 border border-slate-200">
-        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Aktif</div>
-        <div class="text-3xl font-extrabold text-green-600">{activeVideos ?? 0}</div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Aktif</div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-green-600">{activeVideos ?? 0}</div>
       </div>
-      <div class="bg-white rounded-xl p-5 border border-slate-200">
-        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kategori</div>
-        <div class="text-3xl font-extrabold text-[#0A1931]">{categories.length}</div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Kategori</div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#0A1931]">{categories.length}</div>
       </div>
     </div>
 
     {/* Sync panel */}
-    <div id="sync-panel" class="hidden bg-gradient-to-br from-[#0A1931] to-[#1a3a5c] rounded-2xl p-6 mb-8 text-white">
+    <div id="sync-panel" class="hidden bg-gradient-to-br from-[#0A1931] to-[#1a3a5c] rounded-2xl p-5 sm:p-6 mb-6 text-white">
       <div class="flex items-start justify-between mb-4">
         <div>
-          <h2 class="text-lg font-bold">Sync dari Google Sheets</h2>
-          <p class="text-white/60 text-xs mt-1">Ambil daftar video, caption, dan hashtag langsung dari spreadsheet.</p>
+          <h2 class="text-base sm:text-lg font-bold">Sync dari Google Sheets</h2>
+          <p class="text-white/60 text-xs mt-0.5">Ambil video, caption, dan hashtag dari spreadsheet.</p>
         </div>
-        <button id="btn-close-sync" class="text-white/50 hover:text-white transition-colors">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <button id="btn-close-sync" class="text-white/50 hover:text-white transition-colors p-1">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
           <label class="block text-white/80 text-xs font-medium mb-1.5">Spreadsheet ID</label>
-          <input type="text" id="sync-spreadsheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+          <input type="text" id="sync-spreadsheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74"
             class="w-full px-3 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37]/50" />
         </div>
         <div>
@@ -93,159 +93,148 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
         </div>
       </div>
       <div class="bg-white/5 border border-white/10 rounded-lg p-3 mb-4 text-xs text-white/60">
-        <p class="font-semibold text-white/80 mb-1">Format kolom yang didukung:</p>
+        <p class="font-semibold text-white/80 mb-1">Kolom didukung:</p>
         <p><span class="text-[#D4AF37]">Captions</span>, <span class="text-[#D4AF37]">Hastag</span>, <span class="text-[#D4AF37]">video link</span>, <span class="text-[#D4AF37]">title</span> (opsional)</p>
-        <p class="mt-1">Hashtag pisahkan dengan spasi atau koma. <span class="text-white/80">Judul auto-generate dari URL video.</span></p>
       </div>
       <div id="sync-status" class="hidden text-sm mb-3 p-3 rounded-lg"></div>
-      <button id="btn-do-sync" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c9a430] text-[#0A1931] font-bold text-sm px-5 py-2.5 rounded-lg transition-colors">
+      <button id="btn-do-sync" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c9a430] text-[#0A1931] font-bold text-sm px-5 py-2.5 rounded-xl transition-colors">
         <svg id="sync-spinner" class="hidden animate-spin" width="14" height="14" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
         Jalankan Sync
       </button>
     </div>
 
-    {/* Search & filter */}
-    <div class="flex gap-3 mb-4">
-      <div class="relative flex-1">
-        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="search-input" placeholder="Cari judul atau caption..."
-          class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/20 focus:border-[#0A1931]/40 bg-white" />
+    {/* Search & filter row */}
+    <div class="flex gap-2 mb-4">
+      <div class="relative flex-1 min-w-0">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Cari..."
+          class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/20 focus:border-[#0A1931]/40 bg-white" />
       </div>
-      <select id="filter-category" class="border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/20 bg-white text-slate-600">
-        <option value="">Semua Kategori</option>
+      <select id="filter-category" class="border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/20 bg-white text-slate-600 shrink-0">
+        <option value="">Semua</option>
         {categories.map(c => <option value={c}>{c}</option>)}
       </select>
-      <button id="btn-add" class="flex items-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Tambah Video
+      <button id="btn-add" class="flex items-center gap-1.5 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl transition-colors shrink-0">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="hidden sm:inline">Tambah</span>
       </button>
     </div>
 
-    {/* Video list */}
-    <div id="video-list" class="space-y-3">
-      {allVideos.length === 0 ? (
-        <div class="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <div class="text-4xl mb-3">🎬</div>
-          <p class="text-slate-500 font-medium">Belum ada video.</p>
-          <p class="text-slate-400 text-sm mt-1">Tambah manual atau sync dari Google Sheet.</p>
-        </div>
-      ) : (
-        allVideos.map((v) => (
-          <div class="video-card bg-white rounded-xl border border-slate-200 p-5 hover:shadow-sm hover:border-[#0A1931]/20 transition-all"
+    {/* Video grid */}
+    {allVideos.length === 0 ? (
+      <div class="bg-white rounded-xl border border-slate-200 py-14 text-center">
+        <div class="text-4xl mb-3">🎬</div>
+        <p class="text-slate-500 font-medium">Belum ada video.</p>
+        <p class="text-slate-400 text-sm mt-1">Tambah manual atau sync dari Google Sheet.</p>
+      </div>
+    ) : (
+      <div id="video-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {allVideos.map((v) => (
+          <div class="video-card bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md hover:border-[#0A1931]/20 transition-all flex flex-col"
             data-title={v.title?.toLowerCase() ?? ''}
             data-caption={v.caption?.toLowerCase() ?? ''}
             data-category={v.category ?? ''}
           >
-            <div class="flex gap-4">
-              {/* Thumbnail */}
-              <div class="flex-shrink-0">
-                {v.thumbnail_url ? (
-                  <img src={v.thumbnail_url} alt={v.title} class="w-24 h-16 object-cover rounded-lg bg-slate-100" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-                ) : null}
-                <div class={`w-24 h-16 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 ${v.thumbnail_url ? 'hidden' : ''}`}>
-                  <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            {/* Thumbnail */}
+            <a href={`/admin/video-ads/${v.id}`} class="block bg-slate-900 relative shrink-0" style="aspect-ratio: 16/9;">
+              {v.thumbnail_url ? (
+                <img src={v.thumbnail_url} alt={v.title} class="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" class="text-white/30" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+              )}
+              {/* Play overlay */}
+              <div class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition-colors">
+                <div class="w-10 h-10 rounded-full bg-white/85 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                  <svg width="18" height="18" fill="#0A1931" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 </div>
               </div>
+              {/* Status badge */}
+              <div class="absolute top-2 left-2">
+                {v.is_active ? (
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/90 text-white backdrop-blur-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span>Aktif
+                  </span>
+                ) : (
+                  <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/90 text-white backdrop-blur-sm">Nonaktif</span>
+                )}
+              </div>
+            </a>
 
-              {/* Info */}
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <a href={`/admin/video-ads/${v.id}`} class="font-semibold text-slate-900 hover:text-[#0A1931] transition-colors truncate">
-                        {v.title}
-                      </a>
-                      {v.is_active ? (
-                        <span class="flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">Aktif</span>
-                      ) : (
-                        <span class="flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200">Nonaktif</span>
-                      )}
-                    </div>
-                    {v.category && (
-                      <span class="inline-block text-xs text-[#0A1931]/60 bg-[#0A1931]/5 px-2 py-0.5 rounded-full mb-1.5">{v.category}</span>
-                    )}
-                    {v.caption && (
-                      <p class="text-sm text-slate-500 line-clamp-2 mt-1">{v.caption}</p>
-                    )}
-                    {v.hashtags && v.hashtags.length > 0 && (
-                      <div class="flex flex-wrap gap-1 mt-2">
-                        {v.hashtags.slice(0, 6).map((tag: string) => (
-                          <span class="text-xs text-[#D4AF37] bg-[#D4AF37]/10 px-1.5 py-0.5 rounded-full border border-[#D4AF37]/20">#{tag}</span>
-                        ))}
-                        {v.hashtags.length > 6 && (
-                          <span class="text-xs text-slate-400">+{v.hashtags.length - 6} lagi</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+            {/* Card body */}
+            <div class="p-3 flex flex-col flex-1 min-h-0">
+              {/* Category + order */}
+              <div class="flex items-center gap-1.5 mb-1">
+                {v.category && (
+                  <span class="text-[10px] font-semibold text-[#0A1931]/60 bg-[#0A1931]/5 px-1.5 py-0.5 rounded-full shrink-0">{v.category}</span>
+                )}
+                <span class="text-[10px] text-slate-400 ml-auto shrink-0">#{v.display_order}</span>
+              </div>
 
-                  {/* Actions */}
-                  <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                    <div class="flex items-center gap-2">
-                      <a href={`/admin/video-ads/${v.id}`} class="text-xs text-[#0A1931] hover:text-[#D4AF37] font-semibold transition-colors flex items-center gap-1" title="Lihat detail">
-                        Detail
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-                      </a>
-                      <button class="btn-copy btn-copy-caption text-xs text-slate-500 hover:text-[#D4AF37] font-medium transition-colors"
-                        data-caption={v.caption ?? ''} data-hashtags={JSON.stringify(v.hashtags ?? [])} title="Copy caption + hashtag">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copy
-                      </button>
-                      {v.video_url && (
-                        <a href={v.video_url} target="_blank" rel="noopener noreferrer"
-                          class="text-xs text-slate-500 hover:text-[#0A1931] font-medium transition-colors" title="Buka video">
-                          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        </a>
-                      )}
-                      <button class="btn-edit text-xs text-slate-500 hover:text-[#0A1931] font-medium transition-colors"
-                        data-id={v.id} data-title={v.title} data-video_url={v.video_url ?? ''}
-                        data-thumbnail_url={v.thumbnail_url ?? ''} data-caption={v.caption ?? ''}
-                        data-hashtags={JSON.stringify(v.hashtags ?? [])}
-                        data-category={v.category ?? ''} data-is_active={String(v.is_active)}
-                        data-display_order={v.display_order ?? 0} title="Edit">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                      </button>
-                      <button class="btn-delete-video text-xs text-slate-400 hover:text-red-600 font-medium transition-colors"
-                        data-id={v.id} data-title={v.title} title="Hapus">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                      </button>
-                    </div>
-                    {v.synced_at && (
-                      <span class="text-[10px] text-slate-400">Synced: {new Date(v.synced_at).toLocaleDateString('id-ID')}</span>
-                    )}
-                  </div>
+              {/* Title */}
+              <a href={`/admin/video-ads/${v.id}`} class="block font-semibold text-slate-900 text-sm leading-tight mb-1 hover:text-[#0A1931] transition-colors line-clamp-2">
+                {v.title}
+              </a>
+
+              {/* Caption preview */}
+              {v.caption && (
+                <p class="text-xs text-slate-500 line-clamp-2 mb-2 flex-none">{v.caption}</p>
+              )}
+
+              {/* Hashtags */}
+              {v.hashtags && v.hashtags.length > 0 && (
+                <div class="flex flex-wrap gap-1 mb-2 flex-none">
+                  {v.hashtags.slice(0, 3).map((tag: string) => (
+                    <span class="text-[10px] text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/20 px-1.5 py-0.5 rounded-full">#{tag}</span>
+                  ))}
+                  {v.hashtags.length > 3 && (
+                    <span class="text-[10px] text-slate-400 self-center">+{v.hashtags.length - 3}</span>
+                  )}
                 </div>
+              )}
+
+              {/* Actions */}
+              <div class="flex items-center gap-1.5 mt-auto pt-2 border-t border-slate-100">
+                <button class="btn-copy-caption flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                  data-caption={v.caption ?? ''} data-hashtags={JSON.stringify(v.hashtags ?? [])}
+                  style="background: #D4AF3715; color: #9A7B2A;">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </button>
+                <a href={`/admin/video-ads/${v.id}`}
+                  class="flex items-center justify-center gap-1 py-1.5 px-3 rounded-lg bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-[11px] font-semibold transition-colors">
+                  Detail
+                  <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
               </div>
             </div>
           </div>
-        ))
-      )}
-    </div>
+        ))}
+      </div>
+    )}
   </div>
 </AdminLayout>
 
 {/* Modal */}
 <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
   <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
-      <h2 id="modal-title" class="text-lg font-bold text-slate-900">Tambah Video</h2>
+    <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
+      <h2 id="modal-title" class="text-base font-bold text-slate-900">Tambah Video</h2>
       <button id="btn-close-modal" class="text-slate-400 hover:text-slate-600 transition-colors">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-
-    <form id="video-form" class="px-6 py-5 space-y-4">
+    <form id="video-form" class="p-5 space-y-4">
       <input type="hidden" id="form-id" />
-
       <div>
         <label class="block text-xs font-semibold text-slate-700 mb-1">Judul <span class="text-red-500">*</span></label>
         <input type="text" id="form-title" required placeholder="Video Konsultasi Hukum Gratis"
           class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40" />
       </div>
-
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Link Video (Google Drive)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Link Video (Drive)</label>
           <input type="url" id="form-video_url" placeholder="https://drive.google.com/..."
             class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40" />
         </div>
@@ -255,40 +244,34 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
             class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40" />
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori</label>
-          <input type="text" id="form-category" placeholder="general"
+          <input type="text" id="form-category" placeholder="TikTok"
             class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Urutan Tampil</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Urutan</label>
           <input type="number" id="form-display_order" value="0" min="0"
             class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40" />
         </div>
       </div>
-
       <div>
         <label class="block text-xs font-semibold text-slate-700 mb-1">Caption</label>
-        <textarea id="form-caption" rows="3" placeholder="Caption untuk posting media sosial..."
+        <textarea id="form-caption" rows="3" placeholder="Caption untuk posting..."
           class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40 resize-none"></textarea>
       </div>
-
       <div>
         <label class="block text-xs font-semibold text-slate-700 mb-1">Hashtag <span class="text-slate-400 font-normal">(pisahkan dengan koma)</span></label>
-        <input type="text" id="form-hashtags" placeholder="batavia17, hukum, konsultasi"
+        <input type="text" id="form-hashtags" placeholder="hukum, batavia17, konsultasi"
           class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]/30 focus:border-[#0A1931]/40" />
       </div>
-
       <div class="flex items-center gap-2">
         <input type="checkbox" id="form-is_active" checked class="w-4 h-4 rounded accent-[#0A1931]" />
         <label for="form-is_active" class="text-sm text-slate-700 font-medium">Video aktif</label>
       </div>
-
       <div id="form-status" class="hidden text-sm p-3 rounded-lg"></div>
-
-      <div class="flex justify-end gap-3 pt-2">
+      <div class="flex justify-end gap-3 pt-1">
         <button type="button" id="btn-cancel-form" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 font-medium rounded-lg hover:bg-slate-100 transition-colors">Batal</button>
         <button type="submit" id="btn-submit" class="bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-colors">Simpan</button>
       </div>
@@ -297,19 +280,19 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
 </div>
 
 {/* Delete confirm modal */}
-<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-  <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
-    <h3 class="font-semibold text-slate-900 mb-2">Hapus Video?</h3>
-    <p class="text-sm text-slate-600 mb-5">Video "<strong id="delete-title"></strong>" akan dihapus permanen.</p>
-    <div class="flex justify-end gap-3">
-      <button id="btn-delete-cancel" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 font-medium">Batal</button>
-      <button id="btn-delete-confirm" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg">Hapus</button>
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+  <div class="bg-white rounded-xl p-5 max-w-sm w-full shadow-2xl">
+    <h3 class="font-bold text-slate-900 mb-1.5">Hapus Video?</h3>
+    <p class="text-sm text-slate-500 mb-4">Video "<strong id="delete-title"></strong>" akan dihapus permanen.</p>
+    <div class="flex gap-3">
+      <button id="btn-delete-cancel" class="flex-1 px-4 py-2 text-sm text-slate-600 hover:text-slate-900 font-medium rounded-lg hover:bg-slate-100 transition-colors">Batal</button>
+      <button id="btn-delete-confirm" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl">Hapus</button>
     </div>
   </div>
 </div>
 
 {/* Toast */}
-<div id="toast" class="hidden fixed bottom-6 right-6 z-[100] px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white bg-slate-800"></div>
+<div id="toast" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white bg-slate-800 whitespace-nowrap"></div>
 
 <script>
   import { createClient } from '@supabase/supabase-js';
@@ -318,16 +301,14 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
-  // --- State ---
   let editingId: string | null = null;
   let deleteTargetId = '';
   let deleteTargetTitle = '';
 
-  // --- Helpers ---
   function showToast(msg: string, isError = false) {
     const el = document.getElementById('toast')!;
     el.textContent = msg;
-    el.className = `fixed bottom-6 right-6 z-[100] px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white ${isError ? 'bg-red-600' : 'bg-slate-800'}`;
+    el.className = `fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white whitespace-nowrap ${isError ? 'bg-red-600' : 'bg-slate-800'}`;
     el.classList.remove('hidden');
     setTimeout(() => el.classList.add('hidden'), 3000);
   }
@@ -340,9 +321,8 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   }
 
   function showModal(title: string) {
-    const modal = document.getElementById('modal')!;
+    document.getElementById('modal')!.classList.remove('hidden');
     (document.getElementById('modal-title') as HTMLElement).textContent = title;
-    modal.classList.remove('hidden');
     editingId = null;
     (document.getElementById('form-id') as HTMLInputElement).value = '';
     (document.getElementById('video-form') as HTMLFormElement).reset();
@@ -352,11 +332,9 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   }
 
   function openEditModal(btn: HTMLElement) {
-    const modal = document.getElementById('modal')!;
+    document.getElementById('modal')!.classList.remove('hidden');
     (document.getElementById('modal-title') as HTMLElement).textContent = 'Edit Video';
-    modal.classList.remove('hidden');
     editingId = btn.dataset.id ?? null;
-
     (document.getElementById('form-id') as HTMLInputElement).value = btn.dataset.id ?? '';
     (document.getElementById('form-title') as HTMLInputElement).value = btn.dataset.title ?? '';
     (document.getElementById('form-video_url') as HTMLInputElement).value = btn.dataset.video_url ?? '';
@@ -374,7 +352,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     editingId = null;
   }
 
-  // --- Search & filter ---
+  // Search & filter
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const filterCategory = document.getElementById('filter-category') as HTMLSelectElement;
   const cards = document.querySelectorAll('.video-card') as NodeListOf<HTMLElement>;
@@ -390,11 +368,10 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
       card.style.display = matchSearch && matchCat ? '' : 'none';
     });
   }
-
   searchInput?.addEventListener('input', applyFilters);
   filterCategory?.addEventListener('change', applyFilters);
 
-  // --- Add button ---
+  // Modal controls
   document.getElementById('btn-add')?.addEventListener('click', () => showModal('Tambah Video'));
   document.getElementById('btn-close-modal')?.addEventListener('click', closeModal);
   document.getElementById('btn-cancel-form')?.addEventListener('click', closeModal);
@@ -402,62 +379,12 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     if (e.target === document.getElementById('modal')) closeModal();
   });
 
-  // --- Form submit ---
-  document.getElementById('video-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const statusEl = document.getElementById('form-status')!;
-    const submitBtn = document.getElementById('btn-submit') as HTMLButtonElement;
-
-    const payload = {
-      title: (document.getElementById('form-title') as HTMLInputElement).value.trim(),
-      video_url: (document.getElementById('form-video_url') as HTMLInputElement).value.trim(),
-      thumbnail_url: (document.getElementById('form-thumbnail_url') as HTMLInputElement).value.trim(),
-      caption: (document.getElementById('form-caption') as HTMLTextAreaElement).value.trim(),
-      hashtags: parseHashtags((document.getElementById('form-hashtags') as HTMLInputElement).value),
-      category: (document.getElementById('form-category') as HTMLInputElement).value.trim() || 'general',
-      is_active: (document.getElementById('form-is_active') as HTMLInputElement).checked,
-      display_order: parseInt((document.getElementById('form-display_order') as HTMLInputElement).value) || 0,
-    };
-
-    if (!payload.title) {
-      statusEl.className = 'text-sm p-3 rounded-lg bg-red-50 text-red-600';
-      statusEl.textContent = 'Judul video wajib diisi.';
-      statusEl.classList.remove('hidden');
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Menyimpan...';
-    statusEl.classList.add('hidden');
-
-    const isEdit = !!editingId;
-    const method = isEdit ? 'PUT' : 'POST';
-    const body: Record<string, unknown> = { ...payload };
-    if (isEdit) body.id = editingId;
-
-    const res = await fetch('/api/admin-video-ads', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const result = await res.json();
-
-    if (!res.ok) {
-      statusEl.className = 'text-sm p-3 rounded-lg bg-red-50 text-red-600';
-      statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error');
-      statusEl.classList.remove('hidden');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Simpan';
-      return;
-    }
-
-    showToast(isEdit ? '✓ Video berhasil diperbarui.' : '✓ Video berhasil ditambahkan.');
-    closeModal();
-    setTimeout(() => location.reload(), 600);
-  });
-
-  // --- Edit buttons ---
+  // Edit buttons (injected via data attributes from Astro — no-op in grid view since edit is on detail page)
   document.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', () => openEditModal(btn as HTMLElement));
   });
 
-  // --- Delete ---
+  // Delete
   document.querySelectorAll('.btn-delete-video').forEach(btn => {
     btn.addEventListener('click', () => {
       deleteTargetId = (btn as HTMLElement).dataset.id ?? '';
@@ -466,80 +393,92 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
       document.getElementById('delete-modal')!.classList.remove('hidden');
     });
   });
-
-  document.getElementById('btn-delete-cancel')?.addEventListener('click', () => {
-    document.getElementById('delete-modal')!.classList.add('hidden');
-  });
-
+  document.getElementById('btn-delete-cancel')?.addEventListener('click', () => document.getElementById('delete-modal')!.classList.add('hidden'));
   document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
     document.getElementById('delete-modal')!.classList.add('hidden');
     const res = await fetch('/api/admin-video-ads', {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: deleteTargetId }),
     });
-    if (!res.ok) {
-      const result = await res.json();
-      showToast('Gagal hapus: ' + (result.error ?? ''), true);
-    } else {
-      showToast('✓ Video berhasil dihapus.');
-      setTimeout(() => location.reload(), 600);
-    }
+    if (!res.ok) { const r = await res.json(); showToast('Gagal hapus: ' + (r.error ?? ''), true); }
+    else { showToast('✓ Video dihapus.'); setTimeout(() => location.reload(), 600); }
   });
 
-  // --- Copy caption + hashtags ---
+  // Copy caption + hashtags
   document.querySelectorAll('.btn-copy-caption').forEach(btn => {
     btn.addEventListener('click', async () => {
       const caption = (btn as HTMLElement).dataset.caption ?? '';
       const hashtags: string[] = JSON.parse((btn as HTMLElement).dataset.hashtags ?? '[]');
       const text = caption + (hashtags.length ? '\n\n' + hashtags.map((t: string) => '#' + t).join(' ') : '');
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast('✓ Caption + hashtag berhasil disalin!');
-      } catch {
-        showToast('Gagal menyalin ke clipboard.', true);
-      }
+      try { await navigator.clipboard.writeText(text); showToast('✓ Caption + hashtag disalin!'); }
+      catch { showToast('Gagal menyalin.', true); }
     });
   });
 
-  // --- Sync panel ---
-  document.getElementById('btn-open-sync')?.addEventListener('click', () => {
-    document.getElementById('sync-panel')?.classList.toggle('hidden');
-  });
-  document.getElementById('btn-close-sync')?.addEventListener('click', () => {
-    document.getElementById('sync-panel')?.classList.add('hidden');
-  });
-
-  document.getElementById('btn-do-sync')?.addEventListener('click', async () => {
-    const spreadsheetId = (document.getElementById('sync-spreadsheet-id') as HTMLInputElement).value.trim();
-    const sheetName = (document.getElementById('sync-sheet-name') as HTMLInputElement).value.trim() || 'Sheet1';
-    const statusEl = document.getElementById('sync-status')!;
-    const spinner = document.getElementById('sync-spinner')!;
-    const btn = document.getElementById('btn-do-sync') as HTMLButtonElement;
-
-    if (!spreadsheetId) {
-      statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-red-500/20 text-red-200';
-      statusEl.textContent = 'Spreadsheet ID wajib diisi.';
+  // Form submit
+  document.getElementById('video-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById('form-status')!;
+    const submitBtn = document.getElementById('btn-submit') as HTMLButtonElement;
+    const payload = {
+      title: (document.getElementById('form-title') as HTMLInputElement).value.trim(),
+      video_url: (document.getElementById('form-video_url') as HTMLInputElement).value.trim(),
+      thumbnail_url: (document.getElementById('form-thumbnail_url') as HTMLInputElement).value.trim(),
+      caption: (document.getElementById('form-caption') as HTMLTextAreaElement).value.trim(),
+      hashtags: parseHashtags((document.getElementById('form-hashtags') as HTMLInputElement).value),
+      category: (document.getElementById('form-category') as HTMLInputElement).value.trim() || 'TikTok',
+      is_active: (document.getElementById('form-is_active') as HTMLInputElement).checked,
+      display_order: parseInt((document.getElementById('form-display_order') as HTMLInputElement).value) || 0,
+    };
+    if (!payload.title) {
+      statusEl.className = 'text-sm p-3 rounded-lg bg-red-50 text-red-600';
+      statusEl.textContent = 'Judul video wajib diisi.';
       statusEl.classList.remove('hidden');
       return;
     }
+    submitBtn.disabled = true; submitBtn.textContent = 'Menyimpan...';
+    statusEl.classList.add('hidden');
+    const isEdit = !!editingId;
+    const method = isEdit ? 'PUT' : 'POST';
+    const body: Record<string, unknown> = { ...payload };
+    if (isEdit) body.id = editingId;
+    const res = await fetch('/api/admin-video-ads', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const result = await res.json();
+    if (!res.ok) {
+      statusEl.className = 'text-sm p-3 rounded-lg bg-red-50 text-red-600';
+      statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error');
+      statusEl.classList.remove('hidden');
+      submitBtn.disabled = false; submitBtn.textContent = 'Simpan';
+      return;
+    }
+    showToast(isEdit ? '✓ Video diperbarui.' : '✓ Video ditambahkan.');
+    closeModal();
+    setTimeout(() => location.reload(), 600);
+  });
 
-    btn.disabled = true;
-    spinner.classList.remove('hidden');
+  // Sync panel
+  document.getElementById('btn-open-sync')?.addEventListener('click', () => document.getElementById('sync-panel')?.classList.toggle('hidden'));
+  document.getElementById('btn-close-sync')?.addEventListener('click', () => document.getElementById('sync-panel')?.classList.add('hidden'));
+  document.getElementById('btn-do-sync')?.addEventListener('click', async () => {
+    const spreadsheetId = (document.getElementById('sync-spreadsheet-id') as HTMLInputElement).value.trim();
+    const sheetName = (document.getElementById('sync-sheet-name') as HTMLInputElement).value.trim() || 'Videos';
+    const statusEl = document.getElementById('sync-status')!;
+    const spinner = document.getElementById('sync-spinner')!;
+    const btn = document.getElementById('btn-do-sync') as HTMLButtonElement;
+    if (!spreadsheetId) {
+      statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-red-500/20 text-red-200';
+      statusEl.textContent = 'Spreadsheet ID wajib diisi.'; statusEl.classList.remove('hidden'); return;
+    }
+    btn.disabled = true; spinner.classList.remove('hidden');
     (btn.childNodes[1] as Text).textContent = ' Menyinkronkan...';
     statusEl.classList.add('hidden');
-
     const res = await fetch('/api/admin-sync-videos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ spreadsheet_id: spreadsheetId, sheet_name: sheetName }),
     });
-
     const result = await res.json();
-
-    btn.disabled = false;
-    spinner.classList.add('hidden');
+    btn.disabled = false; spinner.classList.add('hidden');
     (btn.childNodes[1] as Text).textContent = ' Jalankan Sync';
-
     if (!res.ok) {
       statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-red-500/20 text-red-200';
       statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error');
