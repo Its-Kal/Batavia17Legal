@@ -88,14 +88,14 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
         </div>
         <div>
           <label class="block text-white/80 text-xs font-medium mb-1.5">Sheet Name</label>
-          <input type="text" id="sync-sheet-name" placeholder="Sheet1"
+          <input type="text" id="sync-sheet-name" placeholder="Videos"
             class="w-full px-3 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37]/50" />
         </div>
       </div>
       <div class="bg-white/5 border border-white/10 rounded-lg p-3 mb-4 text-xs text-white/60">
         <p class="font-semibold text-white/80 mb-1">Format kolom yang didukung:</p>
-        <p><span class="text-[#D4AF37]">title</span> (wajib), <span class="text-[#D4AF37]">video_url</span>, <span class="text-[#D4AF37]">thumbnail_url</span>, <span class="text-[#D4AF37]">caption</span>, <span class="text-[#D4AF37]">hashtags</span> (pisahkan dengan koma), <span class="text-[#D4AF37]">category</span></p>
-        <p class="mt-1">Kolom hashtag bisa isi langsung: <code class="bg-white/10 px-1 rounded">hukum, batavia17, konsultasi</code></p>
+        <p><span class="text-[#D4AF37]">Captions</span>, <span class="text-[#D4AF37]">Hastag</span>, <span class="text-[#D4AF37]">video link</span>, <span class="text-[#D4AF37]">title</span> (opsional)</p>
+        <p class="mt-1">Hashtag pisahkan dengan spasi atau koma. <span class="text-white/80">Judul auto-generate dari URL video.</span></p>
       </div>
       <div id="sync-status" class="hidden text-sm mb-3 p-3 rounded-lg"></div>
       <button id="btn-do-sync" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c9a430] text-[#0A1931] font-bold text-sm px-5 py-2.5 rounded-lg transition-colors">

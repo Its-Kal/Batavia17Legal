@@ -1,13 +1,23 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../utils/supabase';
 
-interface SheetRow {
-  title?: string;
-  video_url?: string;
-  thumbnail_url?: string;
-  caption?: string;
-  hashtags?: string;
-  category?: string;
+function normalize(header: string): string {
+  return header.trim().toLowerCase().replace(/[\s\-_]+/g, '_').replace(/^#/, '');
+}
+
+function findCol(headers: string[], ...candidates: string[]): number {
+  for (const c of candidates) {
+    const idx = headers.indexOf(c);
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
+
+function extractTitleFromDriveUrl(url: string): string {
+  // Format: https://drive.google.com/file/d/FILEID/view?usp=drivesdk
+  const match = String(url).match(/\/file\/d\/([^/]+)\//);
+  if (match) return `Video ${match[1].slice(0, 8).toUpperCase()}`;
+  return '';
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -20,13 +30,10 @@ export const POST: APIRoute = async ({ request }) => {
         JSON.stringify({
           error:
             'Spreadsheet ID dan Sheet Name wajib diisi.\n' +
-            'Contoh Spreadsheet ID: https://docs.google.com/spreadsheets/d/XXXXXXX/edit → XXXXXXX\n' +
-            'Sheet Name default: Sheet1',
+            'Spreadsheet ID dari URL:\n' +
+            'https://docs.google.com/spreadsheets/d/XXXXX/edit → XXXXX',
         }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -35,27 +42,26 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(
         JSON.stringify({
           error:
-            'GOOGLE_SHEETS_API_KEY belum diset di environment variables.\n' +
-            'Dapatkan API key dari: https://console.cloud.google.com/apis/credentials',
+            'GOOGLE_SHEETS_API_KEY belum diset.\n' +
+            'Setup di Vercel Dashboard → Settings → Environment Variables.',
         }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Fetch from Google Sheets API v4
-    const sheetRange = `${encodeURIComponent(sheet_name.trim())}!A1:Z1000`;
+    // --- Fetch sheet data ---
+    const safeSheetName = encodeURIComponent(sheet_name.trim());
+    const sheetRange = `${safeSheetName}!A1:Z1000`;
     const sheetsUrl =
-      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id.trim()}/values/${sheetRange}` +
-      `?key=${apiKey}`;
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id.trim()}/values/${sheetRange}?key=${apiKey}`;
 
     const sheetsRes = await fetch(sheetsUrl);
     const sheetsData = await sheetsRes.json();
 
     if (!sheetsRes.ok || sheetsData.error) {
-      const msg = sheetsData.error?.message ?? 'Gagal mengambil data dari Google Sheets.';
+      const msg =
+        sheetsData.error?.message ??
+        'Gagal mengambil data dari Google Sheets. Pastikan spreadsheet di-share "Anyone with the link".';
       return new Response(JSON.stringify({ error: msg }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
@@ -66,78 +72,94 @@ export const POST: APIRoute = async ({ request }) => {
     if (values.length < 2) {
       return new Response(
         JSON.stringify({ error: 'Sheet kosong atau hanya ada header.' }),
-        {
-          status: 422,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        { status: 422, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Parse header row
-    const headers = values[0].map((h) =>
-      String(h).trim().toLowerCase().replace(/\s+/g, '_')
-    );
+    // --- Parse headers (flexible matching) ---
+    const rawHeaders = values[0];
+    const headers = rawHeaders.map(normalize);
 
-    const titleIdx = headers.indexOf('title');
-    const videoUrlIdx = headers.indexOf('video_url');
-    const thumbnailUrlIdx = headers.indexOf('thumbnail_url');
-    const captionIdx = headers.indexOf('caption');
-    const hashtagsIdx = headers.indexOf('hashtags');
-    const categoryIdx = headers.indexOf('category');
+    // Find column indices — accept multiple name variants
+    const captionIdx   = findCol(headers, 'captions', 'caption', 'captions_text');
+    const hashtagIdx   = findCol(headers, 'hastag', 'hashtag', 'hashtags', 'tags');
+    const videoUrlIdx  = findCol(headers, 'video_link', 'videolink', 'video', 'video_url', 'link', 'url');
+    const titleIdx     = findCol(headers, 'title', 'judul', 'name', 'video_title');
 
-    if (titleIdx === -1) {
+    // Must have at least a video URL or caption
+    if (videoUrlIdx === -1 && captionIdx === -1) {
       return new Response(
         JSON.stringify({
           error:
-            'Kolom "title" tidak ditemukan di sheet.\n' +
-            'Header yang tersedia: ' + headers.join(', '),
+            'Kolom "video link" atau "Captions" tidak ditemukan.\n' +
+            'Kolom yang tersedia: ' + rawHeaders.join(', '),
         }),
-        {
-          status: 422,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        { status: 422, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Parse rows
-    const rows: SheetRow[] = values.slice(1).map((row) => {
-      const get = (idx: number) => (idx >= 0 && idx < row.length ? row[idx] : '');
-      return {
-        title: get(titleIdx),
-        video_url: get(videoUrlIdx),
-        thumbnail_url: get(thumbnailUrlIdx),
-        caption: get(captionIdx),
-        hashtags: get(hashtagsIdx),
-        category: get(categoryIdx),
-      };
-    });
-
-    // Filter out empty rows
-    const validRows = rows.filter((r) => r.title?.trim());
-
-    // Upsert: delete all and re-insert (simple sync strategy)
-    await supabaseAdmin.from('video_ads').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-
+    // --- Parse data rows ---
     const now = new Date().toISOString();
-    const toInsert = validRows.map((r, idx) => {
-      // Parse hashtags: comma or space separated, filter empty
-      const rawTags = r.hashtags ?? '';
-      const tagList = rawTags
-        .split(/[,\s#]+/)
-        .map((t) => t.trim().replace(/^#/, ''))
-        .filter((t) => t.length > 0 && t.length <= 30);
+    const toInsert: Record<string, unknown>[] = [];
 
-      return {
-        title: String(r.title).trim(),
-        video_url: String(r.video_url).trim() || null,
-        thumbnail_url: String(r.thumbnail_url).trim() || null,
-        caption: String(r.caption).trim() || null,
-        hashtags: tagList,
-        category: String(r.category).trim() || 'general',
-        display_order: idx,
-        synced_at: now,
-      };
-    });
+    for (let i = 1; i < values.length; i++) {
+      const row = values[i];
+      const get = (idx: number) => (idx >= 0 && idx < row.length ? String(row[idx]).trim() : '');
+
+      const rawCaption  = get(captionIdx);
+      const rawHashtags = get(hashtagIdx);
+      const rawVideoUrl = get(videoUrlIdx);
+      const rawTitle    = get(titleIdx);
+
+      // Skip fully empty rows
+      if (!rawCaption && !rawVideoUrl) continue;
+
+      // Generate title: use explicit title col, else derive from Drive URL, else use caption prefix
+      let title = rawTitle;
+      if (!title?.trim()) {
+        title = extractTitleFromDriveUrl(rawVideoUrl);
+      }
+      if (!title?.trim()) {
+        title = rawCaption?.slice(0, 60).trim() || `Video ${i}`;
+      }
+
+      // Parse hashtags: comma / space / # separated
+      const tagList = rawHashtags
+        ? rawHashtags
+            .split(/[,\s]+/)
+            .map((t: string) => t.trim().replace(/^#+/, ''))
+            .filter((t: string) => t.length > 0 && t.length <= 30)
+        : [];
+
+      toInsert.push({
+        title: title.trim(),
+        video_url:    rawVideoUrl || null,
+        caption:      rawCaption || null,
+        hashtags:     tagList,
+        thumbnail_url: null,
+        category:     'TikTok',
+        display_order: i - 1,
+        synced_at:    now,
+        is_active:    true,
+      });
+    }
+
+    if (toInsert.length === 0) {
+      return new Response(
+        JSON.stringify({
+          error:
+            'Tidak ada data video yang bisa di-sync.\n' +
+            'Pastikan kolom "Captions" atau "video link" terisi.',
+        }),
+        { status: 422, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // --- Clear old data and insert new ---
+    await supabaseAdmin
+      .from('video_ads')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
 
     const { data, error } = await supabaseAdmin
       .from('video_ads')
@@ -146,28 +168,20 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (error) {
       return new Response(
-        JSON.stringify({ error: 'Gagal menyimpan ke database: ' + error.message }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        JSON.stringify({ error: 'Gagal menyimpan: ' + error.message }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
-    const skipped = rows.length - validRows.length;
 
     return new Response(
       JSON.stringify({
         success: true,
-        synced: validRows.length,
-        skipped,
-        total_rows: rows.length,
-        message: `Berhasil sync ${validRows.length} video${skipped > 0 ? ` (${skipped} baris dilewati karena tanpa judul)` : ''}`,
+        synced: toInsert.length,
+        columns_used: rawHeaders.join(', '),
+        message: `Berhasil sync ${toInsert.length} video dari sheet "${sheet_name}".`,
         data,
       }),
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
+      { headers: { 'Content-Type': 'application/json' } }
     );
   } catch (err) {
     console.error('[sync-videos]', err);
