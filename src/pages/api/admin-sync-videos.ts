@@ -86,8 +86,8 @@ export const POST: APIRoute = async ({ request }) => {
     const rawHeaders = values[0];
     const headers = rawHeaders.map(normalize);
 
-    // Video URL: supports "video_url", "video url", "video_link", "videourl", "url", etc.
-    const videoUrlIdx  = findCol(headers, 'video_url', 'video_link', 'videourl', 'video', 'url', 'video_link_1');
+    // Video URL: prioritize video_link (Google Drive) first, then Video URL, etc.
+    const videoUrlIdx  = findCol(headers, 'video_link', 'video_url', 'videolink', 'video', 'url', 'video_link_1');
     // Caption: supports "caption", "captions", "captions_text", "caption_text"
     const captionIdx   = findCol(headers, 'captions', 'caption', 'captions_text', 'caption_text');
     // Hashtag: supports "hastag", "hashtag", "hashtags", "tags", "hastag_text"
