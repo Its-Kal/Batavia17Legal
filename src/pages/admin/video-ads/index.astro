@@ -20,6 +20,11 @@ const { data: profile } = await supabase
 const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
 if (role !== 'admin_utama') return Astro.redirect('/admin');
 
+// Server-side env vars for auto-sync
+const spreadsheetId = import.meta.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+const sheetName = import.meta.env.GOOGLE_SHEETS_SHEET_NAME || 'Videos';
+const hasAutoSyncConfig = !!spreadsheetId;
+
 const { data: videos } = await supabaseAdmin
   .from('video_ads')
   .select('*')
@@ -47,13 +52,15 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
         <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Video Iklan</h1>
         <p class="text-slate-500 text-sm mt-0.5">Kelola video, caption, dan hashtag untuk media sosial.</p>
       </div>
-      <button id="btn-open-sync" class="flex items-center justify-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shrink-0">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        Sync Sheet
-      </button>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-open-sync" class="flex items-center justify-center gap-2 bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Sync Sheet
+        </button>
+      </div>
     </div>
 
-    {/* Stats — responsive grid */}
+    {/* Stats */}
     <div class="grid grid-cols-3 gap-3 mb-6">
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total</div>
@@ -67,6 +74,17 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
         <div class="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Kategori</div>
         <div class="text-2xl sm:text-3xl font-extrabold text-[#0A1931]">{categories.length}</div>
       </div>
+    </div>
+
+    {/* Auto-sync status bar */}
+    <div id="auto-sync-bar" class={`mb-4 flex items-center gap-2.5 text-xs px-3 py-2 rounded-lg ${hasAutoSyncConfig ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+      <span id="auto-sync-icon">
+        {hasAutoSyncConfig
+          ? <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          : <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        }
+      </span>
+      <span id="auto-sync-label">{hasAutoSyncConfig ? `Auto-sync aktif — Sheet: "${sheetName}"` : 'Auto-sync belum dikonfigurasi. Isi Spreadsheet ID & Sheet Name lalu Sync.'}</span>
     </div>
 
     {/* Sync panel */}
@@ -83,12 +101,12 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
           <label class="block text-white/80 text-xs font-medium mb-1.5">Spreadsheet ID</label>
-          <input type="text" id="sync-spreadsheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74"
+          <input type="text" id="sync-spreadsheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74" value={spreadsheetId}
             class="w-full px-3 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37]/50" />
         </div>
         <div>
           <label class="block text-white/80 text-xs font-medium mb-1.5">Sheet Name</label>
-          <input type="text" id="sync-sheet-name" placeholder="Videos"
+          <input type="text" id="sync-sheet-name" placeholder="Videos" value={sheetName}
             class="w-full px-3 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37]/50" />
         </div>
       </div>
@@ -99,7 +117,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
       <div id="sync-status" class="hidden text-sm mb-3 p-3 rounded-lg"></div>
       <button id="btn-do-sync" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c9a430] text-[#0A1931] font-bold text-sm px-5 py-2.5 rounded-xl transition-colors">
         <svg id="sync-spinner" class="hidden animate-spin" width="14" height="14" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-        Jalankan Sync
+        <span id="sync-btn-text">Jalankan Sync</span>
       </button>
     </div>
 
@@ -135,8 +153,15 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
             data-caption={v.caption?.toLowerCase() ?? ''}
             data-category={v.category ?? ''}
           >
-            {/* Thumbnail */}
-            <a href={`/admin/video-ads/${v.id}`} class="block bg-slate-900 relative shrink-0" style="aspect-ratio: 16/9;">
+            {/* Thumbnail — click opens preview modal */}
+            <button
+              class="block bg-slate-900 relative shrink-0 w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/60"
+              style="aspect-ratio: 16/9;"
+              data-video-url={v.video_url ?? ''}
+              data-title={v.title}
+              data-id={v.id}
+              aria-label={`Preview ${v.title}`}
+            >
               {v.thumbnail_url ? (
                 <img src={v.thumbnail_url} alt={v.title} class="w-full h-full object-cover" loading="lazy" />
               ) : (
@@ -146,7 +171,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
               )}
               {/* Play overlay */}
               <div class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition-colors">
-                <div class="w-10 h-10 rounded-full bg-white/85 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <div class="w-10 h-10 rounded-full bg-white/85 flex items-center justify-center">
                   <svg width="18" height="18" fill="#0A1931" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 </div>
               </div>
@@ -160,29 +185,22 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
                   <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/90 text-white backdrop-blur-sm">Nonaktif</span>
                 )}
               </div>
-            </a>
+            </button>
 
             {/* Card body */}
             <div class="p-3 flex flex-col flex-1 min-h-0">
-              {/* Category + order */}
               <div class="flex items-center gap-1.5 mb-1">
                 {v.category && (
                   <span class="text-[10px] font-semibold text-[#0A1931]/60 bg-[#0A1931]/5 px-1.5 py-0.5 rounded-full shrink-0">{v.category}</span>
                 )}
                 <span class="text-[10px] text-slate-400 ml-auto shrink-0">#{v.display_order}</span>
               </div>
-
-              {/* Title */}
               <a href={`/admin/video-ads/${v.id}`} class="block font-semibold text-slate-900 text-sm leading-tight mb-1 hover:text-[#0A1931] transition-colors line-clamp-2">
                 {v.title}
               </a>
-
-              {/* Caption preview */}
               {v.caption && (
                 <p class="text-xs text-slate-500 line-clamp-2 mb-2 flex-none">{v.caption}</p>
               )}
-
-              {/* Hashtags */}
               {v.hashtags && v.hashtags.length > 0 && (
                 <div class="flex flex-wrap gap-1 mb-2 flex-none">
                   {v.hashtags.slice(0, 3).map((tag: string) => (
@@ -193,8 +211,6 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
                   )}
                 </div>
               )}
-
-              {/* Actions */}
               <div class="flex items-center gap-1.5 mt-auto pt-2 border-t border-slate-100">
                 <button class="btn-copy-caption flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
                   data-caption={v.caption ?? ''} data-hashtags={JSON.stringify(v.hashtags ?? [])}
@@ -216,7 +232,20 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   </div>
 </AdminLayout>
 
-{/* Modal */}
+{/* Video Preview Modal */}
+<div id="preview-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+    <div class="px-4 py-3 bg-[#0A1931] flex items-center justify-between">
+      <h3 id="preview-title" class="text-white font-semibold text-sm truncate pr-4"></h3>
+      <button id="btn-close-preview" class="text-white/60 hover:text-white transition-colors shrink-0">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="preview-container" class="bg-black" style="aspect-ratio: 16/9;"></div>
+  </div>
+</div>
+
+{/* CRUD Modal */}
 <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
   <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
     <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
@@ -294,6 +323,13 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
 {/* Toast */}
 <div id="toast" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white bg-slate-800 whitespace-nowrap"></div>
 
+<!-- Pass server env vars to client script -->
+<script define:vars={{ spreadsheetId, sheetName, hasAutoSyncConfig }}>
+  window.__AUTO_SPREADSHEET_ID__ = spreadsheetId;
+  window.__AUTO_SHEET_NAME__ = sheetName;
+  window.__HAS_AUTO_SYNC__ = hasAutoSyncConfig;
+</script>
+
 <script>
   import { createClient } from '@supabase/supabase-js';
   const supabase = createClient(
@@ -305,6 +341,59 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   let deleteTargetId = '';
   let deleteTargetTitle = '';
 
+  // --- Preview modal ---
+  function parseVideoUrl(url: string | null) {
+    if (!url) return { type: 'none' as const, embedUrl: null };
+    const driveMatch = String(url).match(/\/file\/d\/([^/]+)\//);
+    if (driveMatch) {
+      return { type: 'drive' as const, embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview` };
+    }
+    if (/\.(mp4|webm|mov|avi|m4v)(\?.*)?$/i.test(url)) {
+      return { type: 'direct' as const, embedUrl: url };
+    }
+    if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('tiktok.com')) {
+      return { type: 'embed' as const, embedUrl: url };
+    }
+    return { type: 'local' as const, embedUrl: url };
+  }
+
+  function openPreviewModal(btn: HTMLButtonElement) {
+    const url = btn.dataset.videoUrl ?? '';
+    const title = btn.dataset.title ?? '';
+    const titleEl = document.getElementById('preview-title')!;
+    const container = document.getElementById('preview-container')!;
+    titleEl.textContent = title;
+    const parsed = parseVideoUrl(url);
+    if (parsed.type === 'none') {
+      container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white/40 text-sm">Tidak ada video URL</div>`;
+    } else if (parsed.type === 'direct') {
+      container.innerHTML = `<video src="${parsed.embedUrl}" controls autoplay class="w-full h-full" controlsList="nodownload"></video>`;
+    } else if (parsed.type === 'drive') {
+      container.innerHTML = `<iframe src="${parsed.embedUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen" title="${title}"></iframe>`;
+    } else if (parsed.type === 'embed') {
+      container.innerHTML = `<iframe src="${parsed.embedUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen" title="${title}"></iframe>`;
+    } else {
+      container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white/40 text-sm">Format tidak didukung</div>`;
+    }
+    document.getElementById('preview-modal')!.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePreviewModal() {
+    document.getElementById('preview-modal')!.classList.add('hidden');
+    document.getElementById('preview-container')!.innerHTML = '';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('btn-close-preview')?.addEventListener('click', closePreviewModal);
+  document.getElementById('preview-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('preview-modal')) closePreviewModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePreviewModal();
+  });
+
+  // --- Toast ---
   function showToast(msg: string, isError = false) {
     const el = document.getElementById('toast')!;
     el.textContent = msg;
@@ -316,10 +405,59 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   function parseHashtags(raw: string): string[] {
     return (raw ?? '')
       .split(/[,\s#]+/)
-      .map((t: string) => t.trim().replace(/^#/, ''))
+      .map((t: string) => t.trim().replace(/^#+/, ''))
       .filter((t: string) => t.length > 0 && t.length <= 30);
   }
 
+  // --- Auto-sync on load ---
+  const autoSyncSpreadsheetId = (window as any).__AUTO_SPREADSHEET_ID__;
+  const autoSyncSheetName = (window as any).__AUTO_SHEET_NAME__;
+  const hasAutoSync = !!(window as any).__HAS_AUTO_SYNC__;
+
+  if (hasAutoSync) {
+    const lastSync = localStorage.getItem('video_ads_last_sync') ?? '0';
+    const now = Date.now();
+    if (now - parseInt(lastSync) > 3 * 60 * 1000) {
+      runAutoSync();
+    }
+  }
+
+  async function runAutoSync() {
+    const statusEl = document.getElementById('sync-status')!;
+    const labelEl = document.getElementById('auto-sync-label')!;
+    const iconEl = document.getElementById('auto-sync-icon')!;
+    const barEl = document.getElementById('auto-sync-bar')!;
+
+    iconEl.innerHTML = `<svg class="animate-spin" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`;
+    labelEl.textContent = 'Menyinkronkan...';
+    barEl.className = 'mb-4 flex items-center gap-2.5 text-xs px-3 py-2 rounded-lg bg-blue-50 text-blue-700 border border-blue-200';
+
+    try {
+      const res = await fetch('/api/admin-sync-videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spreadsheet_id: autoSyncSpreadsheetId, sheet_name: autoSyncSheetName || 'Videos' }),
+      });
+      const result = await res.json();
+      localStorage.setItem('video_ads_last_sync', String(Date.now()));
+      if (res.ok) {
+        iconEl.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`;
+        labelEl.textContent = `Terakhir sync: baru saja — ${result.synced} video`;
+        barEl.className = 'mb-4 flex items-center gap-2.5 text-xs px-3 py-2 rounded-lg bg-green-50 text-green-700 border border-green-200';
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        iconEl.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+        labelEl.textContent = `Auto-sync gagal: ${(result.error ?? 'Unknown').slice(0, 60)}`;
+        barEl.className = 'mb-4 flex items-center gap-2.5 text-xs px-3 py-2 rounded-lg bg-red-50 text-red-700 border border-red-200';
+      }
+    } catch {
+      iconEl.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+      labelEl.textContent = 'Auto-sync gagal: koneksi error';
+      barEl.className = 'mb-4 flex items-center gap-2.5 text-xs px-3 py-2 rounded-lg bg-red-50 text-red-700 border border-red-200';
+    }
+  }
+
+  // --- CRUD ---
   function showModal(title: string) {
     document.getElementById('modal')!.classList.remove('hidden');
     (document.getElementById('modal-title') as HTMLElement).textContent = title;
@@ -329,6 +467,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     (document.getElementById('form-is_active') as HTMLInputElement).checked = true;
     (document.getElementById('form-display_order') as HTMLInputElement).value = '0';
     document.getElementById('form-status')?.classList.add('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
   function openEditModal(btn: HTMLElement) {
@@ -345,11 +484,13 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     (document.getElementById('form-is_active') as HTMLInputElement).checked = btn.dataset.is_active === 'true';
     (document.getElementById('form-display_order') as HTMLInputElement).value = btn.dataset.display_order ?? '0';
     document.getElementById('form-status')?.classList.add('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
   function closeModal() {
     document.getElementById('modal')!.classList.add('hidden');
     editingId = null;
+    document.body.style.overflow = '';
   }
 
   // Search & filter
@@ -361,15 +502,18 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     const search = searchInput.value.toLowerCase().trim();
     const cat = filterCategory.value;
     cards.forEach(card => {
-      const matchSearch = !search ||
-        (card.dataset.title ?? '').includes(search) ||
-        (card.dataset.caption ?? '').includes(search);
+      const matchSearch = !search || (card.dataset.title ?? '').includes(search) || (card.dataset.caption ?? '').includes(search);
       const matchCat = !cat || card.dataset.category === cat;
       card.style.display = matchSearch && matchCat ? '' : 'none';
     });
   }
   searchInput?.addEventListener('input', applyFilters);
   filterCategory?.addEventListener('change', applyFilters);
+
+  // Thumbnail → preview modal
+  document.querySelectorAll('[data-video-url]').forEach(btn => {
+    btn.addEventListener('click', () => openPreviewModal(btn as HTMLButtonElement));
+  });
 
   // Modal controls
   document.getElementById('btn-add')?.addEventListener('click', () => showModal('Tambah Video'));
@@ -378,11 +522,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   document.getElementById('modal')?.addEventListener('click', (e) => {
     if (e.target === document.getElementById('modal')) closeModal();
   });
-
-  // Edit buttons (injected via data attributes from Astro — no-op in grid view since edit is on detail page)
-  document.querySelectorAll('.btn-edit').forEach(btn => {
-    btn.addEventListener('click', () => openEditModal(btn as HTMLElement));
-  });
+  document.querySelectorAll('.btn-edit').forEach(btn => btn.addEventListener('click', () => openEditModal(btn as HTMLElement)));
 
   // Delete
   document.querySelectorAll('.btn-delete-video').forEach(btn => {
@@ -396,10 +536,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   document.getElementById('btn-delete-cancel')?.addEventListener('click', () => document.getElementById('delete-modal')!.classList.add('hidden'));
   document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
     document.getElementById('delete-modal')!.classList.add('hidden');
-    const res = await fetch('/api/admin-video-ads', {
-      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: deleteTargetId }),
-    });
+    const res = await fetch('/api/admin-video-ads', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: deleteTargetId }) });
     if (!res.ok) { const r = await res.json(); showToast('Gagal hapus: ' + (r.error ?? ''), true); }
     else { showToast('✓ Video dihapus.'); setTimeout(() => location.reload(), 600); }
   });
@@ -432,9 +569,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     };
     if (!payload.title) {
       statusEl.className = 'text-sm p-3 rounded-lg bg-red-50 text-red-600';
-      statusEl.textContent = 'Judul video wajib diisi.';
-      statusEl.classList.remove('hidden');
-      return;
+      statusEl.textContent = 'Judul video wajib diisi.'; statusEl.classList.remove('hidden'); return;
     }
     submitBtn.disabled = true; submitBtn.textContent = 'Menyimpan...';
     statusEl.classList.add('hidden');
@@ -446,10 +581,8 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     const result = await res.json();
     if (!res.ok) {
       statusEl.className = 'text-sm p-3 rounded-lg bg-red-50 text-red-600';
-      statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error');
-      statusEl.classList.remove('hidden');
-      submitBtn.disabled = false; submitBtn.textContent = 'Simpan';
-      return;
+      statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error'); statusEl.classList.remove('hidden');
+      submitBtn.disabled = false; submitBtn.textContent = 'Simpan'; return;
     }
     showToast(isEdit ? '✓ Video diperbarui.' : '✓ Video ditambahkan.');
     closeModal();
@@ -461,28 +594,27 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   document.getElementById('btn-close-sync')?.addEventListener('click', () => document.getElementById('sync-panel')?.classList.add('hidden'));
   document.getElementById('btn-do-sync')?.addEventListener('click', async () => {
     const spreadsheetId = (document.getElementById('sync-spreadsheet-id') as HTMLInputElement).value.trim();
-    const sheetName = (document.getElementById('sync-sheet-name') as HTMLInputElement).value.trim() || 'Videos';
+    const sheetNameVal = (document.getElementById('sync-sheet-name') as HTMLInputElement).value.trim() || 'Videos';
     const statusEl = document.getElementById('sync-status')!;
     const spinner = document.getElementById('sync-spinner')!;
     const btn = document.getElementById('btn-do-sync') as HTMLButtonElement;
+    const btnText = document.getElementById('sync-btn-text')!;
     if (!spreadsheetId) {
-      statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-red-500/20 text-red-200';
-      statusEl.textContent = 'Spreadsheet ID wajib diisi.'; statusEl.classList.remove('hidden'); return;
+      statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-red-500/20 text-red-200'; statusEl.textContent = 'Spreadsheet ID wajib diisi.'; statusEl.classList.remove('hidden'); return;
     }
-    btn.disabled = true; spinner.classList.remove('hidden');
-    (btn.childNodes[1] as Text).textContent = ' Menyinkronkan...';
+    btn.disabled = true; spinner.classList.remove('hidden'); btnText.textContent = ' Menyinkronkan...';
     statusEl.classList.add('hidden');
     const res = await fetch('/api/admin-sync-videos', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ spreadsheet_id: spreadsheetId, sheet_name: sheetName }),
+      body: JSON.stringify({ spreadsheet_id: spreadsheetId, sheet_name: sheetNameVal }),
     });
     const result = await res.json();
-    btn.disabled = false; spinner.classList.add('hidden');
-    (btn.childNodes[1] as Text).textContent = ' Jalankan Sync';
+    btn.disabled = false; spinner.classList.add('hidden'); btnText.textContent = ' Jalankan Sync';
     if (!res.ok) {
       statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-red-500/20 text-red-200';
       statusEl.textContent = '✗ Gagal: ' + (result.error ?? 'Unknown error');
     } else {
+      localStorage.setItem('video_ads_last_sync', String(Date.now()));
       statusEl.className = 'text-sm mb-3 p-3 rounded-lg bg-green-500/20 text-green-200';
       statusEl.textContent = `✓ ${result.message ?? `Berhasil sync ${result.synced} video.`}`;
       setTimeout(() => location.reload(), 1500);
