@@ -27,7 +27,7 @@ const { data: profile } = await supabase
   .from('profiles').select('role').eq('id', user.id).single();
 
 const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
-if (role !== 'admin_utama') return Astro.redirect('/admin');
+if (role !== 'admin_utama' && role !== 'staff') return Astro.redirect('/admin/login?error=required');
 
   // Fetch semua testimonials (service role bypasses RLS)
 const { data: testimonials } = await supabaseAdmin
@@ -40,7 +40,7 @@ const pending = allTestimonials.filter(t => !t.is_approved);
 const approved = allTestimonials.filter(t => t.is_approved);
 ---
 
-<AdminLayout title="Testimoni — Batavia 17" activeMenu="testimonials" userRole="admin_utama" userEmail={user.email ?? ''}>
+<AdminLayout title="Testimoni — Batavia 17" activeMenu="testimonials" userRole={role} userEmail={user.email ?? ''}>
   <div class="p-8">
 
     {/* Page header */}

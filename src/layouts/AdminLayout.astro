@@ -18,6 +18,7 @@ const sectionLinks = [
   { key: 'footer_stats', label: 'Footer Stats', icon: '📊' },
 ];
 ---
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -32,30 +33,70 @@ const sectionLinks = [
 </head>
 <body class="bg-slate-100">
 
+{/* Mobile top bar */}
+<div class="lg:hidden flex items-center justify-between bg-[#0A1931] text-white px-4 py-3 sticky top-0 z-30 shadow-md">
+  <button id="mobile-menu-btn" class="flex flex-col gap-1.5 p-1 focus:outline-none" aria-label="Buka menu">
+    <span class="block w-5 h-0.5 bg-white rounded-full transition-all"></span>
+    <span class="block w-5 h-0.5 bg-white rounded-full transition-all"></span>
+    <span class="block w-5 h-0.5 bg-white rounded-full transition-all"></span>
+  </button>
+  <div class="flex items-center gap-2">
+    <div class="w-7 h-7 rounded-md bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-xs">B17</div>
+    <span class="font-bold text-sm">Batavia 17</span>
+  </div>
+  <div class="w-7 h-7 rounded-full bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-xs shrink-0">
+    {initials}
+  </div>
+</div>
+
+{/* Mobile overlay */}
+<div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden" onclick="closeMobileSidebar()"></div>
+
 <div class="flex h-screen overflow-hidden">
 
-  {/* Sidebar */}
-  <aside class="w-64 bg-[#0A1931] text-white flex flex-col flex-shrink-0">
+  {/* Sidebar — desktop fixed, mobile drawer */}
+  <aside id="sidebar" class="
+    fixed lg:static inset-y-0 left-0 z-40
+    w-64 bg-[#0A1931] text-white flex flex-col flex-shrink-0
+    transform -translate-x-full lg:translate-x-0 transition-transform duration-300
+  ">
+
     {/* Logo */}
-    <div class="px-6 py-5 border-b border-white/10">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-sm">B17</div>
-        <div>
-          <div class="font-bold text-sm leading-tight">Batavia 17</div>
-          <div class="text-white/40 text-xs">Admin Panel</div>
-        </div>
+    <div class="px-6 py-5 border-b border-white/10 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-sm shrink-0">B17</div>
+      <div>
+        <div class="font-bold text-sm leading-tight">Batavia 17</div>
+        <div class="text-white/40 text-xs">Admin Panel</div>
       </div>
     </div>
 
     {/* Nav */}
-    <nav class="flex-1 px-3 py-4 space-y-1">
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+
+      {userRole === 'admin_utama' && (
+        <a href="/admin" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'statistik' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Statistik
+        </a>
+      )}
+
+      {(userRole === 'admin_utama' || userRole === 'staff') && (
+        <a href="/admin/video-ads" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'video-ads' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Video Iklan
+        </a>
+      )}
+
+      {(userRole === 'admin_utama' || userRole === 'staff') && (
+        <a href="/admin/testimonials" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'testimonials' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Testimoni
+        </a>
+      )}
+
       {userRole === 'admin_utama' && (
         <>
-          <a href="/admin" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'statistik' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-            Statistik
-          </a>
-          {/* Sections — Strapi-style collapsible nav */}
+          {/* Sections — collapsible */}
           <div>
             <button id="sections-toggle" class={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'sections' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5zm10 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5zM4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4zm10 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4z"/></svg>
@@ -72,17 +113,9 @@ const sectionLinks = [
               ))}
             </div>
           </div>
-          <a href="/admin/testimonials" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'testimonials' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Testimoni
-          </a>
           <a href="/admin/users" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'users' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Kelola User
-          </a>
-          <a href="/admin/video-ads" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeMenu === 'video-ads' ? 'bg-[#D4AF37] text-[#0A1931]' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Video Iklan
           </a>
         </>
       )}
@@ -91,7 +124,7 @@ const sectionLinks = [
     {/* User info + logout */}
     <div class="px-3 py-4 border-t border-white/10">
       <div class="flex items-center gap-3 mb-3 px-3">
-        <div class="w-8 h-8 rounded-full bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-xs flex-shrink-0">
+        <div class="w-8 h-8 rounded-full bg-[#D4AF37] text-[#0A1931] flex items-center justify-center font-bold text-xs shrink-0">
           {initials}
         </div>
         <div class="min-w-0">
@@ -125,6 +158,27 @@ const sectionLinks = [
     window.location.href = '/admin/login?success=logout';
   });
 
+  // Mobile sidebar
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+
+  function openMobileSidebar() {
+    sidebar?.classList.remove('-translate-x-full');
+    overlay?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileSidebar() {
+    sidebar?.classList.add('-translate-x-full');
+    overlay?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  menuBtn?.addEventListener('click', openMobileSidebar);
+  overlay?.addEventListener('click', closeMobileSidebar);
+  (window as any).closeMobileSidebar = closeMobileSidebar;
+
   // Sections dropdown toggle
   const toggle = document.getElementById('sections-toggle');
   const submenu = document.getElementById('sections-submenu');
@@ -134,7 +188,6 @@ const sectionLinks = [
       const open = submenu.classList.toggle('hidden');
       chevron.style.transform = open ? '' : 'rotate(180deg)';
     });
-    // Auto-open if on a section page
     if (document.querySelector('[data-section-page]')) {
       submenu.classList.remove('hidden');
       chevron.style.transform = 'rotate(180deg)';

@@ -18,7 +18,7 @@ const { data: profile } = await supabase
   .from('profiles').select('role').eq('id', user.id).single();
 
 const role = (profile?.role as 'admin_utama' | 'staff') ?? 'staff';
-if (role !== 'admin_utama') return Astro.redirect('/admin');
+if (role !== 'admin_utama' && role !== 'staff') return Astro.redirect('/admin/login?error=required');
 
 // Server-side env vars for auto-sync
 const spreadsheetId = import.meta.env.GOOGLE_SHEETS_SPREADSHEET_ID;
@@ -43,7 +43,7 @@ const { count: activeVideos } = await supabaseAdmin
 const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))];
 ---
 
-<AdminLayout title="Video Iklan — Batavia 17" activeMenu="video-ads" userRole="admin_utama" userEmail={user.email ?? ''}>
+<AdminLayout title="Video Iklan — Batavia 17" activeMenu="video-ads" userRole={role} userEmail={user.email ?? ''}>
   <div class="p-4 sm:p-6 lg:p-8">
 
     {/* Page header */}
