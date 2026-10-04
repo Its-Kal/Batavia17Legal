@@ -415,9 +415,10 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
   const hasAutoSync = !!(window as any).__HAS_AUTO_SYNC__;
 
   if (hasAutoSync) {
-    const lastSync = localStorage.getItem('video_ads_last_sync') ?? '0';
+    const lastSyncRaw = localStorage.getItem('video_ads_last_sync');
+    const lastSync = parseInt(lastSyncRaw ?? '0') || 0;
     const now = Date.now();
-    if (now - parseInt(lastSync) > 3 * 60 * 1000) {
+    if (now - lastSync > 3 * 60 * 1000) {
       runAutoSync();
     }
   }
