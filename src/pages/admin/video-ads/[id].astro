@@ -49,8 +49,17 @@ function parseVideoUrl(url: string | null) {
   }
 
   // YouTube / TikTok embeds
-  if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('tiktok.com')) {
+  const tiktokMatch = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/);
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
     return { type: 'embed' as const, driveId: null, directUrl: url, isDrive: false };
+  }
+  if (tiktokMatch) {
+    return {
+      type: 'tiktok' as const,
+      driveId: null,
+      directUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`,
+      isDrive: false,
+    };
   }
 
   // Local / other file name
@@ -119,7 +128,7 @@ const isPublished = video.is_active;
                 class="w-full h-full absolute inset-0"
                 title={video.title}
               ></video>
-            ) : parsed.type === 'embed' ? (
+            ) : parsed.type === 'embed' || parsed.type === 'tiktok' ? (
               <iframe
                 src={parsed.directUrl!}
                 class="w-full h-full absolute inset-0"

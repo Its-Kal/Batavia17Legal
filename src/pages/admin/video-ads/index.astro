@@ -212,14 +212,30 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
                 </div>
               )}
               <div class="flex items-center gap-1.5 mt-auto pt-2 border-t border-slate-100">
-                <button class="btn-copy-caption flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                <button class="btn-copy-caption flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
                   data-caption={v.caption ?? ''} data-hashtags={JSON.stringify(v.hashtags ?? [])}
-                  style="background: #D4AF3715; color: #9A7B2A;">
+                  style="background: #D4AF3715; color: #9A7B2A; min-width:0; flex:1;">
                   <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   Copy
                 </button>
+                {(() => {
+                  function getDriveDownload(url) {
+                    if (!url) return null;
+                    const m = String(url).match(/\/file\/d\/([^/]+)\//);
+                    return m ? `https://docs.google.com/uc?export=download&id=${m[1]}` : null;
+                  }
+                  const dl = getDriveDownload(v.video_url);
+                  return dl ? (
+                    <a href={dl} download target="_blank" rel="noopener noreferrer"
+                      class="flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-[11px] font-semibold transition-colors shrink-0"
+                      title="Download video">
+                      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      DL
+                    </a>
+                  ) : null;
+                })()}
                 <a href={`/admin/video-ads/${v.id}`}
-                  class="flex items-center justify-center gap-1 py-1.5 px-3 rounded-lg bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-[11px] font-semibold transition-colors">
+                  class="flex items-center justify-center gap-1 py-1.5 px-3 rounded-lg bg-[#0A1931] hover:bg-[#1a3a5c] text-white text-[11px] font-semibold transition-colors shrink-0">
                   Detail
                   <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
@@ -343,18 +359,35 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
 
   // --- Preview modal ---
   function parseVideoUrl(url: string | null) {
-    if (!url) return { type: 'none' as const, embedUrl: null };
+    if (!url) return { type: 'none' as const, embedUrl: null, downloadUrl: null };
+    // Google Drive
     const driveMatch = String(url).match(/\/file\/d\/([^/]+)\//);
     if (driveMatch) {
-      return { type: 'drive' as const, embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview` };
+      return {
+        type: 'drive' as const,
+        embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`,
+        downloadUrl: `https://docs.google.com/uc?export=download&id=${driveMatch[1]}`,
+      };
     }
+    // Direct video file
     if (/\.(mp4|webm|mov|avi|m4v)(\?.*)?$/i.test(url)) {
-      return { type: 'direct' as const, embedUrl: url };
+      return { type: 'direct' as const, embedUrl: null, downloadUrl: url };
     }
-    if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('tiktok.com')) {
-      return { type: 'embed' as const, embedUrl: url };
+    // TikTok — extract video ID and use embed iframe
+    const tiktokMatch = String(url).match(/tiktok\.com\/@[^/]+\/video\/(\d+)/);
+    if (tiktokMatch) {
+      return {
+        type: 'tiktok' as const,
+        embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`,
+        downloadUrl: null,
+      };
     }
-    return { type: 'local' as const, embedUrl: url };
+    // YouTube
+    const ytMatch = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) {
+      return { type: 'youtube' as const, embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}`, downloadUrl: null };
+    }
+    return { type: 'local' as const, embedUrl: url, downloadUrl: null };
   }
 
   function openPreviewModal(btn: HTMLButtonElement) {
@@ -368,9 +401,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
       container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white/40 text-sm">Tidak ada video URL</div>`;
     } else if (parsed.type === 'direct') {
       container.innerHTML = `<video src="${parsed.embedUrl}" controls autoplay class="w-full h-full" controlsList="nodownload"></video>`;
-    } else if (parsed.type === 'drive') {
-      container.innerHTML = `<iframe src="${parsed.embedUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen" title="${title}"></iframe>`;
-    } else if (parsed.type === 'embed') {
+    } else if (parsed.type === 'drive' || parsed.type === 'tiktok' || parsed.type === 'youtube') {
       container.innerHTML = `<iframe src="${parsed.embedUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen" title="${title}"></iframe>`;
     } else {
       container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white/40 text-sm">Format tidak didukung</div>`;
