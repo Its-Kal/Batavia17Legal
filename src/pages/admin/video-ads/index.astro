@@ -429,7 +429,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     const body: Record<string, unknown> = { ...payload };
     if (isEdit) body.id = editingId;
 
-    const res = await fetch('/api/admin/video-ads', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const res = await fetch('/api/admin-video-ads', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const result = await res.json();
 
     if (!res.ok) {
@@ -467,7 +467,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
 
   document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
     document.getElementById('delete-modal')!.classList.add('hidden');
-    const res = await fetch('/api/admin/video-ads', {
+    const res = await fetch('/api/admin-video-ads', {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: deleteTargetId }),
     });
@@ -522,7 +522,7 @@ const categories = [...new Set(allVideos.map((v) => v.category).filter(Boolean))
     (btn.childNodes[1] as Text).textContent = ' Menyinkronkan...';
     statusEl.classList.add('hidden');
 
-    const res = await fetch('/api/admin/sync-videos', {
+    const res = await fetch('/api/admin-sync-videos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ spreadsheet_id: spreadsheetId, sheet_name: sheetName }),

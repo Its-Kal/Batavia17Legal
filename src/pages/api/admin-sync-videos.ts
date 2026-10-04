@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
-import { supabaseAdmin } from '../../../utils/supabase';
+import { supabaseAdmin } from '../../utils/supabase';
+
+export const prerender = false;
 
 function normalize(header: string): string {
   return header.trim().toLowerCase().replace(/[\s\-_]+/g, '_').replace(/^#/, '');
@@ -80,11 +82,11 @@ export const POST: APIRoute = async ({ request }) => {
     const rawHeaders = values[0];
     const headers = rawHeaders.map(normalize);
 
-    // Find column indices — accept multiple name variants
+    // Find column indices — most specific names first (headers are matched in order)
+    const videoUrlIdx  = findCol(headers, 'video_link', 'video_url', 'video', 'videolink', 'url');
     const captionIdx   = findCol(headers, 'captions', 'caption', 'captions_text');
-    const hashtagIdx   = findCol(headers, 'hastag', 'hashtag', 'hashtags', 'tags');
-    const videoUrlIdx  = findCol(headers, 'video_link', 'videolink', 'video', 'video_url', 'link', 'url');
-    const titleIdx     = findCol(headers, 'title', 'judul', 'name', 'video_title');
+    const hashtagIdx   = findCol(headers, 'hastag', 'hashtags', 'hashtag', 'tags');
+    const titleIdx     = findCol(headers, 'title', 'name', 'video_title', 'judul');
 
     // Must have at least a video URL or caption
     if (videoUrlIdx === -1 && captionIdx === -1) {
