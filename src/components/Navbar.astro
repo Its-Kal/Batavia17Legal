@@ -1,4 +1,20 @@
 ---
+import { supabase } from '../utils/supabase';
+
+export const prerender = false;
+
+// Fetch contact info (WhatsApp number) from Supabase
+const { data: contactSection } = await supabase
+  .from('landing_sections')
+  .select('extra')
+  .eq('section_key', 'contact')
+  .single();
+
+const whatsappNumber = contactSection?.extra?.whatsapp ?? '6285828331717';
+const whatsappDisplay = contactSection?.extra?.whatsapp_display ?? '085828331717';
+const whatsappMsg = 'Halo Admin Batavia 17, saya butuh pendampingan untuk masalah tagihan pinjaman online / kartu kredit.';
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsg)}`;
+
 const navLinks = [
   { href: '/', label: 'Beranda' },
   { href: '/berita', label: 'Berita & Edukasi' },
@@ -9,12 +25,36 @@ const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 
-const whatsappUrl = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya ingin berkonsultasi mengenai masalah hukum.')}`;
 const logoUrl = '/images/logo.webp';
+
+const marqueeText = 'Batavia 17 bukan pemberi pinjaman, tetapi pendampingan dalam proses tagihan pinjaman online ataupun kartu kredit';
 ---
 
-<header class="fixed top-0 left-0 right-0 z-[100] bg-[#061124]/95 backdrop-blur-md border-b border-[#162847]/60 transition-all duration-300 overflow-hidden">
+<!-- ======================================================== -->
+<!-- TOP MARQUEE STRIP — full width scrolling disclaimer    -->
+<!-- ======================================================== -->
+<div class="bg-[#061124] border-b border-[#162847]/60 overflow-hidden w-full">
+  <div class="running-marquee-outer relative overflow-hidden">
+    <div class="running-marquee-inner flex items-center whitespace-nowrap">
+      <span class="running-marquee-content text-[11px] sm:text-[12px] text-amber-400/90 font-medium tracking-wide py-1.5 px-4">
+        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+      <span class="running-marquee-content text-[11px] sm:text-[12px] text-amber-400/90 font-medium tracking-wide py-1.5 px-4" aria-hidden="true">
+        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+      <span class="running-marquee-content text-[11px] sm:text-[12px] text-amber-400/90 font-medium tracking-wide py-1.5 px-4" aria-hidden="true">
+        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MAIN NAVBAR                                             -->
+<!-- ======================================================== -->
+<header class="sticky top-0 z-[99] bg-[#061124]/95 backdrop-blur-md border-b border-[#162847]/60 transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-16 sm:h-20 lg:h-24 flex items-center justify-between">
+
     {/* Logo */}
     <a class="flex items-center gap-2 sm:gap-3 group" href="/">
       <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 rounded-full overflow-hidden ring-2 ring-gold-accent/40 shadow-gold-glow flex-shrink-0">
@@ -98,14 +138,38 @@ const logoUrl = '/images/logo.webp';
     </div>
   </div>
 </header>
-<div class="h-16 sm:h-20 lg:h-24"></div>
+
+<style>
+  /* Marquee animation */
+  .running-marquee-outer {
+    height: 30px;
+    overflow: hidden;
+  }
+  .running-marquee-inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: max-content;
+    animation: marqueeScroll 35s linear infinite;
+  }
+  .running-marquee-inner:hover {
+    animation-play-state: paused;
+  }
+  .running-marquee-content {
+    flex-shrink: 0;
+  }
+  @keyframes marqueeScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-33.333%); }
+  }
+</style>
 
 <script is:inline>
   function toggleMobileMenu() {
     const menu = document.getElementById('mobile-menu');
     const menuIcon = document.getElementById('menu-icon');
     const closeIcon = document.getElementById('close-icon');
-
+    if (!menu || !menuIcon || !closeIcon) return;
     if (menu.classList.contains('hidden')) {
       menu.classList.remove('hidden');
       menuIcon.classList.add('hidden');
@@ -117,7 +181,6 @@ const logoUrl = '/images/logo.webp';
     }
   }
 
-  // Close menu when clicking on links
   document.addEventListener('DOMContentLoaded', function() {
     const menuLinks = document.querySelectorAll('#mobile-menu a');
     menuLinks.forEach(link => {
@@ -125,6 +188,7 @@ const logoUrl = '/images/logo.webp';
         const menu = document.getElementById('mobile-menu');
         const menuIcon = document.getElementById('menu-icon');
         const closeIcon = document.getElementById('close-icon');
+        if (!menu || !menuIcon || !closeIcon) return;
         menu.classList.add('hidden');
         menuIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');

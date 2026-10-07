@@ -1,6 +1,19 @@
 ---
+export const prerender = false;
+
+import { supabase } from '../utils/supabase';
+
 const year = new Date().getFullYear();
-const whatsappUrl = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya butuh arah hukum.')}`;
+
+const { data: contactSection } = await supabase
+  .from('landing_sections')
+  .select('extra')
+  .eq('section_key', 'contact')
+  .single();
+
+const whatsappNumber = contactSection?.extra?.whatsapp ?? '6285828331717';
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Halo Admin Batavia 17, saya butuh pendampingan untuk masalah tagihan.')}`;
+
 const logoUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBuIfYd4CxD2KdgLpMgCAFjy_bG48gmOTv7boFeDa6jZRtchMHyK801NsbNmdgL1UMJLk9n0VR-FtJtgffqtfvi2uXQOqgMVt3X91IU8uF7hlghPKGI5uiF7gQhollYT9WTPMTIBwNo6nEZoHJrsO2G_3Qgo1xrpcKIe0krTqH8bRCbVWYvss9GGTzESEjfBCSfvqvodYShXrl6beybgARhiZ86UTsoeLF-tcAh3UjvW6GDQ0HMu5A4WmEUXDjc4PXFdQ';
 ---
 
@@ -24,7 +37,7 @@ const logoUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBuIfYd4CxD2
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-accent shrink-0 mt-0.5">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
           </svg>
-          <span class="text-xs sm:text-sm">Jl. Raden Inten II No.66, RT.1/RW.7, Duren Sawit, Kec. Duren Sawit, Kota Jakarta Timur 13440</span>
+          <span class="text-xs sm:text-sm">{contactSection?.extra?.address ?? 'Jl. Raden Inten II No.66, RT.1/RW.7, Duren Sawit, Kec. Duren Sawit, Kota Jakarta Timur 13440'}</span>
         </div>
       </div>
 

@@ -34,12 +34,20 @@ if (allSections) {
   }
 }
 
+// Fetch contact info (WhatsApp)
+const { data: contactSection } = await supabase
+  .from('landing_sections')
+  .select('extra')
+  .eq('section_key', 'contact')
+  .single();
+const whatsappNumber = contactSection?.extra?.whatsapp ?? '6285828331717';
+
 // Fallback defaults (match DB seed values)
 const hero = heroSection ?? {
   title: 'Pendampingan yang Tidak Main-Main untuk Masalah Pinjaman Online & Kartu Kredit.',
   subtitle: 'Tim berpengalaman siap membantu Anda menghadapi teror debt collector, somasi, dan tagihan tidak wajar. Konsultasi gratis, kerahasiaan terjamin.',
   cta_text: 'Jadwalkan Konsultasi',
-  cta_link: 'https://wa.me/6285706129641?text=Halo%20Admin%20Batavia%2017',
+  cta_link: `https://wa.me/${whatsappNumber}?text=Halo%20Admin%20Batavia%2017`,
   image_url: '/images/hero.webp',
   extra: { badge: 'Siap 24/7', tagline: 'Kerahasiaan Terjamin' },
 };
@@ -159,45 +167,15 @@ const intake = (staffSection?.extra?.staff ?? [
   },
 ]);
 
-const whatsappWa = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya butuh bantuan pendampingan untuk masalah tagihan pinjaman online / kartu kredit.')}`;
-const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('Halo Admin Batavia 17, saya ingin konsultasi mengenai masalah tagihan yang saya hadapi.')}`;
+const whatsappWa = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsgDefault ?? 'Halo Admin Batavia 17, saya butuh pendampingan untuk masalah tagihan.')}`;
+const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsgLayanan ?? 'Halo Admin Batavia 17, saya ingin konsultasi.')}`;
 ---
 
 <Layout>
   {/* ============================================ */}
-  {/* BREADCRUMB + RUNNING TEXT MARQUEE            */}
-  {/* ============================================ */}
-  <div class="bg-[#061124] border-b border-[#162847]/60 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 flex items-center gap-3">
-      {/* Static breadcrumb links */}
-      <div class="flex items-center gap-2 text-[12px] sm:text-[13px] text-slate-400 shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-light">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-        <a href="/" class="hover:text-gold-light transition-colors">Beranda</a>
-        <span class="text-[#162847]">/</span>
-        <span class="text-gold-light font-medium">Halaman Utama</span>
-      </div>
-      {/* Running text separator + content */}
-      <div class="flex-1 overflow-hidden relative">
-        <div class="running-text-wrapper absolute inset-0 overflow-hidden">
-          <div class="running-text-inner flex items-center whitespace-nowrap">
-            <span class="running-text-content text-[11px] sm:text-[12px] text-amber-400/80 font-medium tracking-wide">
-              &nbsp;•&nbsp; Batavia 17 bukan pemberi pinjaman, tetapi pendampingan dalam proses tagihan pinjaman online ataupun kartu kredit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
-            <span class="running-text-content text-[11px] sm:text-[12px] text-amber-400/80 font-medium tracking-wide" aria-hidden="true">
-              &nbsp;•&nbsp; Batavia 17 bukan pemberi pinjaman, tetapi pendampingan dalam proses tagihan pinjaman online ataupun kartu kredit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* ============================================ */}
   {/* HERO SECTION                                */}
   {/* ============================================ */}
-  <section class="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center bg-[#061124] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-20 overflow-hidden">
+  <section class="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center bg-[#061124] text-white pt-36 pb-16 sm:pt-40 sm:pb-20 lg:pt-44 lg:pb-20 overflow-hidden">
     <div class="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none" style={`background-image: url('${hero.image_url ?? '/images/hero.webp'}');`}></div>
     {/* Dramatic gradient */}
     <div class="absolute inset-0 pointer-events-none max-w-full" style="background: linear-gradient(to right, #061124 0%, #061124 40%, rgba(6,17,36,0.95) 50%, rgba(10,25,49,0.85) 58%, rgba(13,32,63,0.65) 65%, rgba(15,46,86,0.45) 72%, rgba(22,40,71,0.25) 82%, rgba(22,40,71,0.05) 95%, transparent 100%);"></div>
@@ -848,18 +826,6 @@ const whatsappLayanan = `https://wa.me/6285706129641?text=${encodeURIComponent('
   #mobile-carousel::-webkit-scrollbar-thumb {
     background: #E6C158;
     border-radius: 10px;
-  }
-  .running-text-inner {
-    display: flex;
-    width: max-content;
-    animation: runningTextScroll 30s linear infinite;
-  }
-  .running-text-inner:hover {
-    animation-play-state: paused;
-  }
-  @keyframes runningTextScroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
   }
   .line-clamp-2 {
     display: -webkit-box;
