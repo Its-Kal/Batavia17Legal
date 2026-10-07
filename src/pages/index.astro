@@ -167,8 +167,11 @@ const intake = (staffSection?.extra?.staff ?? [
   },
 ]);
 
-const whatsappWa = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsgDefault ?? 'Halo Admin Batavia 17, saya butuh pendampingan untuk masalah tagihan.')}`;
-const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsgLayanan ?? 'Halo Admin Batavia 17, saya ingin konsultasi.')}`;
+// WhatsApp messages
+const whatsappMsgDefault = 'Halo Admin Batavia 17, saya butuh pendampingan untuk masalah tagihan pinjaman online / kartu kredit.';
+const whatsappMsgLayanan = 'Halo Admin Batavia 17, saya ingin konsultasi mengenai masalah tagihan yang saya hadapi.';
+const whatsappWa = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsgDefault)}`;
+const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsgLayanan)}`;
 ---
 
 <Layout>
