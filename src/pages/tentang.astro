@@ -114,7 +114,35 @@ const heroTitle = tentangSection?.title ?? 'Tim yang Berdiri di Garis Depan Pend
 const heroSubtitle = tentangSection?.subtitle ?? 'Dua dekade lebih kami mengawal masyarakat yang terlilit tagihan pinjol dan kartu kredit.';
 ---
 
-<Layout title="Tentang Kami — Batavia 17 Legal Advisory">
+<Layout title="Tentang Kami — Batavia 17 Konsultan Pinjaman Online & Kartu Kredit">
+  {/*
+  ================================================================
+  SEO: JSON-LD tentang-kami page
+  ================================================================
+  */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "mainEntity": {
+      "@type": "LegalService",
+      "name": "Batavia 17 Legal Advisory",
+      "description": "Konsultan pinjaman online dan kartu kredit. Pendampingan hukum untuk tagihan pinjol, teror debt collector, somasi, dan restrukturisasi tagihan.",
+      "url": "https://batavia17.my.id",
+      "telephone": "+6285828331717",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jl. Raden Inten II No.66 RT.1/RW.7, Duren Sawit",
+        "addressLocality": "Jakarta Timur",
+        "addressRegion": "DKI Jakarta",
+        "postalCode": "13440",
+        "addressCountry": "ID"
+      },
+      "areaServed": "Indonesia",
+      "foundingDate": "2007",
+      "numberOfEmployees": "10-50",
+      "serviceType": ["Pendampingan Pinjaman Online", "Hukum Perdata", "Stop Debt Collector", "Restrukturisasi Tagihan"]
+    }
+  })} />
   {/* Hero */}
   <section class="bg-navy-dark text-white relative overflow-hidden pt-20">
     <div class="absolute inset-0 opacity-[0.05]" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
@@ -148,46 +176,91 @@ const heroSubtitle = tentangSection?.subtitle ?? 'Dua dekade lebih kami mengawal
     </section>
   )}
 
-  {/* Visi Misi */}
-  <section class="py-24 bg-surface-light">
-    <div class="container-x grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <div class="bg-white p-10 rounded-2xl shadow-card border border-navy-base/5">
-        <div class="flex items-center gap-3 mb-5">
-          <div class="w-12 h-12 rounded-xl bg-gold-tint text-gold-deep grid place-items-center flex-shrink-0">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
-          </div>
-          <h2 class="font-heading font-extrabold text-3xl text-navy-dark">Visi</h2>
-        </div>
-        <p class="text-navy-base/75 leading-relaxed text-lg">
-          Menjadi tempat bergantung bagi masyarakat yang terlilit tagihan pinjaman online dan kartu kredit — dikenal atas keteguhan mendampingi, kerahasiaan tanpa kompromi, dan jalan keluar yang nyata.
-        </p>
+  {/* NARATIF: Tenang, Selalu Ada Jalan */}
+  <section class="py-20 lg:py-28 bg-white">
+    <div class="container-x max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="inline-block text-gold-deep text-xs font-bold tracking-[0.2em] uppercase px-4 py-1.5 bg-gold-tint rounded-full mb-6">Filosofi Pendampingan</span>
+        <h2 class="font-heading font-extrabold text-3xl lg:text-5xl text-navy-dark leading-tight">
+          Tenang, Selalu Ada Jalan.
+        </h2>
       </div>
 
-      <div class="bg-white p-10 rounded-2xl shadow-card border border-navy-base/5">
-        <div class="flex items-center gap-3 mb-5">
-          <div class="w-12 h-12 rounded-xl bg-gold-tint text-gold-deep grid place-items-center flex-shrink-0">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <div class="space-y-8">
+        <p class="text-lg lg:text-xl text-navy-base/75 leading-relaxed font-light">
+          Saat jeratan tagihan menumpuk, wajar jika Anda merasa cemas, bingung, dan terpojok. Anda tidak harus menanggung beban ini sendirian.
+        </p>
+        <p class="text-base lg:text-lg text-navy-base/70 leading-relaxed">
+          Batavia 17 hadir memberikan pendampingan nyata, bukan sekadar janji muluk. Kami memahami bahwa kesulitan menghadapi pinjaman online (pinjol), tagihan kartu kredit, atau cicilan bank bukanlah sebuah akhir, melainkan situasi yang butuh strategi jalan keluar.
+        </p>
+
+        {/* 3-Step Approach */}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div class="relative bg-gradient-to-b from-[#0A1931] to-[#061124] rounded-2xl p-8 text-center border border-white/5 shadow-xl">
+            <div class="w-14 h-14 rounded-full bg-gold-accent/20 border border-gold-accent/40 flex items-center justify-center mx-auto mb-5">
+              <span class="font-heading font-extrabold text-gold-accent text-xl">01</span>
+            </div>
+            <h3 class="font-heading font-bold text-lg text-white mb-3">Analisis Empatik</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Kami membedah kapasitas finansial Anda saat ini secara objektif dan tanpa menghakimi.</p>
           </div>
-          <h2 class="font-heading font-extrabold text-3xl text-navy-dark">Misi</h2>
+          <div class="relative bg-gradient-to-b from-[#0A1931] to-[#061124] rounded-2xl p-8 text-center border border-white/5 shadow-xl">
+            <div class="w-14 h-14 rounded-full bg-gold-accent/20 border border-gold-accent/40 flex items-center justify-center mx-auto mb-5">
+              <span class="font-heading font-extrabold text-gold-accent text-xl">02</span>
+            </div>
+            <h3 class="font-heading font-bold text-lg text-white mb-3">Strategi Realistis</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Kami menyusun skema pelunasan yang masuk akal dan tidak mencekik arus kas harian Anda.</p>
+          </div>
+          <div class="relative bg-gradient-to-b from-[#0A1931] to-[#061124] rounded-2xl p-8 text-center border border-white/5 shadow-xl">
+            <div class="w-14 h-14 rounded-full bg-gold-accent/20 border border-gold-accent/40 flex items-center justify-center mx-auto mb-5">
+              <span class="font-heading font-extrabold text-gold-accent text-xl">03</span>
+            </div>
+            <h3 class="font-heading font-bold text-lg text-white mb-3">Negosiasi Langsung</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Kami maju sebagai perwakilan Anda untuk berhadapan dengan pihak kreditur secara transparan dan resmi.</p>
+          </div>
         </div>
-        <ul class="space-y-3 text-navy-base/75 leading-relaxed">
-          <li class="flex gap-3">
-            <span class="text-gold-deep font-bold flex-shrink-0">01.</span>
-            Memberikan pendampingan tanpa biaya di awal — korban cerita duluan, baru kami tangani.
-          </li>
-          <li class="flex gap-3">
-            <span class="text-gold-deep font-bold flex-shrink-0">02.</span>
-            Menghentikan teror debt collector dan intimidasi dengan langkah hukum yang tegas.
-          </li>
-          <li class="flex gap-3">
-            <span class="text-gold-deep font-bold flex-shrink-0">03.</span>
-            Membantu negosiasi restrukturisasi tagihan agar solusi yang bisa dijalankan.
-          </li>
-          <li class="flex gap-3">
-            <span class="text-gold-deep font-bold flex-shrink-0">04.</span>
-            Menjaga kerahasiaan penuh — data dan cerita klien tidak akan dibagikan ke pihak manapun.
-          </li>
-        </ul>
+
+        <p class="text-base lg:text-lg text-navy-base/70 leading-relaxed mt-8">
+          Fokus utama Batavia 17 bukan sekadar membereskan deretan angka. Kami bekerja untuk <strong class="text-navy-dark font-semibold">mengembalikan ketenangan hidup Anda</strong>, agar Anda punya ruang untuk kembali bernapas lega, menata pikiran, dan melangkah maju.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* NILAI INTI */}
+  <section class="py-16 bg-surface-light">
+    <div class="container-x">
+      <div class="text-center mb-10">
+        <h3 class="font-heading font-extrabold text-2xl lg:text-3xl text-navy-dark">Nilai Inti Kami</h3>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl p-6 border border-navy-base/5 shadow-sm text-center">
+          <div class="w-12 h-12 rounded-xl bg-gold-tint flex items-center justify-center mx-auto mb-4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C4941E" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h4 class="font-heading font-bold text-navy-dark mb-2">Integritas</h4>
+          <p class="text-xs text-navy-base/60 leading-relaxed">Kami tidak pernah mengorbankan etika demi hasil singkat.</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-navy-base/5 shadow-sm text-center">
+          <div class="w-12 h-12 rounded-xl bg-gold-tint flex items-center justify-center mx-auto mb-4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C4941E" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h4 class="font-heading font-bold text-navy-dark mb-2">Rahasia</h4>
+          <p class="text-xs text-navy-base/60 leading-relaxed">Kerahasiaan adalah pondasi kepercayaan klien.</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-navy-base/5 shadow-sm text-center">
+          <div class="w-12 h-12 rounded-xl bg-gold-tint flex items-center justify-center mx-auto mb-4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C4941E" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h4 class="font-heading font-bold text-navy-dark mb-2">Keberpihakan</h4>
+          <p class="text-xs text-navy-base/60 leading-relaxed">Klien kami adalah prioritas, bukan portofolio.</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-navy-base/5 shadow-sm text-center">
+          <div class="w-12 h-12 rounded-xl bg-gold-tint flex items-center justify-center mx-auto mb-4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C4941E" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <h4 class="font-heading font-bold text-navy-dark mb-2">Transparansi</h4>
+          <p class="text-xs text-navy-base/60 leading-relaxed">Semua proses berjalan jujur dan dapat dipertanggungjawabkan.</p>
+        </div>
       </div>
     </div>
   </section>

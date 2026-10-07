@@ -175,6 +175,53 @@ const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURICompone
 ---
 
 <Layout>
+  {/* SEO: FAQ Schema untuk indexing cepat */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Apa itu Batavia 17?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Batavia 17 adalah konsultan pinjaman online dan kartu kredit yang memberikan pendampingan hukum profesional untuk masalah tagihan, intimidasi debt collector, dan restrukturisasi tagihan di Indonesia."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apakah konsultasi di Batavia 17 gratis?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ya, konsultasi awal di Batavia 17 adalah gratis. Anda bisa menceritakan situasi Anda terlebih dahulu tanpa dikenakan biaya."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Bagaimana Batavia 17 membantu korban pinjol ilegal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kami membantu menganalisis kondisi finansial Anda, menyusun strategi restrukturisasi tagihan, dan mewakili Anda dalam negosiasi langsung dengan pihak kreditur secara transparan dan resmi."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apakah data saya aman di Batavia 17?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ya, kerahasiaan adalah prioritas utama kami. Data dan cerita klien tidak akan dibagikan ke pihak manapun."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Bagaimana cara menghubungi Batavia 17?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Anda dapat menghubungi kami melalui WhatsApp di nomor yang tertera di website untuk konsultasi gratis dan respons dalam 1x24 jam kerja."
+        }
+      }
+    ]
+  })} />
   {/* ============================================ */}
   {/* HERO SECTION                                */}
   {/* ============================================ */}
@@ -310,7 +357,7 @@ const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURICompone
     {/* Marquee when > 3 testimonials — starts from right, infinite seamless loop */}
     {testimonials.length > 3 && (
       <div class="carousel-container relative w-full overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-        <div class="carousel-track flex gap-4 sm:gap-6 py-4" style="padding-left: 50vw;">
+        <div class="carousel-track flex gap-4 sm:gap-6 py-4" style="animation-duration: 30s;">
           {[...testimonials, ...testimonials].map((t) => (
             <div class="testimonial-card w-[280px] sm:w-[360px] md:w-[400px] bg-white text-[#0F172A] p-4 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
               <div>
@@ -744,6 +791,7 @@ const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURICompone
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-play-state: running;
+    animation-duration: 40s;
   }
   .carousel-container:hover .carousel-track {
     animation-play-state: paused;
@@ -968,24 +1016,9 @@ const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURICompone
     }).catch(() => {});
   });
 
-  // Testimonial marquee carousel — seamless infinite loop
+  // Testimonial marquee carousel — seamless infinite loop, no JS duration calc
   const track = document.querySelector('.carousel-track');
   if (track) {
-    const updateDuration = () => {
-      const cards = track.querySelectorAll('.testimonial-card');
-      if (!cards.length) return;
-      // Use half the track (one set) to animate — seamless because set is duplicated
-      const halfW = track.scrollWidth / 2;
-      // Speed: cards should drift at ~80px/sec — feels smooth and never stops
-      const duration = Math.max(10, halfW / 80);
-      track.style.animationDuration = duration + 's';
-    };
-    updateDuration();
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(updateDuration, 200);
-    });
     track.addEventListener('mouseenter', () => { track.style.animationPlayState = 'paused'; });
     track.addEventListener('mouseleave', () => { track.style.animationPlayState = 'running'; });
   }
