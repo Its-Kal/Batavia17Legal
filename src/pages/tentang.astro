@@ -1,10 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../utils/supabase';
-import stats from '../data/stats.json';
 
 export const prerender = false;
 
+// Fetch page content from Supabase
 const { data: page } = await supabase
   .from('content')
   .select('*')
@@ -12,7 +12,106 @@ const { data: page } = await supabase
   .eq('status', 'published')
   .single();
 
-const { stats: statList, attorneys } = stats;
+// Fetch landing_sections for tentang-kami (hero + stats)
+const { data: tentangSection } = await supabase
+  .from('landing_sections')
+  .select('*')
+  .eq('section_key', 'tentang-kami')
+  .eq('status', 'published')
+  .single();
+
+// Fetch attorneys from advokat section
+const { data: advokatSection } = await supabase
+  .from('landing_sections')
+  .select('*')
+  .eq('section_key', 'advokat')
+  .single();
+
+// Fetch staff/team from staff section
+const { data: staffSection } = await supabase
+  .from('landing_sections')
+  .select('*')
+  .eq('section_key', 'staff')
+  .single();
+
+// Stats from DB or fallback
+const statsList = tentangSection?.extra?.stats ?? [
+  { value: '720+', label: 'Kasus Ditangani' },
+  { value: '98%', label: 'Tingkat Kepuasan' },
+  { value: '18+', label: 'Tahun Pengalaman' },
+  { value: '1.200+', label: 'Korban Ditolong' },
+];
+
+// Attorneys from DB or fallback
+const attorneys = advokatSection?.extra?.advokats ?? [
+  {
+    name: 'Adv. ROSLINDAWATI, S.H.I.',
+    role: 'Advokat',
+    specialty: 'Hukum Perdata — Tagihan Pinjol & Kartu Kredit',
+    img: '/images/advocate/ADV ROSLINDAWATI, SH.i.webp',
+  },
+  {
+    name: 'Adv. Muhamad Nur, S.H.',
+    role: 'Advokat',
+    specialty: 'Hukum Perdata — Intimidasi & Somasi',
+    img: '/images/advocate/ADV.Muhamad nur, SH.webp',
+  },
+  {
+    name: 'Abdus Sholeh, S.H.',
+    role: 'Pengacara',
+    specialty: 'Hukum Perdata — collection & Pelecehan Data',
+    img: '/images/advocate/Abdus Sholeh, S.H..webp',
+  },
+  {
+    name: 'Ahmad Akbar, S.H.',
+    role: 'Pengacara',
+    specialty: 'Hukum Perdata — Pelanggaran Regulasi Pinjol',
+    img: '/images/advocate/AHMAD AKBAR.webp',
+  },
+  {
+    name: 'Fikri Abdul Ajiz, S.H.',
+    role: 'Pengacara',
+    specialty: 'Hukum Perdata — Restrukturisasi Tagihan',
+    img: '/images/advocate/Fikri Abdul Ajiz, S.H..webp',
+  },
+];
+
+// Staff from DB or fallback
+const staffList = staffSection?.extra?.staff ?? [
+  {
+    name: 'Rusli Yani',
+    role: 'Founder',
+    desc: 'Pendiri Batavia 17 — Berawal dari keresahan pribadi menghadapi kompleksitas tagihan pinjol dan kartu kredit, mendirikan Batavia 17 dengan misi memberikan akses keadilan yang adil dan transparan.',
+    img: '/images/staff/Rusli Yani.webp',
+  },
+  {
+    name: 'Firman',
+    role: 'Staff Legal Consultant',
+    desc: 'Membantu dalam analisis perkara dan persiapan dokumen hukum untuk mendukung proses pendampingan klien.',
+    img: '/images/staff/firman.webp',
+  },
+  {
+    name: 'Lita Khaileena',
+    role: 'Staff Legal Consultant',
+    desc: 'Memberikan konsultasi hukum awal dan membantu verifikasi kelengkapan dokumen perkara klien.',
+    img: '/images/staff/Lita khaileena.webp',
+  },
+  {
+    name: 'Farida',
+    role: 'Staff Legal Consultant',
+    desc: 'Mengelola dan menyusun dokumen hukum serta memastikan kelancaran komunikasi dengan klien.',
+    img: '/images/staff/farida.webp',
+  },
+  {
+    name: 'Bilal Ferdiansyah',
+    role: 'Staff Legal Consultant',
+    desc: 'Berkomitmen membantu kelancaran administrasi perkara dan koordinasi dengan tim hukum.',
+    img: '/images/staff/Bilal Ferdiansyah.webp',
+  },
+];
+
+const heroTitle = tentangSection?.title ?? 'Tim yang Berdiri di Garis Depan Pendampingan Anda.';
+const heroSubtitle = tentangSection?.subtitle ?? 'Dua dekade lebih kami mengawal masyarakat yang terlilit tagihan pinjol dan kartu kredit.';
 ---
 
 <Layout title="Tentang Kami — Batavia 17 Legal Advisory">
@@ -25,11 +124,10 @@ const { stats: statList, attorneys } = stats;
     <div class="container-x relative py-20 lg:py-28">
       <span class="text-gold-accent text-sm font-semibold tracking-[0.2em] uppercase">Tentang Kami</span>
       <h1 class="mt-5 font-heading font-extrabold text-balance text-4xl lg:text-6xl tracking-tight max-w-3xl">
-        Dua Dekade Menjaga<br/>
-        <span class="text-gold-accent">Marga & Martabat</span> Klien Kami.
+        {heroTitle}
       </h1>
       <p class="mt-6 text-white/75 text-lg max-w-2xl leading-relaxed">
-        {page?.body ? page.body.match(/<p class="lead">([\s\S]*?)<\/p>/)?.[1] ?? 'Batavia 17 lahir dari visi sekelompok advokat senior yang ingin mengembalikan esensi pendampingan hukum.' : 'Batavia 17 lahir dari visi sekelompok advokat senior yang ingin mengembalikan esensi pendampingan hukum.'}
+        {heroSubtitle}
       </p>
     </div>
   </section>
@@ -61,7 +159,7 @@ const { stats: statList, attorneys } = stats;
           <h2 class="font-heading font-extrabold text-3xl text-navy-dark">Visi</h2>
         </div>
         <p class="text-navy-base/75 leading-relaxed text-lg">
-          Menjadi firma hukum rujukan di Indonesia yang dikenal atas integritas tanpa kompromi, ketajaman strategi litigasi, dan empati mendalam terhadap setiap klien.
+          Menjadi tempat bergantung bagi masyarakat yang terlilit tagihan pinjaman online dan kartu kredit — dikenal atas keteguhan mendampingi, kerahasiaan tanpa kompromi, dan jalan keluar yang nyata.
         </p>
       </div>
 
@@ -75,19 +173,19 @@ const { stats: statList, attorneys } = stats;
         <ul class="space-y-3 text-navy-base/75 leading-relaxed">
           <li class="flex gap-3">
             <span class="text-gold-deep font-bold flex-shrink-0">01.</span>
-            Memberikan pendampingan hukum dengan standar etika profesi tertinggi.
+            Memberikan pendampingan tanpa biaya di awal — korban cerita duluan, baru kami tangani.
           </li>
           <li class="flex gap-3">
             <span class="text-gold-deep font-bold flex-shrink-0">02.</span>
-            Mengembangkan kapasitas litigasi strategis yang berorientasi hasil nyata.
+            Menghentikan teror debt collector dan intimidasi dengan langkah hukum yang tegas.
           </li>
           <li class="flex gap-3">
             <span class="text-gold-deep font-bold flex-shrink-0">03.</span>
-            Membangun kepercayaan jangka panjang dengan transparansi biaya & proses.
+            Membantu negosiasi restrukturisasi tagihan agar solusi yang bisa dijalankan.
           </li>
           <li class="flex gap-3">
             <span class="text-gold-deep font-bold flex-shrink-0">04.</span>
-            Mendukung akses keadilan bagi komunitas melalui pro bono terpilih.
+            Menjaga kerahasiaan penuh — data dan cerita klien tidak akan dibagikan ke pihak manapun.
           </li>
         </ul>
       </div>
@@ -97,7 +195,7 @@ const { stats: statList, attorneys } = stats;
   {/* Stats */}
   <section class="py-20 bg-navy-base text-white">
     <div class="container-x grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-      {statList.map((s) => (
+      {statsList.map((s) => (
         <div>
           <div class="font-heading font-extrabold text-5xl text-gold-primary tracking-tight">{s.value}</div>
           <div class="text-xs tracking-badge uppercase text-white/60 mt-3">{s.label}</div>
@@ -110,9 +208,9 @@ const { stats: statList, attorneys } = stats;
   <section class="py-24 bg-surface-light">
     <div class="container-x">
       <div class="max-w-2xl mb-16">
-        <span class="text-gold-deep text-sm font-semibold tracking-[0.2em] uppercase">Profil Mitra</span>
+        <span class="text-gold-deep text-sm font-semibold tracking-[0.2em] uppercase">Tim Pendamping</span>
         <h2 class="mt-5 font-heading font-extrabold text-4xl lg:text-5xl tracking-tight text-navy-dark">
-          Tim Yang Akan<br/>Mendampingi Anda.
+          Tim Advokat & Staff<br/>yang Mendampingi Anda.
         </h2>
       </div>
 
@@ -120,16 +218,16 @@ const { stats: statList, attorneys } = stats;
         {attorneys.map((atty) => (
           <article class="bg-white rounded-2xl p-8 shadow-card border border-navy-base/5 hover:border-gold-accent transition-all group">
             <div class="flex items-start gap-5">
-              <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-navy-base to-navy-surface grid place-items-center text-gold-primary font-heading font-extrabold text-3xl flex-shrink-0">
-                {atty.name.split(' ').slice(2, 3)[0]?.[0] ?? 'A'}
+              <div class="relative shrink-0">
+                <div class="w-20 h-24 rounded-xl overflow-hidden border-2 border-white shadow-lg">
+                  <img alt={atty.name} class="w-full h-full object-cover object-top" src={atty.img} />
+                </div>
               </div>
               <div class="flex-1">
                 <h3 class="font-heading font-bold text-xl leading-tight text-navy-dark group-hover:text-gold-deep transition-colors">{atty.name}</h3>
                 <p class="text-sm font-semibold text-gold-deep mt-1">{atty.role}</p>
-                <div class="mt-4 space-y-1.5 text-sm text-navy-base/70">
+                <div class="mt-3 space-y-1.5 text-sm text-navy-base/70">
                   <p><span class="text-navy-base/40 font-medium">Spesialisasi:</span> {atty.specialty}</p>
-                  <p><span class="text-navy-base/40 font-medium">Pengalaman:</span> {atty.experience}</p>
-                  <p><span class="text-navy-base/40 font-medium">Bar:</span> <span class="text-xs tracking-wider text-navy-base/60">{atty.bar}</span></p>
                 </div>
               </div>
             </div>
@@ -148,7 +246,7 @@ const { stats: statList, attorneys } = stats;
       </h2>
       <p class="mt-5 text-white/70 text-lg">Konsultasi awal gratis. Respons dalam 1×24 jam kerja. Kerahasiaan terjamin.</p>
       <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="/#konsultasi" class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold px-6 py-3 rounded-xl transition-all">Jadwalkan Sekarang</a>
+        <a href="https://wa.me/6285706129641?text=Halo%20Admin%20Batavia%2017%2C%20saya%20butuh%20bantuan%20pendampingan%20untuk%20masalah%20tagihan%20pinjaman%20online%20%2F%20kartu%20kredit." class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold px-6 py-3 rounded-xl transition-all" target="_blank" rel="noopener noreferrer">Jadwalkan Sekarang</a>
         <a href="/berita" class="inline-flex items-center gap-2 bg-gold-accent hover:bg-gold-dim text-navy-dark font-semibold px-6 py-3 rounded-xl transition-all">Baca Insight Hukum</a>
       </div>
     </div>
