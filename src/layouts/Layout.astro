@@ -23,6 +23,20 @@ import FloatingRatingButton from '../components/WhatsAppFab.astro';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="keywords" content="konsultan pinjaman online, pendampingan tagihan kartu kredit, bantuan hukum pinjol, stop debt collector, restrukturisasi tagihan, somasi pinjol, galbay gagal bayar, tunda bayar, hukum perdata jakarta" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Batavia 17" />
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://batavia17.my.id" />
+    <meta property="og:image" content="https://batavia17.my.id/images/hero.webp" />
+    <meta property="og:locale" content="id_ID" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/images/favicon1.svg" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -32,6 +46,43 @@ import FloatingRatingButton from '../components/WhatsAppFab.astro';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <title>{title}</title>
+
+    <!-- SEO: JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LegalService",
+      "name": "Batavia 17 — Konsultan Pinjaman Online & Kartu Kredit",
+      "description": "Pendampingan hukum profesional untuk masalah tagihan pinjaman online illegal, teror debt collector, somasi, dan restrukturisasi tagihan kartu kredit. Konsultasi awal gratis.",
+      "url": "https://batavia17.my.id",
+      "telephone": "+6285828331717",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jl. Raden Inten II No.66, RT.1/RW.7, Duren Sawit",
+        "addressLocality": "Jakarta Timur",
+        "addressRegion": "DKI Jakarta",
+        "postalCode": "13440",
+        "addressCountry": "ID"
+      },
+      "areaServed": "Indonesia",
+      "serviceType": ["Pendampingan Pinjaman Online", "Pendampingan Kartu Kredit", "Hukum Perdata", "Stop Teror Debt Collector"],
+      "openingHours": "Mo-Sa 08:00-21:00",
+      "priceRange": "$$",
+      "sameAs": [
+        "https://www.instagram.com/batavia17.legal"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Batavia 17",
+      "url": "https://batavia17.my.id",
+      "logo": "https://batavia17.my.id/images/logo.webp",
+      "description": "Konsultan Pinjaman Online & Kartu Kredit — menghentikan teror debt collector dan memberikan pendampingan hukum."
+    }
+    </script>
   </head>
   <body class="bg-surface-light font-sans text-text-dark antialiased selection:bg-gold-accent selection:text-white overflow-x-hidden">
     <Navbar isDark={isDarkHeader} />

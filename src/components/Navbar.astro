@@ -31,25 +31,6 @@ const marqueeText = 'Batavia 17 bukan pemberi pinjaman, tetapi pendampingan dala
 ---
 
 <!-- ======================================================== -->
-<!-- TOP MARQUEE STRIP — full width scrolling disclaimer    -->
-<!-- ======================================================== -->
-<div class="bg-[#061124] border-b border-[#162847]/60 overflow-hidden w-full">
-  <div class="running-marquee-outer relative overflow-hidden">
-    <div class="running-marquee-inner flex items-center whitespace-nowrap">
-      <span class="running-marquee-content text-[11px] sm:text-[12px] text-amber-400/90 font-medium tracking-wide py-1.5 px-4">
-        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      </span>
-      <span class="running-marquee-content text-[11px] sm:text-[12px] text-amber-400/90 font-medium tracking-wide py-1.5 px-4" aria-hidden="true">
-        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      </span>
-      <span class="running-marquee-content text-[11px] sm:text-[12px] text-amber-400/90 font-medium tracking-wide py-1.5 px-4" aria-hidden="true">
-        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      </span>
-    </div>
-  </div>
-</div>
-
-<!-- ======================================================== -->
 <!-- MAIN NAVBAR                                             -->
 <!-- ======================================================== -->
 <header class="sticky top-0 z-[99] bg-[#061124]/95 backdrop-blur-md border-b border-[#162847]/60 transition-all duration-300">
@@ -139,10 +120,29 @@ const marqueeText = 'Batavia 17 bukan pemberi pinjaman, tetapi pendampingan dala
   </div>
 </header>
 
+<!-- ======================================================== -->
+<!-- MARQUEE STRIP — di bawah navbar, font lebih besar       -->
+<!-- ======================================================== -->
+<div class="bg-[#061124] border-b border-[#162847]/60 overflow-hidden w-full">
+  <div class="running-marquee-outer relative overflow-hidden">
+    <div class="running-marquee-inner flex items-center whitespace-nowrap">
+      <span class="running-marquee-content text-[13px] sm:text-[15px] text-amber-400/90 font-semibold tracking-wide py-2.5 sm:py-3 px-4">
+        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+      <span class="running-marquee-content text-[13px] sm:text-[15px] text-amber-400/90 font-semibold tracking-wide py-2.5 sm:py-3 px-4" aria-hidden="true">
+        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+      <span class="running-marquee-content text-[13px] sm:text-[15px] text-amber-400/90 font-semibold tracking-wide py-2.5 sm:py-3 px-4" aria-hidden="true">
+        &nbsp;•&nbsp; {marqueeText} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+    </div>
+  </div>
+</div>
+
 <style>
   /* Marquee animation */
   .running-marquee-outer {
-    height: 30px;
+    height: 40px;
     overflow: hidden;
   }
   .running-marquee-inner {

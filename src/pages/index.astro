@@ -86,7 +86,7 @@ const services = (layananSection?.extra?.services ?? [
   {
     badge: 'RESTRUKTURISASI',
     title: 'Restrukturisasi & Negosiasi Tagihan',
-    desc: 'Susah bayar tapi belum tahu opsi? Kami bantu negosiasi restrukturisasi dengan pihak terkait untuk方案的 yang bisa dijalankan.',
+    desc: 'Susah bayar tapi belum tahu opsi? Kami bantu negosiasi restrukturisasi dengan pihak terkait agar solusi yang bisa dijalankan.',
     bg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy6M89Pdv8ozO5GNCC01Cg3PJ63dlJZiDSzI1M6sImPQbJxBYpXiE_PloerMjGs_Xrl-QWTaykoYyRqRahh0qei92_bi415TKa-b1rrSn9BYW25XXKoBcvFnQRCbucQ8f9muqMqEcmUanbn2rI5VQyCn5u5hcsUzJSfsKzHv-s72wpbGbv-RmzaPcamxFDiDpQ7rE8Vp0RA8h88AQiQSaGbTIVFjMzBBxMleOxLXncTXKbd3i3ixo8',
   },
 ]).map((svc: any) => ({
@@ -310,7 +310,7 @@ const whatsappLayanan = `https://wa.me/${whatsappNumber}?text=${encodeURICompone
     {/* Marquee when > 3 testimonials — starts from right, infinite seamless loop */}
     {testimonials.length > 3 && (
       <div class="carousel-container relative w-full overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-        <div class="carousel-track flex gap-4 sm:gap-6 py-4" style="padding-left: 100vw;">
+        <div class="carousel-track flex gap-4 sm:gap-6 py-4" style="padding-left: 50vw;">
           {[...testimonials, ...testimonials].map((t) => (
             <div class="testimonial-card w-[280px] sm:w-[360px] md:w-[400px] bg-white text-[#0F172A] p-4 sm:p-7 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between shrink-0">
               <div>
